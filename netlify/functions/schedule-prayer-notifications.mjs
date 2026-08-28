@@ -151,17 +151,23 @@ export default async () => {
       results.push({ prayer: arabicName, skipped: true, reason: "موعد الإرسال مضى" });
       continue;
     }
-    const response = await scheduleOneSignalMessage({
-      appId,
-      apiKey,
-      englishKey,
-      arabicName,
-      sendAfter,
-      dateKey,
-      noticeMinutes,
-      siteUrl,
-    });
-    results.push({ prayer: arabicName, sendAfter, messageId: response.id || null });
+    try {
+      const response = await scheduleOneSignalMessage({
+        appId,
+        apiKey,
+        englishKey,
+        arabicName,
+        sendAfter,
+        dateKey,
+        noticeMinutes,
+        siteUrl,
+      });
+      results.push({ prayer: arabicName, sendAfter, messageId: response.id || null });
+    } catch (error) {
+      // لا نوقف بقية الصلوات إذا فشلت واحدة (مثلاً: لا يوجد مشترك مطابق للوسوم).
+      console.error(`فشل جدولة صلاة ${arabicName}:`, error.message);
+      results.push({ prayer: arabicName, sendAfter, error: error.message });
+    }
   }
 
   console.log(JSON.stringify({ date: dateKey, noticeMinutes, results }, null, 2));
