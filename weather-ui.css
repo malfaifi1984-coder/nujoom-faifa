@@ -182,3 +182,15 @@ body.calm-sky.dark-mode #app .chars-section::before,body.calm-sky.dark-mode #app
 .sky-data-credit h3{font-size:.85rem;margin:0 0 7px;color:#c5d6eb}.sky-data-credit p{font-size:.72rem;line-height:2;color:#aabdd5}.sky-data-credit a{color:#b4d4ef;text-underline-offset:3px}
 @media(min-width:560px){.sky-astro-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(prefers-reduced-motion:reduce){.sky-orbit-marker,.sky-summary-chevron{transition:none!important}}
+/* Focused prayer controls and one sky card appropriate to the current time. */
+.sky-astronomy .sky-astro-grid{grid-template-columns:minmax(0,1fr)}
+.sky-astronomy .sky-orbit-card{width:100%;max-width:620px;margin-inline:auto}
+.sky-astronomy [hidden]{display:none!important}
+.prayer-extra{margin-top:12px;border-top:1px solid #2b3d55;padding-top:11px}
+.prayer-extra summary{font-size:.75rem;color:#a9bdd6;cursor:pointer}.prayer-extra button{margin-top:12px}
+body.calm-sky.dark-mode #app .share-sheet{background:#111e30!important;border-color:#364a65!important;box-shadow:0 20px 70px #0007!important}
+body.calm-sky.dark-mode #app .share-preview-wrap{background:#0b1423!important;border-color:#33455e!important}
+body.calm-sky.dark-mode #app .share-actions button{background:#1a2c44!important;color:#d9e5f5!important;border-color:#3b506d!important}
+body.calm-sky.dark-mode #app .share-actions .primary{background:#d6c29b!important;color:#15233a!important;border-color:#e0cfae!important}
+.weather-credit-line{font-size:.62rem;color:#839ab4}.weather-credit-line a{color:#95acc6;text-underline-offset:3px}
+.sky-sampling-note{padding:6px 12px;color:#526075;font-size:11px;text-align:center;background:#fff}

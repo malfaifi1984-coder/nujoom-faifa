@@ -1,4 +1,4 @@
-/* Forecast data stays with Open-Meteo / ECMWF. No synthetic values or API key. */
+/* Free weather forecasts with no account or API key required. */
 (() => {
   'use strict';
   const CACHE_KEY = 'faifaWeatherCalmV3';
@@ -52,8 +52,10 @@
   }
   function set(id, text) { if ($(id)) $(id).textContent = text; }
   function status(message, state) {
-    set('sky-status', message);
-    $('sky-status').dataset.state = state;
+    const node = $('sky-status');
+    node.dataset.state = state;
+    node.hidden = state === 'ready';
+    node.textContent = state === 'ready' ? '' : message;
   }
   function chooseIndex(times, now = Date.now()) {
     // Never substitute the first forecast hour when a saved forecast has expired.
@@ -88,7 +90,7 @@
     const today = forecast.daily?.time?.indexOf(dateKey()) ?? -1;
     set('v2-temp', `${format(temp)}°`);
     $('v2-icon').innerHTML = icon(code);
-    set('v2-desc', currentIndex < 0 ? 'لا تتوفر توقعات لهذه الساعة' : condition(code)[1]);
+    set('v2-desc', currentIndex < 0 ? 'لا تتوفر توقعات لهذه الساعة' : forecast.hourly.weather_description?.[currentIndex] || condition(code)[1]);
     set('v2-hilo', `العظمى ${format(number(forecast.daily?.temperature_2m_max?.[today]))}° · الصغرى ${format(number(forecast.daily?.temperature_2m_min?.[today]))}°`);
     set('sky-home-update', `${cacheStale ? 'بيانات محفوظة · ' : ''}جُلبت ${stampFormat.format(new Date(fetchedAt))} · توقعات فيفاء`);
   }
@@ -99,7 +101,7 @@
     const unit = forecast.hourly_units?.wind_speed_10m;
     const kmh = speed === null ? null : unit === 'm/s' ? speed * 3.6 : unit === 'km/h' ? speed : null;
     set('sky-temp', `${format(valueAt('temperature_2m', i))}°`);
-    set('sky-condition', i < 0 ? 'لا تتوفر توقعات لهذه الساعة' : condition(valueAt('weather_code', i))[1]);
+    set('sky-condition', i < 0 ? 'لا تتوفر توقعات لهذه الساعة' : forecast.hourly.weather_description?.[i] || condition(valueAt('weather_code', i))[1]);
     $('sky-icon').innerHTML = icon(valueAt('weather_code', i));
     set('sky-high', `${format(number(forecast.daily?.temperature_2m_max?.[today]))}°`);
     set('sky-low', `${format(number(forecast.daily?.temperature_2m_min?.[today]))}°`);
@@ -143,7 +145,18 @@
     const y = (v, p) => p.bottom - (v - p.min) / (p.max - p.min) * (p.bottom - p.top);
     const groups = [];
     times.forEach((time, n) => { const date = time.slice(0, 10); let group = groups.at(-1); if (!group || group.date !== date) { group = { date, start: n, end: n }; groups.push(group); } group.end = n; });
-    const isDay = (time) => { const d = forecast.daily?.time?.indexOf(time.slice(0, 10)) ?? -1; const t = epoch(time); return t >= epoch(forecast.daily?.sunrise?.[d]) && t < epoch(forecast.daily?.sunset?.[d]); };
+    const daylight = new Map();
+    const isDay = (time) => {
+      const key = time.slice(0,10), d = forecast.daily?.time?.indexOf(key) ?? -1;
+      if (!daylight.has(key)) {
+        let rise = epoch(forecast.daily?.sunrise?.[d]), set = epoch(forecast.daily?.sunset?.[d]);
+        if ((!Number.isFinite(rise) || !Number.isFinite(set)) && window.SunCalc) {
+          const solar = SunCalc.getTimes(new Date(key+'T12:00:00+03:00'),17.2478,43.1035); rise=solar.sunrise.getTime();set=solar.sunset.getTime();
+        }
+        daylight.set(key,[rise,set]);
+      }
+      const [rise,set] = daylight.get(key), t=epoch(time); return t>=rise && t<set;
+    };
     const chartTitle = period === 120 ? 'توقعات فيفاء · خمسة أيام' : `توقعات فيفاء · ${format(period)} ساعة`;
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" style="font-family:Tahoma,Arial,sans-serif" role="img" aria-labelledby="sky-chart-title sky-chart-desc"><title id="sky-chart-title">${chartTitle}</title><desc id="sky-chart-desc">خلفية فاتحة وثلاثة رسوم متزامنة للحرارة والمطر وطبقات السحب والرياح. طبقات السحب فئات منخفضة ومتوسطة وعالية وليست قياس ارتفاع بالكيلومتر. القيم الناقصة لا ترسم. الوقت بتوقيت السعودية.</desc><defs><clipPath id="sky-temp-clip"><rect x="${left}" y="150" width="${right-left}" height="215"/></clipPath><linearGradient id="sky-temperature-colors" x1="0" y1="1" x2="0" y2="0">`;
     const stops = [[-10,'#6559ba'],[0,'#23bcbd'],[10,'#15b8a1'],[15,'#319a2d'],[20,'#9ef52b'],[25,'#f2ff10'],[30,'#ffbf00'],[35,'#ff7900'],[40,'#fa2920'],[50,'#b50930']];
@@ -165,7 +178,7 @@
       svg+=`<rect x="${left}" y="${p.top}" width="${right-left}" height="${p.bottom-p.top}" fill="none" stroke="#333"/>`;
     });
     groups.forEach((g) => { const date=new Date(epoch(g.date+'T12:00')), center=left+(g.start+g.end+1)*step/2;svg+=`<text x="${center}" y="112" text-anchor="middle" fill="#222" font-size="23">${dayFormat.format(date)}</text><text x="${center}" y="140" text-anchor="middle" fill="#222" font-size="19">${g.date.slice(8,10)}.${g.date.slice(5,7)}</text>`; });
-    const pathFor = (values,p) => { let path='', connected=false;values.forEach((v,n)=>{if(v===null){connected=false;return;}path+=`${connected?'L':'M'}${x(n).toFixed(2)} ${y(v,p).toFixed(2)} `;connected=true;});return path; };
+    const pathFor = (values,p,maxGap=1) => { let path='', previous=null;values.forEach((v,n)=>{if(v===null)return;const connect=previous!==null&&n-previous<=maxGap;path+=`${connect?'L':'M'}${x(n).toFixed(2)} ${y(v,p).toFixed(2)} `;previous=n;});return path; };
     // Each contiguous segment gets its own area; missing hours remain real gaps.
     let segment=[];
     const fillSegment=()=>{if(!segment.length)return;const p=panels[0];let d=`M${x(segment[0][0])} ${p.bottom} `;segment.forEach(([n,v])=>d+=`L${x(n)} ${y(v,p)} `);d+=`L${x(segment.at(-1)[0])} ${p.bottom}Z`;svg+=`<path d="${d}" fill="url(#sky-temperature-colors)" clip-path="url(#sky-temp-clip)"/>`;segment=[];};
@@ -197,7 +210,7 @@
       svg+=`<text x="${right+10}" y="${cy+5}" fill="#444" font-size="16">${label}</text>`;
     });
     rain.forEach((v,n)=>{if(v===null||v<=0)return;const py=y(v,panels[1]);svg+=`<rect x="${x(n)-Math.max(2,step*.25)}" y="${py}" width="${Math.max(4,step*.5)}" height="${panels[1].bottom-py}" fill="#1739ff"><title>${format(v,1)} ملم · ${times[n]}</title></rect>`;});
-    svg+=`<path d="${pathFor(wind,panels[2])}" fill="none" stroke="#40b5ff" stroke-width="4"/><path d="${pathFor(gust,panels[2])}" fill="none" stroke="#159da2" stroke-width="3"/>`;
+    svg+=`<path d="${pathFor(wind,panels[2])}" fill="none" stroke="#40b5ff" stroke-width="4"/><path d="${pathFor(gust,panels[2],forecast.sampling?.wind_gusts_10m_hours===3?3:1)}" fill="none" stroke="#159da2" stroke-width="3"/>`;
     points.forEach((index,n)=>{const d=valueAt('wind_direction_10m',index);if(d===null||Number(times[n].slice(11,13))%3!==0)return;svg+=`<g transform="translate(${x(n)},719) rotate(${d+180})" fill="none" stroke="#111" stroke-width="2.7"><title>رياح قادمة من ${format(d)}°</title><path d="M0 13V-13m-5 7 5-7 5 7"/></g>`;});
     const now=(Date.now()-epoch(times[0]))/3600000;
     if(now>=0&&now<points.length){const px=left+(now+.5)*step;panels.forEach((p)=>svg+=`<line x1="${px}" x2="${px}" y1="${p.top}" y2="${p.bottom}" stroke="#111" stroke-width="2" stroke-dasharray="7 5"/>`);svg+=`<text x="${px}" y="94" text-anchor="middle" fill="#333" font-size="15">الآن</text>`;}
@@ -207,6 +220,7 @@
     [[10,25,'#dedede'],[25,50,'#bcbcbc'],[50,75,'#969696'],[75,90,'#737373'],[90,100,'#505050']].forEach(([a,b,c],i)=>{const px=left+50+i*155;svg+=`<circle cx="${px}" cy="947" r="9" fill="${c}"/><text x="${px+17}" y="953" fill="#444" font-size="16">${a}–${b}%</text>`;});
     svg+=`<text x="${left}" y="990" fill="#777" font-size="16">وقت جلب البيانات: ${stampFormat.format(new Date(fetchedAt))} · توقيت السعودية</text><text x="${right}" y="990" text-anchor="end" fill="#555" font-size="16">الرمادي: كثافة السحب · الأزرق: المطر · الخلفية الفاتحة: النهار</text></svg>`;
     target.innerHTML=svg;
+    if (forecast.sampling?.cloud_cover_hours===3) { const note=document.createElement('p');note.className='sky-sampling-note';note.textContent='الحرارة والمطر كل ساعة · السحب والهبّات كل ٣ ساعات';target.append(note); }
     $('sky-table-body').innerHTML=points.map((i)=>`<tr><td>${dateFormat.format(new Date(epoch(forecast.hourly.time[i])))} · ${hourFormat.format(new Date(epoch(forecast.hourly.time[i])))}</td><td>${format(valueAt('temperature_2m',i),1)}</td><td>${format(valueAt('precipitation',i),1)}</td><td>${format(valueAt('cloud_cover',i))}</td><td>${format(speed('wind_speed_10m',i))}</td><td>${format(speed('wind_gusts_10m',i))}</td></tr>`).join('');
     $('sky-chart-expand').disabled=false;
   }
@@ -239,7 +253,7 @@
     if (!force && cache && Date.now() - cache.savedAt < CACHE_TTL && chooseIndex(cache.data.hourly.time) >= 0) {
       const offline = navigator.onLine === false;
       render(cache.data, cache.savedAt, offline);
-      status(offline ? 'نسخة محفوظة دون اتصال؛ راجع وقت الجلب قبل الاعتماد عليها.' : 'توقعات فيفاء · توقيت السعودية · تقديرات نموذجية وليست رصدًا من محطة محلية.', offline ? 'stale' : 'ready');
+      status(offline ? 'نسخة محفوظة دون اتصال؛ راجع وقت الجلب قبل الاعتماد عليها.' : '', offline ? 'stale' : 'ready');
       return;
     }
     if (cache && !forecast) render(cache.data, cache.savedAt, true);
@@ -257,7 +271,7 @@
         const savedAt = Date.now();
         try { localStorage.setItem(CACHE_KEY, JSON.stringify({ savedAt, data })); } catch (_) { /* Optional cache. */ }
         render(data, savedAt, false);
-        status('توقعات فيفاء · توقيت السعودية · تقديرات نموذجية وليست رصدًا من محطة محلية.', 'ready');
+        status('', 'ready');
       } catch (_) {
         const fallback = readCache();
         if (fallback) {

@@ -1,7 +1,7 @@
 import { fetchPrayerDay, PRAYERS, ksaDateKey, cleanTime } from './prayer-shared.mjs';
 
 const $ = (id) => document.getElementById(id);
-const STORE = 'nujoomPrayerSettingsV6';
+const STORE = 'nujoomPrayerSettingsV7';
 const days = new Map();
 const localCalculation = window.computePrayerTimes;
 const previousSync = window.syncNotifyPrefsToOneSignal;
@@ -17,14 +17,14 @@ function validDay(day, date) {
 function readSettings() {
   let saved = {};
   try { const value = JSON.parse(localStorage.getItem(STORE) || '{}'); if (value && typeof value === 'object') saved = value; } catch (_) { /* Use defaults. */ }
-  return { atTime: saved.atTime !== false, lead: [0, 5, 10, 15].includes(saved.lead) ? saved.lead : 10, prayers: Object.fromEntries(PRAYERS.map(([, , key]) => [key, saved.prayers?.[key] !== false])) };
+  return { atTime: true, lead: [0, 5, 10, 15].includes(saved.lead) ? saved.lead : 0, prayers: Object.fromEntries(PRAYERS.map(([, , key]) => [key, true])) };
 }
 function enabled() { return window.getNotifyPrefs().prayer; }
 function subscription() { return window.__oneSignalInstance?.User?.PushSubscription; }
 function refreshStatus(message) {
   const sub = subscription();
   const denied = 'Notification' in window && Notification.permission === 'denied';
-  $('prayer-push-status').textContent = message || (denied ? 'الإشعارات محظورة من المتصفح. افتح إعدادات الموقع للسماح بها.' : sub?.optedIn ? (enabled() ? 'اشتراك الإشعارات مفعّل على هذا الجهاز.' : 'الاشتراك متاح، وتنبيهات الصلاة متوقفة حسب اختيارك.') : 'لتلقي التنبيه أثناء إغلاق التطبيق، فعّل اشتراك الإشعارات على جهاز يدعمه.');
+  $('prayer-push-status').textContent = message || (denied ? 'الإشعارات محظورة من المتصفح. افتح إعدادات الموقع للسماح بها.' : sub?.optedIn ? (enabled() ? 'الإشعارات مفعّلة على هذا الجهاز.' : 'إشعارات الجهاز متاحة، وتنبيهات الصلاة متوقفة.') : 'لتنبيهك والتطبيق مغلق، فعّل الإشعارات على جهازك.');
   $('prayer-enable-push').hidden = !!sub?.optedIn;
 }
 async function syncSettings() {
@@ -33,33 +33,31 @@ async function syncSettings() {
   const prefs = readSettings();
   const seq = ++syncNumber;
   const tags = { prayer_prefs_version: '2', notify_prayer: enabled() ? '1' : '0', prayer_at_time: prefs.atTime ? '1' : '0', prayer_lead_minutes: String(prefs.lead), push_device: window.isMobilePushDevice() ? 'mobile' : 'desktop' };
-  for (const [, , key] of PRAYERS) tags[`notify_prayer_${key}`] = prefs.prayers[key] ? '1' : '0';
+  for (const [, , key] of PRAYERS) tags[`notify_prayer_${key}`] = '1';
   try {
     await sdk.User.addTags(tags);
-    if (seq === syncNumber) refreshStatus('حُفظت التفضيلات لدى خدمة الإشعارات. قد تحتاج التغييرات دورة الجدولة التالية لتسري.');
+    if (seq === syncNumber) refreshStatus('حُفظت إعدادات تنبيهات الصلاة.');
   } catch (_) { if (seq === syncNumber) refreshStatus('حُفظت التفضيلات على الجهاز، وتعذرت مزامنتها. افتح التطبيق عند عودة الاتصال.'); }
 }
 window.syncNotifyPrefsToOneSignal = (prefs) => { previousSync(prefs); void syncSettings(); };
 function saveSettings() {
   const prefs = {
-    atTime: $('prayer-at-time').checked,
+    atTime: true,
     lead: Number($('prayer-lead').value),
-    prayers: Object.fromEntries(PRAYERS.map(([, , key]) => [key, $(`prayer-switch-${key}`).checked]))
+    prayers: Object.fromEntries(PRAYERS.map(([, , key]) => [key, true]))
   };
   try {
     localStorage.setItem(STORE, JSON.stringify(prefs));
     const general = window.getNotifyPrefs(); general.prayer = $('prayer-master').checked;
+    for (const key of ['stars','friday','weather','daily','updates']) general[key] = false;
     localStorage.setItem('nujoomNotifyPrefs', JSON.stringify(general));
-    if ($('notify-prayer')) $('notify-prayer').checked = general.prayer;
   } catch (_) { refreshStatus('تعذر حفظ التفضيلات. تحقق من السماح بالتخزين في المتصفح.'); return; }
   window.syncNotifyPrefsToOneSignal();
 }
 function paintSettings() {
   const prefs = readSettings();
   $('prayer-master').checked = enabled();
-  $('prayer-at-time').checked = prefs.atTime;
   $('prayer-lead').value = String(prefs.lead);
-  for (const [, , key] of PRAYERS) $(`prayer-switch-${key}`).checked = prefs.prayers[key];
   refreshStatus();
 }
 window.computePrayerTimes = (date) => {
@@ -72,7 +70,9 @@ window.computePrayerTimes = (date) => {
 function paintTimes() {
   window.renderPrayerCard(); window.adhanTick(); window.updateHomePrayer();
   const day = days.get(ksaDateKey());
-  $('prayer-source-status').textContent = day ? 'مواقيت أم القرى لفيفاء · نفس مصدر جدولة التنبيهات · توقيت السعودية' : 'تعذر جلب المواقيت الموحّدة؛ المعروض حساب محلي تقريبي وقد يختلف عن التنبيهات.';
+  window.FaifaPrayerDay = day || null;
+  window.dispatchEvent(new Event('faifa-prayer-times'));
+  $('prayer-source-status').textContent = day ? 'مواقيت فيفاء · أم القرى' : 'تعذر التحديث؛ المواقيت المعروضة تقريبية مؤقتًا.';
   $('prayer-source-status').dataset.state = day ? 'ready' : 'approximate';
 }
 async function getDay(date) {
@@ -130,7 +130,14 @@ window.checkPrayerAndFridayNotifications = () => {
   }
 };
 
+window.saveNotifyPrefs = saveSettings;
+try {
+  const general = window.getNotifyPrefs();
+  for (const key of ['stars','friday','weather','daily','updates']) general[key] = false;
+  localStorage.setItem('nujoomNotifyPrefs', JSON.stringify(general));
+} catch (_) { /* Storage is optional. */ }
 paintSettings();
+$('prayer-ios-tip').hidden = !/iPhone|iPad|iPod/.test(navigator.userAgent);
 $('prayer-preferences').addEventListener('change', saveSettings);
 $('prayer-enable-push').addEventListener('click', async () => { await window.toggleNotifications(); refreshStatus(); await syncSettings(); });
 $('prayer-test').addEventListener('click', async () => {

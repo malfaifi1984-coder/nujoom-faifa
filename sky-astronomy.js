@@ -37,13 +37,20 @@
     if (!$('sky-sun-marker') || !window.SunCalc) return;
     const key = dayKey.format(now), start = new Date(`${key}T00:00:00+03:00`);
     const solar = SunCalc.getTimes(new Date(`${key}T12:00:00+03:00`), lat, lon);
+    const prayer = window.FaifaPrayerDay;
+    if (prayer?.date === key) {
+      if (/^\d{2}:\d{2}$/.test(prayer.timings?.Sunrise)) solar.sunrise = new Date(`${key}T${prayer.timings.Sunrise}:00+03:00`);
+      if (/^\d{2}:\d{2}$/.test(prayer.timings?.Maghrib)) solar.sunset = new Date(`${key}T${prayer.timings.Maghrib}:00+03:00`);
+    }
     const duration = solar.sunset - solar.sunrise;
-    const sunlight = valid(solar.sunrise) && valid(solar.sunset) && now >= solar.sunrise && now <= solar.sunset;
+    const sunlight = valid(solar.sunrise) && valid(solar.sunset) && now >= solar.sunrise && now < solar.sunset;
     marker('sky-sun-marker', duration > 0 ? (now - solar.sunrise) / duration : 0, sunlight);
     $('sky-sun-rise').textContent = time(solar.sunrise);
     $('sky-sun-set').textContent = time(solar.sunset);
     $('sky-sun-status').textContent = sunlight ? 'الشمس فوق الأفق' : 'الشمس تحت الأفق';
     $('sky-sun-state').textContent = sunlight ? 'نهار فيفاء' : 'ليل فيفاء';
+    $('sky-sun-card').hidden = !sunlight;
+    $('sky-moon-card').hidden = sunlight;
     const light = SunCalc.getMoonIllumination(now);
     const phase = Math.round(light.phase * 8) % 8;
     $('sky-moon-phase').textContent = phases[phase];
@@ -66,9 +73,9 @@
     const progress = above && previousRise && nextSet ? (now - previousRise.at) / (nextSet.at - previousRise.at) : 0;
     marker('sky-moon-marker', progress, above);
     $('sky-moon-status').textContent = above ? 'القمر فوق الأفق' : 'القمر تحت الأفق';
-    $('sky-astro-updated').textContent = `الموقع محسوب حسب وقتك الآن · ${clock.format(now)} بتوقيت السعودية`;
   }
   window.FaifaAstronomy = Object.freeze({ update });
+  window.addEventListener('faifa-prayer-times', () => update());
   document.addEventListener('DOMContentLoaded', () => {
     update();
     setInterval(() => { if (!document.hidden) update(); }, 30000);
