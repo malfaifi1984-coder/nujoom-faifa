@@ -1,0 +1,184 @@
+/* Calm astronomical identity. Loaded after the existing application styles. */
+body.calm-sky,body.calm-sky.dark-mode{
+  --bg:#0b1220;--bg2:#111e30;--bg3:#1a293d;--card:#111e30;
+  --text:#eef3f9;--text2:#aab9cc;--text3:#91a2ba;
+  --gold:#cdb586;--gold-l:#e5cea1;--gold-d:#8e7854;--border:#29374c;
+  --nf-gold:#cdb586;--nf-gold-2:#e5cea1;--nf-line:#29374c;--nf-line-strong:#3a4a61;
+  --ui-gold-soft:#e5cea1;--winter:#9fc4ed;--spring:#a1c4ad;
+  background:#0b1220!important;color:var(--text);
+}
+body.calm-sky::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 75% 0,rgba(46,69,107,.27),transparent 55%),radial-gradient(1px 1px at 15% 12%,#aab9cc 75%,transparent),radial-gradient(1px 1px at 85% 32%,#aab9cc 75%,transparent),radial-gradient(1px 1px at 74% 8%,#d7be8e 75%,transparent),radial-gradient(1px 1px at 26% 68%,#aab9cc 75%,transparent)}
+body.calm-sky.dark-mode #bgCanvas{display:none}
+body.calm-sky.dark-mode #app{background:transparent!important;box-shadow:none!important}
+body.calm-sky.dark-mode #splash{background:#0b1220!important}
+body.calm-sky.dark-mode #app .splash-title{font-size:2rem!important;text-shadow:none!important}
+body.calm-sky.dark-mode #nav{background:rgba(16,27,44,.97)!important;border:1px solid var(--border)!important;box-shadow:0 12px 35px #0005!important;backdrop-filter:blur(16px)}
+body.calm-sky.dark-mode #nav .nav-btn{border:1px solid transparent!important;transition:background .15s!important;color:#aab9cc!important}
+body.calm-sky.dark-mode #nav .nav-btn.active{background:#223149!important;border-color:#354763!important;color:#e5cea1!important}
+body.calm-sky.dark-mode #nav .nav-btn.active::after{display:none}
+body.calm-sky.dark-mode #nav .nav-label{font-weight:700!important}
+body.calm-sky.dark-mode #app .scrollable{max-width:900px;padding-bottom:100px!important}
+body.calm-sky.dark-mode #page-home .brand-text-title{font-size:1.4rem!important;font-weight:700!important;line-height:1.6!important;color:#eef3f9!important;text-shadow:none!important;filter:none!important}
+body.calm-sky.dark-mode #app .brand-site-logo{width:55px!important;height:55px!important;filter:none!important;box-shadow:none!important}
+body.calm-sky.dark-mode #app .home-header,body.calm-sky.dark-mode #app .cal-header,body.calm-sky.dark-mode #app .detail-header{background:transparent!important;box-shadow:none!important;border-color:var(--border)!important}
+body.calm-sky.dark-mode #app .date-banner,body.calm-sky.dark-mode #app .v2-dashboard-compact,body.calm-sky.dark-mode #app .hero-card,body.calm-sky.dark-mode #app .chars-section,body.calm-sky.dark-mode #app .info-section,body.calm-sky.dark-mode #app .star-row,body.calm-sky.dark-mode #app .qibla-card,body.calm-sky.dark-mode #app .prayer-card,body.calm-sky.dark-mode #app .notify-panel,body.calm-sky.dark-mode #app .detail-hero,body.calm-sky.dark-mode #app .date-card,body.calm-sky.dark-mode #app .detail-chars{background:#111e30!important;border:1px solid #29374c!important;border-radius:20px!important;box-shadow:none!important;animation:none!important}
+body.calm-sky.dark-mode #app .hero-card::before,body.calm-sky.dark-mode #app .hero-card::after,body.calm-sky.dark-mode #app .v2-dashboard-compact::before,body.calm-sky.dark-mode #app .v2-dashboard-compact::after,body.calm-sky.dark-mode #app .progress-glow{display:none!important}
+body.calm-sky.dark-mode #app .hero-card .hero-star-name{color:#e5cea1!important;text-shadow:none!important}
+body.calm-sky.dark-mode #app .hero-card .hero-season-badge{background:#1c2a3e!important;color:#b7cbe4!important;border-color:#31425c!important}
+body.calm-sky.dark-mode #app .hero-progress-modern{background:#25344a!important}
+body.calm-sky.dark-mode #app .progress-fill{background:#bca478!important;box-shadow:none!important}
+body.calm-sky.dark-mode #app .hero-card .countdown-num{color:#eef3f9!important;text-shadow:none!important}
+body.calm-sky.dark-mode #app .date-banner .db-head{background:transparent!important;border-color:#29374c!important}
+body.calm-sky.dark-mode #app .db-day,body.calm-sky.dark-mode #app .db-value,body.calm-sky.dark-mode #app .v2-temp{color:#eef3f9!important;text-shadow:none!important}
+body.calm-sky.dark-mode #app .home-install,body.calm-sky.dark-mode #app .share-today-btn{background:#17253a!important;border-color:#35445a!important;box-shadow:none!important;color:#d6c19a!important}
+body.calm-sky.dark-mode #app .v2-live-dot{background:#94b9d7!important;box-shadow:none!important;animation:none!important}
+body.calm-sky.dark-mode .whatsapp-float{width:42px!important;height:42px!important;opacity:.85;box-shadow:none!important}
+body.calm-sky.dark-mode #app .page.active .weather-card{animation:none!important}
+body.calm-sky.dark-mode #app .wx-legacy{display:none!important}
+
+/* Weather layout */
+#page-weather .sky-weather{padding:calc(var(--safe-top) + 25px) 20px 125px!important;font-family:var(--font-ar)}
+.sky-weather *{box-sizing:border-box}
+.sky-weather button,.sky-weather a{touch-action:manipulation}
+.sky-weather button{font:inherit;cursor:pointer}
+.sky-weather button:disabled{cursor:wait;opacity:.6}
+.sky-weather button:focus-visible,.sky-weather a:focus-visible,.sky-weather summary:focus-visible{outline:2px solid #d9c292;outline-offset:4px}
+.sky-weather [hidden]{display:none!important}
+.sky-weather h1,.sky-weather h2,.sky-weather h3,.sky-weather p{margin:0}
+.sky-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:24px}
+.sky-brand{font-size:.8rem;letter-spacing:0;color:#cdb586;display:flex;align-items:center;gap:8px}
+.sky-brand svg{width:21px;height:21px;stroke:#cdb586;fill:none;stroke-width:1.4}
+.sky-date{font-size:.7rem;color:#aab9cc}
+.sky-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.sky-heading h1{font-size:1.7rem;font-weight:700;line-height:1.7;color:#eef3f9}
+.sky-heading p{font-size:.76rem;color:#aab9cc}
+.sky-refresh{border:1px solid #34445b;background:#142238;color:#d7e4f4;display:flex;align-items:center;gap:7px;padding:9px 12px;border-radius:12px;white-space:nowrap;font-size:.73rem!important}
+.sky-refresh svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6}
+.sky-status{font-size:.73rem;color:#b9cce1;padding:11px 14px;background:#14243a;border:1px solid #2f4560;border-radius:12px;margin-bottom:18px;line-height:1.9}
+.sky-status[data-state="error"],.sky-status[data-state="stale"]{border-color:#786347;background:#2a261f;color:#e8d3af}
+.sky-card{background:#111e30;border:1px solid #29374c;border-radius:20px;overflow:hidden;min-width:0}
+.sky-now{padding:23px;position:relative;background:radial-gradient(ellipse at 10% 20%,#243a55 0,transparent 65%),#111e30}
+.sky-now-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.sky-kicker{font-size:.75rem;color:#bdcde0}
+.sky-model{font:11px/1.6 Tahoma,sans-serif;color:#b4cce7;padding:4px 9px;border:1px solid #3c526d;border-radius:30px;white-space:nowrap}
+.sky-current{display:flex;align-items:center;gap:16px;margin:10px 0 15px;min-height:100px}
+.sky-temperature{font:400 72px/1.2 var(--font-ar);letter-spacing:-3px;color:#eef3f9;direction:ltr;font-variant-numeric:tabular-nums}
+.sky-condition{display:flex;flex-direction:column;gap:7px;color:#d4e2f2;font-size:.85rem}
+.sky-condition svg{width:50px;height:50px;fill:none;stroke:#d5c08f;stroke-width:1.4}
+.sky-range{font-size:.75rem;color:#aab9cc}
+.sky-range b{font-weight:600;color:#e3ebf6;margin-inline:4px 12px}
+.sky-divider{height:1px;background:#304158;margin:19px 0 16px}
+.sky-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sky-metric{display:flex;flex-direction:column;gap:6px}
+.sky-metric span{font-size:.68rem;color:#aab9cc}
+.sky-metric strong{font-size:1.05rem;font-weight:600;color:#dce9f7;font-variant-numeric:tabular-nums}
+.sky-metric small{font-weight:400;font-size:.66rem;color:#aab9cc}
+.sky-update{font-size:.66rem;color:#aab9cc;margin-top:18px!important}
+.sky-section{margin-top:24px}
+.sky-section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:13px}
+.sky-section h2{font-size:1rem;font-weight:700;color:#e3ebf6}
+.sky-section-sub{font-size:.7rem;color:#aab9cc;margin-top:4px!important;line-height:1.9}
+.sky-tabs{display:flex;gap:3px;border:1px solid #2d3c52;border-radius:11px;padding:3px;background:#0e1929;flex-shrink:0}
+.sky-tabs button{background:transparent;border:0;color:#aab9cc;border-radius:8px;padding:6px 10px;font-size:.7rem;white-space:nowrap}
+.sky-tabs button[aria-pressed="true"]{background:#293b53;color:#eef3f9}
+.sky-hours{display:flex;gap:9px;overflow-x:auto;padding:0 0 12px;scrollbar-width:thin;scrollbar-color:#415773 transparent;scroll-snap-type:x proximity}
+.sky-hour{flex:0 0 76px;background:#111e30;border:1px solid #29374c;border-radius:15px;padding:12px 5px;display:flex;align-items:center;flex-direction:column;gap:8px;scroll-snap-align:start}
+.sky-hour:first-child{background:#1b2d44;border-color:#4d6582}
+.sky-hour-time{font-size:.67rem;color:#aab9cc;white-space:nowrap}
+.sky-hour svg{width:28px;height:28px;fill:none;stroke:#c8d9ec;stroke-width:1.5}
+.sky-hour-temp{font-size:1.05rem;color:#eef3f9;direction:ltr}
+.sky-hour-rain{font-size:.64rem;color:#9bc6ed;white-space:nowrap}
+.sky-chart-head{padding:17px 18px 0;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.sky-chart-legend{display:flex;align-items:center;gap:14px;color:#c2cedf;font-size:.68rem}
+.sky-chart-legend span{display:flex;align-items:center;gap:6px}
+.sky-chart-legend i{display:inline-block;width:15px;height:3px;border-radius:3px;background:#d8bb84}
+.sky-chart-legend .rain-key{height:10px;width:8px;background:#72addb}
+.sky-chart-empty{padding:45px 20px;text-align:center;color:#aab9cc;font-size:.8rem}
+.sky-chart-scroll{overflow-x:auto;direction:ltr;padding:6px 10px 0;scrollbar-width:thin;scrollbar-color:#415773 transparent}
+.sky-chart-scroll svg{display:block;min-width:580px;width:100%;height:auto;overflow:visible}
+.sky-chart-scroll text{font-family:Tahoma,Arial,sans-serif}
+.sky-chart-caption{padding:0 18px 13px;font-size:.65rem;color:#aab9cc}
+.sky-data-table{border-top:1px solid #29374c;font-size:.73rem}
+.sky-data-table summary{padding:12px 18px;color:#bfd0e4;cursor:pointer}
+.sky-table-scroll{overflow:auto;max-height:320px}
+.sky-data-table table{width:100%;border-collapse:collapse;white-space:nowrap;text-align:right}
+.sky-data-table th,.sky-data-table td{padding:10px 14px;border-bottom:1px solid #26364b;font-weight:400}
+.sky-data-table th{background:#18283c;position:sticky;top:0;color:#d6e4f4}
+.sky-days{padding:0 15px}
+.sky-day{display:grid;grid-template-columns:1.1fr 35px 1.25fr 1fr;align-items:center;gap:8px;padding:14px 0;border-bottom:1px solid #27374a;font-size:.77rem;min-height:62px}
+.sky-day:last-child{border-bottom:0}
+.sky-day-name{display:flex;flex-direction:column;gap:2px;color:#e0e9f5}
+.sky-day-name small{font-size:.64rem;color:#94a9c2}
+.sky-day svg{width:27px;height:27px;fill:none;stroke:#bdd0e6;stroke-width:1.5}
+.sky-day-temp{display:flex;gap:9px;justify-content:center;direction:ltr;font-variant-numeric:tabular-nums}
+.sky-day-temp .low{color:#9db2cc}
+.sky-day-temp .high{color:#e6d2af}
+.sky-day-rain{text-align:left;color:#a7cff0;font-size:.72rem;white-space:nowrap}
+.sky-map-head{padding:19px 18px 14px}
+.sky-map-source{font-size:.65rem;color:#abc5e2;border:1px solid #344b65;border-radius:20px;padding:3px 8px;display:inline-block;margin-top:8px}
+.sky-map-stage{position:relative;min-height:310px;background:#122338;border-top:1px solid #2b3d53;border-bottom:1px solid #2b3d53;display:grid;place-items:center;overflow:hidden}
+.sky-map-contours{position:absolute;inset:0;width:100%;height:100%;opacity:.5;fill:none;stroke:#355772;stroke-width:1;pointer-events:none}
+.sky-map-placeholder{position:relative;text-align:center;padding:24px;max-width:370px;z-index:1}
+.sky-map-pin{display:grid;place-items:center;width:48px;height:48px;border:1px solid #8c8066;border-radius:50%;margin:0 auto 13px;background:#1b2b3c;color:#e3c990}
+.sky-map-pin svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.5}
+.sky-map-placeholder h3{font-size:.95rem;font-weight:600;color:#e3ebf6}
+.sky-map-placeholder p{font-size:.72rem;color:#aab9cc;margin:7px 0 18px;line-height:1.9}
+.sky-map-button{border:1px solid #8294ac;border-radius:12px;padding:10px 21px;background:#d3deec;color:#142033;font-size:.76rem!important;font-weight:700!important}
+.sky-rain-map{display:block;width:100%;height:400px;background:#172a3f;z-index:1;direction:ltr}
+.sky-rain-map .leaflet-popup-content,.sky-rain-map .leaflet-tooltip{direction:rtl;font-family:var(--font-ar);font-size:12px;line-height:1.8}
+.sky-rain-map .leaflet-tooltip,.sky-rain-map .leaflet-popup-content-wrapper,.sky-rain-map .leaflet-popup-tip{background:#14243a;color:#e6edf6;border-color:#445c78}
+.sky-rain-map .leaflet-control-attribution{font-size:10px;background:#fff;color:#222}
+.sky-rain-map .leaflet-control-attribution a{color:#125478}
+.sky-map-controls{padding:14px 18px;border-bottom:1px solid #29374c}
+.sky-map-controls label{display:block;font-size:.72rem;color:#aab9cc}
+.sky-map-controls output{display:block;color:#e0eaf7;font-size:.8rem;margin-top:5px;font-variant-numeric:tabular-nums}
+.sky-map-controls input{display:block;width:100%;margin:18px 0;accent-color:#9cbede;direction:ltr;min-height:24px}
+.sky-map-controls button,.sky-map-retry{border:1px solid #3a506b;color:#d3e3f5;background:#192c43;border-radius:8px;padding:6px 10px;font-size:.7rem!important;white-space:nowrap}
+.sky-map-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;color:#aab9cc;font-size:.62rem}
+.sky-map-legend span{display:flex;align-items:center;gap:4px}.sky-map-legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
+body.calm-sky.dark-mode #app .sky-home-update{font:11px/1.9 var(--font-ar);color:#aab9cc;margin:-3px 22px 18px}
+body.calm-sky.dark-mode #app .v2-condition-icon svg{width:39px;height:39px;fill:none;stroke:#d5c08f;stroke-width:1.5}
+.sky-map-foot{padding:14px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.sky-map-foot p{font-size:.65rem;color:#aab9cc;line-height:1.9;max-width:360px}
+.sky-map-foot a{color:#b4d3ed;font-size:.72rem;white-space:nowrap;text-underline-offset:4px}
+.sky-map-notice{padding:10px 18px;font-size:.72rem;color:#d8c49e;background:#29261f;border-bottom:1px solid #4f4839;line-height:1.9}
+.sky-radar-note{font-size:.72rem;color:#aab9cc;line-height:2;margin-top:12px!important;padding-inline:2px}
+.sky-radar-note strong{color:#d4e0ef;font-weight:600}
+.sky-source{margin-top:22px;padding:17px 18px;border:1px solid #29374c;border-radius:15px;background:#101c2c}
+.sky-source summary{font-size:.76rem;color:#c4d2e4;cursor:pointer;line-height:1.8}
+.sky-source p{font-size:.71rem;color:#aab9cc;line-height:2;margin-top:12px}
+.sky-source a{color:#afcdea;text-underline-offset:4px}
+.sky-source dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0;font-size:.68rem}
+.sky-source dt{color:#aab9cc}.sky-source dd{margin:0;color:#d9e3f0;text-align:left}
+.sky-footer{color:#8fa3bd;font-size:.65rem;text-align:center;margin-top:22px!important;line-height:1.9}
+.about-app-button{font:12px var(--font-ar);color:#b7c9e0;background:#19283d;border:1px solid #35465f;border-radius:10px;padding:8px 12px;cursor:pointer;margin-inline-start:auto;white-space:nowrap}
+body.calm-sky.dark-mode #page-home .brand-text-header{flex-wrap:wrap;gap:10px!important}
+body.calm-sky.dark-mode #page-home .brand-text-title{font-size:clamp(1rem,4.2vw,1.4rem)!important}
+body.calm-sky.dark-mode #page-home .brand-site-logo{width:44px!important;height:44px!important;border-radius:12px!important}
+body.calm-sky.dark-mode #app .adhan-card{background:radial-gradient(ellipse at top left,#263d57,transparent),#111e30!important;border:1px solid #34475f!important;border-radius:22px!important;box-shadow:none!important;padding:26px!important}
+body.calm-sky.dark-mode #app .adhan-time{color:#e5d0a8!important;text-shadow:none!important;font-weight:600!important}
+body.calm-sky.dark-mode #app .prayer-card .pr-next{background:#24364e!important;border-color:#5b6e87!important}
+body.calm-sky.dark-mode #app .qibla-btn{background:#1c2c42!important;color:#d9e6f6!important;border-color:#384d69!important;box-shadow:none!important}
+body.calm-sky.dark-mode #app .qibla-compass{background:#101d2e!important;box-shadow:none!important;border-color:#34465e!important}
+.prayer-settings{padding:22px;margin:20px 14px;font-family:var(--font-ar)}
+.prayer-settings h2{font-size:1.1rem;margin:0;color:#e4edf8}.prayer-intro{font-size:.78rem;color:#aab9cc;margin:6px 0 18px}
+.prayer-pref-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid #2a3a50;color:#dce6f5;font-size:.8rem}
+.prayer-pref-row input{appearance:none;-webkit-appearance:none;position:relative;width:40px;height:24px;background:#314058;border:1px solid #53627a;border-radius:20px;flex-shrink:0;cursor:pointer;transition:background .15s}
+.prayer-pref-row input::before{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;background:#c2cede;border-radius:50%;transition:transform .15s}
+.prayer-pref-row input:checked{background:#a9bdcb;border-color:#c9d8e6}.prayer-pref-row input:checked::before{transform:translateX(16px);background:#142238}
+.prayer-pref-row input:focus-visible,.prayer-settings button:focus-visible,.prayer-settings select:focus-visible{outline:2px solid #dfc593;outline-offset:4px}
+.prayer-master{font-weight:700;color:#e4d1ad}.prayer-choice-grid{padding-inline:12px}
+.prayer-pref-row select{font:inherit;border:1px solid #465c78;background:#1b2e46;color:#dce6f5;padding:8px;border-radius:9px;max-width:50%}
+.prayer-settings-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.prayer-settings-actions button,.prayer-secondary{font:700 .75rem var(--font-ar);background:#cedae9;color:#15243a;border:1px solid #8ca4bd;border-radius:11px;padding:10px 14px;cursor:pointer}
+.prayer-settings-actions .prayer-secondary,.prayer-secondary{background:#1b2d45;color:#c1d3e9;border-color:#3d536f}
+.prayer-push-status{font-size:.73rem;color:#b7cce4;line-height:2;margin:15px 0 0}.prayer-footnote{font-size:.68rem;line-height:2;color:#9fb2ca;margin:15px 0 0}
+#prayer-source-status{line-height:1.9;font-size:.73rem}#prayer-source-status[data-state="approximate"]{color:#e1c393}#prayer-refresh{display:block;margin:12px auto 0}
+@media(min-width:650px){.prayer-choice-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:25px}}
+@media(min-width:820px){body.calm-sky.dark-mode #app{width:900px;max-width:calc(100% - 40px)}.sky-now{padding:28px}.sky-temperature{font-size:86px}.sky-current{margin-block:5px 16px}.sky-metrics{gap:30px}.sky-now-top,.sky-current,.sky-range,.sky-divider,.sky-metrics,.sky-update{position:relative;z-index:1}.sky-now::after{content:"✧";position:absolute;left:60px;top:15px;font:200px/1.4 Georgia,serif;color:#9fbbdc0c;pointer-events:none}.sky-hour{flex-basis:87px}.sky-map-stage{min-height:350px}.sky-rain-map{height:450px}}
+@media(max-width:380px){#page-weather .sky-weather{padding-inline:14px!important}.sky-heading h1{font-size:1.5rem}.sky-now{padding:19px}.sky-temperature{font-size:64px}.sky-metric strong{font-size:.94rem}.sky-section-head{flex-wrap:wrap}.sky-day{gap:5px;font-size:.7rem}.sky-day-rain{font-size:.65rem}.sky-map-foot{flex-wrap:wrap}.sky-topline{gap:5px}.sky-date{font-size:.62rem}}
+@media(prefers-reduced-motion:reduce){.calm-sky *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+.home-calendar-date{margin:8px 16px 18px;position:relative;padding:15px 18px;border:1px solid #29394f;border-radius:17px;background:#111e30;font-family:var(--font-ar);color:#c5d3e6}
+.home-calendar-date>span{font-size:.78rem;color:#cdb586;float:left}.home-calendar-date div{font-size:1rem;color:#e6eef9}.home-calendar-date div strong{font-weight:600}.home-calendar-date p{font-size:.75rem;color:#aab9cc;margin:5px 0 0}
+body.calm-sky.dark-mode #app .chars-section::before,body.calm-sky.dark-mode #app .chars-section::after{display:none!important}
+
+#prayer-source-status{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}

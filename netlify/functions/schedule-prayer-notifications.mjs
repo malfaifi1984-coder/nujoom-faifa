@@ -1,182 +1,59 @@
-import { createHash } from "node:crypto";
+import { createHash } from 'node:crypto';
+import { fetchPrayerDay, ksaDateKey, prayerInstant, PRAYERS } from '../../prayer-shared.mjs';
 
-const LATITUDE = 17.2478;
-const LONGITUDE = 43.1035;
-const KSA_OFFSET_MINUTES = 180;
-const DEFAULT_NOTICE_MINUTES = 10;
-const PRAYERS = [
-  ["Fajr", "الفجر"],
-  ["Dhuhr", "الظهر"],
-  ["Asr", "العصر"],
-  ["Maghrib", "المغرب"],
-  ["Isha", "العشاء"],
-];
-
-function env(name) {
-  return globalThis.Netlify?.env?.get?.(name) ?? process.env[name];
+const env = (name) => globalThis.Netlify?.env?.get?.(name) ?? process.env[name];
+function uuid(value) {
+  const bytes = createHash('sha256').update(value).digest().subarray(0, 16);
+  bytes[6] = (bytes[6] & 15) | 80; bytes[8] = (bytes[8] & 63) | 128;
+  const s = bytes.toString('hex');
+  return `${s.slice(0, 8)}-${s.slice(8, 12)}-${s.slice(12, 16)}-${s.slice(16, 20)}-${s.slice(20)}`;
 }
-
-function deterministicUuid(text) {
-  const bytes = Buffer.from(createHash("sha256").update(text).digest().subarray(0, 16));
-  bytes[6] = (bytes[6] & 0x0f) | 0x50;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = bytes.toString("hex");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+const tag = (key, value) => ({ field: 'tag', key, relation: '=', value });
+function filtersFor(id, lead, legacy) {
+  const filters = [tag('notify_prayer', '1'), tag('push_device', 'mobile')];
+  if (legacy) filters.push({ field: 'tag', key: 'prayer_prefs_version', relation: 'not_exists' });
+  else filters.push(tag('prayer_prefs_version', '2'), tag(`notify_prayer_${id}`, '1'), tag(lead === 0 ? 'prayer_at_time' : 'prayer_lead_minutes', lead === 0 ? '1' : String(lead)));
+  return filters.flatMap((filter, i) => i ? [{ operator: 'AND' }, filter] : [filter]);
 }
-
-function ksaDateParts(date = new Date()) {
-  const shifted = new Date(date.getTime() + KSA_OFFSET_MINUTES * 60_000);
-  return {
-    year: shifted.getUTCFullYear(),
-    month: shifted.getUTCMonth() + 1,
-    day: shifted.getUTCDate(),
-  };
-}
-
-function cleanTime(value) {
-  const match = String(value || "").match(/^(\d{1,2}):(\d{2})/);
-  if (!match) throw new Error(`وقت صلاة غير صالح: ${value}`);
-  return { hour: Number(match[1]), minute: Number(match[2]) };
-}
-
-function toUtcIso(dateParts, time, noticeMinutes) {
-  const localAsUtc = Date.UTC(
-    dateParts.year,
-    dateParts.month - 1,
-    dateParts.day,
-    time.hour,
-    time.minute,
-    0,
-  );
-  const actualUtc = localAsUtc - KSA_OFFSET_MINUTES * 60_000 - noticeMinutes * 60_000;
-  return new Date(actualUtc).toISOString();
-}
-
-async function fetchPrayerTimes(dateParts) {
-  const unixNoonUtc = Math.floor(
-    Date.UTC(dateParts.year, dateParts.month - 1, dateParts.day, 9, 0, 0) / 1000,
-  );
-  const url = new URL(`https://api.aladhan.com/v1/timings/${unixNoonUtc}`);
-  url.searchParams.set("latitude", String(LATITUDE));
-  url.searchParams.set("longitude", String(LONGITUDE));
-  url.searchParams.set("method", "4"); // Umm Al-Qura University, Makkah
-  url.searchParams.set("school", "0");
-  url.searchParams.set("timezonestring", "Asia/Riyadh");
-
-  const response = await fetch(url, { headers: { accept: "application/json" } });
-  if (!response.ok) throw new Error(`تعذر جلب المواقيت: HTTP ${response.status}`);
-  const payload = await response.json();
-  if (payload?.code !== 200 || !payload?.data?.timings) {
-    throw new Error("استجابة مواقيت الصلاة غير مكتملة");
-  }
-  return payload.data.timings;
-}
-
-async function scheduleOneSignalMessage({ appId, apiKey, englishKey, arabicName, sendAfter, dateKey, noticeMinutes, siteUrl }) {
-  const isAtPrayerTime = noticeMinutes === 0;
-  const heading = isAtPrayerTime
-    ? `حان الآن وقت صلاة ${arabicName} 🕌`
-    : `متبقي ${noticeMinutes} دقائق على صلاة ${arabicName} 🕌`;
-  const body = isAtPrayerTime
-    ? "حسب توقيت فيفاء — تقبّل الله طاعتكم."
-    : "حسب مواقيت فيفاء — تقبّل الله طاعتكم.";
-
-  const idempotencyKey = deterministicUuid(`nujoom-faifa:${dateKey}:${englishKey}:${noticeMinutes}`);
-  const message = {
-    app_id: appId,
-    included_segments: ["Subscribed Users"],
-    filters: undefined,
-    headings: { en: heading, ar: heading },
-    contents: { en: body, ar: body },
-    send_after: sendAfter,
-    url: `${siteUrl.replace(/\/$/, "")}/#prayer`,
-    web_url: `${siteUrl.replace(/\/$/, "")}/#prayer`,
-    chrome_web_icon: `${siteUrl.replace(/\/$/, "")}/icons/icon-192.png`,
-    chrome_web_badge: `${siteUrl.replace(/\/$/, "")}/icons/badge-96.png`,
-    priority: 10,
-    ttl: 3600,
-    idempotency_key: idempotencyKey,
-    name: `صلاة ${arabicName} — ${dateKey}`,
-  };
-
-  // Target only users who enabled prayer alerts in the app.
-  delete message.included_segments;
-  message.filters = [
-    { field: "tag", key: "notify_prayer", relation: "=", value: "1" },
-    { operator: "AND" },
-    { field: "tag", key: "push_device", relation: "=", value: "mobile" }
-  ];
-
-  const response = await fetch("https://api.onesignal.com/notifications", {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      authorization: `Key ${apiKey}`,
-    },
-    body: JSON.stringify(message),
-  });
-
-  const text = await response.text();
-  let result;
-  try { result = JSON.parse(text); } catch { result = { raw: text }; }
-  if (!response.ok) {
-    throw new Error(`OneSignal ${response.status}: ${JSON.stringify(result)}`);
-  }
-  return result;
-}
-
 export default async () => {
-  const appId = env("ONESIGNAL_APP_ID");
-  const apiKey = env("ONESIGNAL_API_KEY") || env("ONESIGNAL_APP_API_KEY") || env("ONESIGNAL_REST_API_KEY");
-  const siteUrl = env("URL") || env("DEPLOY_PRIME_URL") || "https://nujoom-faifa.netlify.app";
-  const noticeMinutesRaw = Number(env("PRAYER_NOTICE_MINUTES") ?? DEFAULT_NOTICE_MINUTES);
-  const noticeMinutes = Number.isFinite(noticeMinutesRaw)
-    ? Math.max(0, Math.min(60, Math.round(noticeMinutesRaw)))
-    : DEFAULT_NOTICE_MINUTES;
-
-  if (!appId || !apiKey) {
-    throw new Error("أضف ONESIGNAL_APP_ID و ONESIGNAL_API_KEY في متغيرات البيئة داخل Netlify.");
-  }
-
-  const dateParts = ksaDateParts();
-  const dateKey = `${dateParts.year}-${String(dateParts.month).padStart(2, "0")}-${String(dateParts.day).padStart(2, "0")}`;
-  const timings = await fetchPrayerTimes(dateParts);
+  const appId = env('ONESIGNAL_APP_ID');
+  const apiKey = env('ONESIGNAL_API_KEY') || env('ONESIGNAL_APP_API_KEY') || env('ONESIGNAL_REST_API_KEY');
+  if (!appId || !apiKey) throw new Error('Configure ONESIGNAL_APP_ID and ONESIGNAL_API_KEY securely in Netlify.');
+  const siteUrl = (env('URL') || env('DEPLOY_PRIME_URL') || 'https://nujoom-faifa.netlify.app').replace(/\/$/, '');
+  const raw = Number(env('PRAYER_NOTICE_MINUTES') ?? 10);
+  const legacyLead = Number.isFinite(raw) ? Math.max(0, Math.min(60, Math.round(raw))) : 10;
+  const date = ksaDateKey();
+  const { timings } = await fetchPrayerDay(date);
   const results = [];
-
-  for (const [englishKey, arabicName] of PRAYERS) {
-    const time = cleanTime(timings[englishKey]);
-    const sendAfter = toUtcIso(dateParts, time, noticeMinutes);
-    if (new Date(sendAfter).getTime() <= Date.now() + 60_000) {
-      results.push({ prayer: arabicName, skipped: true, reason: "موعد الإرسال مضى" });
-      continue;
-    }
-    try {
-      const response = await scheduleOneSignalMessage({
-        appId,
-        apiKey,
-        englishKey,
-        arabicName,
-        sendAfter,
-        dateKey,
-        noticeMinutes,
-        siteUrl,
-      });
-      results.push({ prayer: arabicName, sendAfter, messageId: response.id || null });
-    } catch (error) {
-      // لا نوقف بقية الصلوات إذا فشلت واحدة (مثلاً: لا يوجد مشترك مطابق للوسوم).
-      console.error(`فشل جدولة صلاة ${arabicName}:`, error.message);
-      results.push({ prayer: arabicName, sendAfter, error: error.message });
+  for (const [source, label, id] of PRAYERS) {
+    const variants = [{ lead: legacyLead, legacy: true }, ...[0, 5, 10, 15].map((lead) => ({ lead, legacy: false }))];
+    for (const { lead, legacy } of variants) {
+      const sendAfter = prayerInstant(date, timings[source], lead);
+      if (new Date(sendAfter).getTime() <= Date.now() + 60000) { results.push({ prayer: id, lead, legacy, skipped: true }); continue; }
+      const heading = lead === 0 ? `حان الآن وقت صلاة ${label} 🕌` : `متبقي ${lead} دقائق على صلاة ${label} 🕌`;
+      const key = legacy ? `nujoom-faifa:${date}:${source}:${lead}` : `nujoom-faifa:v6:${date}:${source}:${lead}`;
+      const message = {
+        app_id: appId, filters: filtersFor(id, lead, legacy),
+        headings: { en: heading, ar: heading }, contents: { en: 'حسب توقيت فيفاء — تقبّل الله طاعتكم.', ar: 'حسب توقيت فيفاء — تقبّل الله طاعتكم.' },
+        send_after: sendAfter, url: `${siteUrl}/?page=prayer`, web_url: `${siteUrl}/?page=prayer`,
+        chrome_web_icon: `${siteUrl}/icons/icon-192.png`, chrome_web_badge: `${siteUrl}/icons/badge-96.png`,
+        priority: 10, ttl: 1800, idempotency_key: uuid(key), name: `صلاة ${label} — ${date} — ${lead} دقائق${legacy ? ' — legacy' : ''}`,
+      };
+      try {
+        const response = await fetch('https://api.onesignal.com/notifications', {
+          method: 'POST', signal: AbortSignal.timeout(15000),
+          headers: { accept: 'application/json', 'content-type': 'application/json', authorization: `Key ${apiKey}` }, body: JSON.stringify(message)
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(`OneSignal HTTP ${response.status}`);
+        results.push({ prayer: id, lead, legacy, sendAfter, messageId: body.id || null });
+      } catch (error) {
+        results.push({ prayer: id, lead, legacy, sendAfter, error: error.message });
+      }
     }
   }
-
-  console.log(JSON.stringify({ date: dateKey, noticeMinutes, results }, null, 2));
-  return new Response(JSON.stringify({ ok: true, date: dateKey, noticeMinutes, results }), {
-    headers: { "content-type": "application/json; charset=utf-8" },
-  });
+  const ok = !results.some((result) => result.error);
+  console.log(JSON.stringify({ date, ok, jobs: results.length, failed: results.filter((result) => result.error).length }));
+  return Response.json({ ok, date, results }, { status: ok ? 200 : 500 });
 };
-
-export const config = {
-  // 00:05 في توقيت السعودية = 21:05 UTC في اليوم السابق.
-  schedule: "5 21 * * *",
-};
+export const config = { schedule: '5 21 * * *' }; // 00:05 Asia/Riyadh.
