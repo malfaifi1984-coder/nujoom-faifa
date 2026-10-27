@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-simple3';
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-simple4';
 const APP_SHELL = ['/', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-simple3', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-simple3', '/weather-ui.js?v=6.00-simple3', '/sky-astronomy.js?v=6.00-simple3', '/app-refinements.js?v=6.00-simple3', '/qibla-ui.js?v=6.00-simple3', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js'];
 
 self.addEventListener('install', event => {
@@ -25,12 +25,15 @@ self.addEventListener('fetch', event => {
   if (url.pathname.startsWith('/push/onesignal/')) return;
 
   if (request.mode === 'navigate') {
+    const pageKey = url.pathname === '/index.html' ? '/' : url.pathname;
     event.respondWith(
       fetch(request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put('/', copy));
+        if (response.ok && response.headers.get('content-type')?.includes('text/html')) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(pageKey, copy));
+        }
         return response;
-      }).catch(() => caches.match('/'))
+      }).catch(async () => (await caches.match(pageKey)) || new Response('هذه الصفحة غير متاحة دون اتصال.', {status: 503, headers: {'content-type': 'text/plain; charset=utf-8'}}))
     );
     return;
   }
