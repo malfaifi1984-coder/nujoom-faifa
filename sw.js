@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-approved1';
-const APP_SHELL = ['/', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-approved1', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-approved1', '/weather-ui.js?v=6.00-approved1', '/sky-astronomy.js?v=6.00-approved1', '/app-refinements.js?v=6.00-approved1', '/qibla-ui.js?v=6.00-approved1', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-meteoblue1';
+const APP_SHELL = ['/', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-meteoblue1', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-meteoblue1', '/weather-ui.js?v=6.00-meteoblue1', '/sky-astronomy.js?v=6.00-meteoblue1', '/app-refinements.js?v=6.00-meteoblue1', '/qibla-ui.js?v=6.00-meteoblue1', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));

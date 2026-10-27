@@ -233,3 +233,16 @@ body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 #notification-center .notification-reminder select{width:100%;max-width:100%;font-size:.77rem;min-height:44px}
 .notification-test{margin-top:18px;min-height:44px;width:100%}
 .app-toolbar{justify-content:center}
+
+/* The provider's original dark meteogram replaces all local forecast charts. */
+.home-forecast-link{display:flex;align-items:center;justify-content:space-between;gap:14px;width:calc(100% - 32px);margin:0 16px 18px;padding:17px 19px;text-align:right;background:#142238;color:#e6edf7;border:1px solid #34455d;border-radius:18px;font-family:var(--font-ar);cursor:pointer}
+.home-forecast-link strong{display:block;font-size:.9rem;font-weight:600;color:#dfc99f}.home-forecast-link small{display:block;margin-top:5px;font-size:.7rem;color:#a9bdd5}.home-forecast-link>span:last-child{font:28px/1 sans-serif;color:#d7c092}
+.meteogram-section{margin-top:0}.meteogram-expand{font:500 .73rem var(--font-ar);color:#e1cfad;background:#1b2b41;border:1px solid #42536a;border-radius:10px;min-height:44px;padding:9px 13px;white-space:nowrap;cursor:pointer}
+.meteogram-stage{background:#231f20;border:1px solid #3b4555;border-radius:18px;overflow:hidden;width:100%}.meteogram-scroll{overflow-x:auto;overflow-y:hidden;direction:ltr;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+#meteoblue-frame{display:block;width:100%;min-width:820px;height:700px;border:0;background:#231f20}
+.meteogram-attribution{padding:0 14px 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;font-size:.72rem;direction:ltr}.meteogram-attribution a{color:#acc7e4;text-underline-offset:4px}.meteogram-attribution a:last-child{font-size:.68rem;direction:rtl}
+.meteogram-hint{font-size:.68rem;line-height:1.9;color:#9eb2cd;margin-top:10px!important}.meteogram-status{padding:12px 15px;margin-bottom:12px!important;background:#242a32;border:1px solid #665a41;border-radius:12px;color:#e7cfaa;font-size:.74rem;line-height:1.9}
+#meteogram-dialog{margin:auto;inset:0;width:min(1500px,98vw);max-width:98vw;max-height:94dvh;padding:0;background:#0e192a;color:#e5edf8;border:1px solid #4c5c73;border-radius:18px;font-family:var(--font-ar);overflow:auto}
+#meteogram-dialog::backdrop{background:#020710bf;backdrop-filter:blur(5px)}.meteogram-dialog-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:#111e30;border-bottom:1px solid #344760}.meteogram-dialog-head h2{font-size:1rem;font-weight:600}.meteogram-dialog-head button{font:inherit;font-size:.8rem;padding:8px 14px;min-height:44px;background:#23364e;color:#dce7f5;border:1px solid #50637d;border-radius:10px;cursor:pointer}
+#meteogram-large .meteogram-stage{border:0;border-radius:0}#meteogram-large iframe{min-width:1100px}#meteogram-dialog>p{padding:10px 18px;font-size:.7rem;color:#adc0da}
+.meteogram-expand:focus-visible,.home-forecast-link:focus-visible,#meteogram-dialog button:focus-visible{outline:2px solid #dfc593;outline-offset:3px}

@@ -47,33 +47,14 @@
     text(ctx, season.name, 960, 597, 29, '#bed0e5');
     const day = diffDays(star.start, localDay) + 1;
     text(ctx, `اليوم ${number(day)} من ١٣`, 440, 597, 28, '#a8bed8');
-    panel(ctx, 70, 674, 940, 174);
-    text(ctx, 'طقس فيفاء', 960, 725, 28, '#a8bed8');
-    let temp = null, high = null, low = null, description = 'البيانات غير متاحة';
-    try {
-      const data = _wxData, key = new Intl.DateTimeFormat('en-CA', { ...dateOptions, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
-      // Use the actual current Saudi hour, not localDay (which is midnight).
-      const currentHour = new Intl.DateTimeFormat('en-GB', { ...dateOptions, hour: '2-digit', hourCycle: 'h23' }).format(now);
-      const i = data?.hourly?.time?.indexOf(`${key}T${currentHour}:00`) ?? -1;
-      const d = data?.daily?.time?.indexOf(key) ?? -1;
-      temp = numeric(data?.hourly?.temperature_2m?.[i]); high = numeric(data?.daily?.temperature_2m_max?.[d]); low = numeric(data?.daily?.temperature_2m_min?.[d]);
-      const code = numeric(data?.hourly?.weather_code?.[i]); if (code !== null) description = data.hourly.weather_description?.[i] || wmoAr(code)[0];
-    } catch (_) { /* A card remains shareable without weather. */ }
-    text(ctx, `${number(temp)}°`, 960, 806, 70, '#edf3fa', 600);
-    text(ctx, description, 745, 761, 26, '#cad8e9');
-    text(ctx, `العظمى ${number(high)}°  ·  الصغرى ${number(low)}°`, 745, 810, 27, '#a8bed8');
-    panel(ctx, 70, 878, 940, 220);
-    text(ctx, 'من خصائص الموسم', 960, 932, 27, '#e2cca0');
-    ctx.font = '500 27px Cairo, Tahoma, Arial'; ctx.fillStyle = '#d5e0ed'; wrap(ctx, star.chars, 960, 980, 840, 39, 3);
+    panel(ctx, 70, 674, 940, 424);
+    text(ctx, 'من خصائص الموسم', 960, 737, 32, '#e2cca0');
+    ctx.font = '500 32px Cairo, Tahoma, Arial'; ctx.fillStyle = '#d5e0ed'; wrap(ctx, star.chars, 960, 803, 840, 51, 5);
     panel(ctx, 70, 1128, 940, 152);
     const qr = await loadCanvasImage(SHARE_QR_DATA); ctx.drawImage(qr, 91, 1150, 108, 108);
     text(ctx, 'اكتشف نجوم ومواسم فيفاء', 960, 1186, 30, '#e2cca0', 600);
     ctx.save(); ctx.direction = 'ltr'; ctx.textAlign = 'left'; text(ctx, 'nujoom-faifa.netlify.app', 242, 1242, 27, '#b6cae2'); ctx.restore();
     text(ctx, 'جمع وإعداد: علي أحمد الفيفي (أبو منير) · الإصدار 6.00', 1000, 1324, 21, '#90a8c3');
-    if (typeof _wxData !== 'undefined' && _wxData) {
-      ctx.save(); ctx.direction = 'ltr'; ctx.textAlign = 'left';
-      text(ctx, 'Weather: Open-Meteo', 80, 1324, 16, '#90a8c3'); ctx.restore();
-    }
     return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve({ blob, url: URL.createObjectURL(blob) }) : reject(new Error('Card export failed')), 'image/png'));
   };
 })();
