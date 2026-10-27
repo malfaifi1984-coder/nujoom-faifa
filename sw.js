@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-simple4';
-const APP_SHELL = ['/', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-simple3', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-simple3', '/weather-ui.js?v=6.00-simple3', '/sky-astronomy.js?v=6.00-simple3', '/app-refinements.js?v=6.00-simple3', '/qibla-ui.js?v=6.00-simple3', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js'];
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-center1';
+const APP_SHELL = ['/', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-center1', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-center1', '/weather-ui.js?v=6.00-center1', '/sky-astronomy.js?v=6.00-center1', '/app-refinements.js?v=6.00-center1', '/qibla-ui.js?v=6.00-center1', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));

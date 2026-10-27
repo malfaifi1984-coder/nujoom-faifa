@@ -6,12 +6,14 @@
   const clock = new Intl.DateTimeFormat('ar-SA', { timeZone: zone, hour: 'numeric', minute: '2-digit', hour12: true });
   const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' });
   const valid = (date) => date instanceof Date && Number.isFinite(date.getTime());
-  const time = (date) => valid(date) ? clock.format(date) : 'لا يحدث اليوم';
+  const time = (date) => valid(date) ? clock.formatToParts(date).map((part) => part.type === 'dayPeriod' ? (part.value.startsWith('ص') ? 'صباحًا' : 'مساءً') : part.value).join('') : 'لا يحدث اليوم';
   const phases = ['محاق', 'هلال متزايد', 'تربيع أول', 'أحدب متزايد', 'بدر', 'أحدب متناقص', 'تربيع أخير', 'هلال متناقص'];
   const faces = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+  let cachedMoonDay;
+  let cachedMoonEvents;
   function marker(id, progress, visible) {
     const p = Math.max(0, Math.min(1, progress));
-    const x = 22 + 276 * p, y = 108 - 320 * p * (1 - p);
+    const x = 298 - 276 * p, y = 108 - 320 * p * (1 - p);
     const node = $(id);
     if (!node.dataset.ready) {
       node.style.transition = 'none';
@@ -19,19 +21,39 @@
       requestAnimationFrame(() => requestAnimationFrame(() => node.style.removeProperty('transition')));
     }
     node.style.transform = `translate(${x}px,${y}px)`;
-    node.style.opacity = visible ? '1' : '.32';
+    node.style.opacity = visible ? '1' : '0';
     node.dataset.progress = p.toFixed(5);
     node.dataset.aboveHorizon = String(visible);
   }
   function moonEvents(start) {
+    const key = start.getTime();
+    if (key === cachedMoonDay) return cachedMoonEvents;
     const events = [];
-    // Gather surrounding UTC days, then select the actual Saudi calendar window.
-    for (let offset = -2; offset <= 2; offset++) {
-      const date = new Date(start.getTime() + offset * 86400000 + 12 * 3600000);
-      const times = SunCalc.getMoonTimes(date, lat, lon, true);
-      for (const kind of ['rise', 'set']) if (valid(times[kind])) events.push({ kind, at: times[kind] });
+    const astronomy = window.Astronomy;
+    if (astronomy) {
+      // Ground-level observer on Faifa terrain, not 1200 m above the ground.
+      const observer = new astronomy.Observer(lat, lon, 1200);
+      const end = key + 3 * 86400000;
+      for (const [kind, direction] of [['rise', 1], ['set', -1]]) {
+        let cursor = new Date(key - 2 * 86400000);
+        while (cursor.getTime() < end) {
+          const event = astronomy.SearchRiseSet(astronomy.Body.Moon, observer, direction, cursor, 2);
+          if (!event || event.date.getTime() >= end) break;
+          events.push({ kind, at: event.date });
+          cursor = new Date(event.date.getTime() + 1000);
+        }
+      }
+    } else {
+      // Fallback if the bundled high-precision library is unavailable.
+      for (let offset = -2; offset <= 2; offset++) {
+        const date = new Date(start.getTime() + offset * 86400000 + 12 * 3600000);
+        const times = SunCalc.getMoonTimes(date, lat, lon, true);
+        for (const kind of ['rise', 'set']) if (valid(times[kind])) events.push({ kind, at: times[kind] });
+      }
     }
-    return events.sort((a, b) => a.at - b.at);
+    cachedMoonDay = key;
+    cachedMoonEvents = events.sort((a, b) => a.at - b.at);
+    return cachedMoonEvents;
   }
   function update(now = new Date()) {
     if (!$('sky-sun-marker') || !window.SunCalc) return;
@@ -58,7 +80,9 @@
     $('sky-moon-face').textContent = faces[phase];
     $('sky-moon-moving-face').textContent = faces[phase];
     const events = moonEvents(start);
-    const above = SunCalc.getMoonPosition(now, lat, lon).altitude > .133 * Math.PI / 180;
+    // Use the same rise/set boundary for visibility and progress, including midnight.
+    const lastEvent = events.filter((event) => event.at <= now).at(-1);
+    const above = lastEvent?.kind === 'rise';
     const previousRise = events.filter((e) => e.kind === 'rise' && e.at <= now).at(-1);
     const nextSet = events.find((e) => e.kind === 'set' && e.at > now);
     const cycleRise = above ? previousRise : events.find((e) => e.kind === 'rise' && e.at > now);

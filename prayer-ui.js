@@ -5,6 +5,11 @@ const STORE = 'nujoomPrayerSettingsV7';
 const days = new Map();
 const localCalculation = window.computePrayerTimes;
 const previousSync = window.syncNotifyPrefsToOneSignal;
+const previousStarCheck = window.checkAndNotify;
+window.checkAndNotify = () => {
+  if (!('Notification' in window) || Notification.permission !== 'granted' || localStorage.getItem('notificationsEnabled') === 'false') return;
+  return previousStarCheck();
+};
 let activeDate;
 let loading = false;
 let syncNumber = 0;
@@ -23,9 +28,16 @@ function enabled() { return window.getNotifyPrefs().prayer; }
 function subscription() { return window.__oneSignalInstance?.User?.PushSubscription; }
 function refreshStatus(message) {
   const sub = subscription();
+  const supported = 'Notification' in window;
   const denied = 'Notification' in window && Notification.permission === 'denied';
-  $('prayer-push-status').textContent = message || (denied ? 'الإشعارات محظورة من المتصفح. افتح إعدادات الموقع للسماح بها.' : sub?.optedIn ? (enabled() ? 'الإشعارات مفعّلة على هذا الجهاز.' : 'إشعارات الجهاز متاحة، وتنبيهات الصلاة متوقفة.') : 'لتنبيهك والتطبيق مغلق، فعّل الإشعارات على جهازك.');
-  $('prayer-enable-push').hidden = !!sub?.optedIn;
+  const local = supported && Notification.permission === 'granted' && localStorage.getItem('notificationsEnabled') !== 'false';
+  const active = !!sub?.optedIn || local;
+  $('prayer-push-status').textContent = message || (!supported ? 'هذا المتصفح لا يدعم الإشعارات. جرّب التطبيق على جهاز يدعمها.' : denied ? 'الإشعارات محظورة من المتصفح. افتح إعدادات الموقع للسماح بها.' : sub?.optedIn ? 'إشعارات الجهاز مفعّلة. اختر التنبيهات المناسبة لك.' : local ? 'الإشعارات مفعّلة أثناء فتح التطبيق. تنبيه الصلاة والتطبيق مغلق يحتاج تفعيل الخدمة على هاتف مدعوم.' : 'الإشعارات متوقفة. اختر تفضيلاتك ثم اضغط «تفعيل».');
+  $('prayer-enable-push').hidden = !!sub?.optedIn || (local && !window.isMobilePushDevice()) || !supported || denied;
+  $('notification-disable').hidden = !active;
+  $('notification-bell').dataset.active = String(active);
+  $('notification-bell').querySelector('.notification-dot').hidden = !active;
+  $('notification-bell').setAttribute('aria-label', active ? 'إعدادات التنبيهات، إشعارات الجهاز مفعّلة' : 'إعدادات التنبيهات');
 }
 async function syncSettings() {
   const sdk = window.__oneSignalInstance;
@@ -36,7 +48,7 @@ async function syncSettings() {
   for (const [, , key] of PRAYERS) tags[`notify_prayer_${key}`] = '1';
   try {
     await sdk.User.addTags(tags);
-    if (seq === syncNumber) refreshStatus('حُفظت إعدادات تنبيهات الصلاة.');
+    if (seq === syncNumber) refreshStatus();
   } catch (_) { if (seq === syncNumber) refreshStatus('حُفظت التفضيلات على الجهاز، وتعذرت مزامنتها. افتح التطبيق عند عودة الاتصال.'); }
 }
 window.syncNotifyPrefsToOneSignal = (prefs) => { previousSync(prefs); void syncSettings(); };
@@ -49,14 +61,16 @@ function saveSettings() {
   try {
     localStorage.setItem(STORE, JSON.stringify(prefs));
     const general = window.getNotifyPrefs(); general.prayer = $('prayer-master').checked;
-    for (const key of ['stars','friday','weather','daily','updates']) general[key] = false;
+    general.stars = $('notify-stars').checked;
     localStorage.setItem('nujoomNotifyPrefs', JSON.stringify(general));
   } catch (_) { refreshStatus('تعذر حفظ التفضيلات. تحقق من السماح بالتخزين في المتصفح.'); return; }
   window.syncNotifyPrefsToOneSignal();
+  if (window.getNotifyPrefs().stars && 'Notification' in window && Notification.permission === 'granted' && localStorage.getItem('notificationsEnabled') !== 'false') void window.checkAndNotify();
 }
 function paintSettings() {
   const prefs = readSettings();
   $('prayer-master').checked = enabled();
+  $('notify-stars').checked = window.getNotifyPrefs().stars;
   $('prayer-lead').value = String(prefs.lead);
   refreshStatus();
 }
@@ -108,7 +122,7 @@ async function loadTimes() {
 // Keep local reminders while the app is open; subscribed devices use server push
 // to avoid delivering both a local and a remote prayer notification.
 window.checkPrayerAndFridayNotifications = () => {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!('Notification' in window) || Notification.permission !== 'granted' || localStorage.getItem('notificationsEnabled') === 'false') return;
   const general = window.getNotifyPrefs(), prefs = readSettings(), now = window.nowKSA();
   const key = keyFromLocalDate(now), minute = now.getHours() * 60 + now.getMinutes();
   const day = days.get(key);
@@ -132,14 +146,43 @@ window.checkPrayerAndFridayNotifications = () => {
 
 window.saveNotifyPrefs = saveSettings;
 try {
-  const general = window.getNotifyPrefs();
-  for (const key of ['stars','friday','weather','daily','updates']) general[key] = false;
-  localStorage.setItem('nujoomNotifyPrefs', JSON.stringify(general));
+  if (!localStorage.getItem('nujoomNotificationCenterV1')) {
+    const general = window.getNotifyPrefs();
+    for (const key of ['stars','friday','weather','daily','updates']) general[key] = false;
+    localStorage.setItem('nujoomNotifyPrefs', JSON.stringify(general));
+    localStorage.setItem('nujoomNotificationCenterV1', '1');
+  }
 } catch (_) { /* Storage is optional. */ }
+const center = $('notification-center');
+window.openNotificationCenter = () => { paintSettings(); if (!center.open) center.showModal(); };
+$('notification-bell').addEventListener('click', window.openNotificationCenter);
+$('notification-close').addEventListener('click', () => center.close());
+center.addEventListener('click', (event) => {
+  const rect = center.getBoundingClientRect();
+  if (event.target === center && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) center.close();
+});
+window.addEventListener('hashchange', () => { if (location.hash === '#notifications') window.openNotificationCenter(); });
+if (location.hash === '#notifications') setTimeout(window.openNotificationCenter, 2800);
+const oldStatus = window.updateNotifBtn;
+window.updateNotifBtn = () => { oldStatus?.(); refreshStatus(); };
 paintSettings();
 $('prayer-ios-tip').hidden = !/iPhone|iPad|iPod/.test(navigator.userAgent);
 $('prayer-preferences').addEventListener('change', saveSettings);
-$('prayer-enable-push').addEventListener('click', async () => { await window.toggleNotifications(); refreshStatus(); await syncSettings(); });
+$('prayer-enable-push').addEventListener('click', async () => {
+  if (window.isMobilePushDevice()) {
+    if (!subscription()?.optedIn) await window.toggleNotifications();
+  } else if (await window.requestNotificationPermission()) {
+    localStorage.setItem('notificationsEnabled', 'true');
+  }
+  refreshStatus(); await syncSettings();
+});
+$('notification-disable').addEventListener('click', async () => {
+  try {
+    if (subscription()?.optedIn) await subscription().optOut();
+    localStorage.setItem('notificationsEnabled', 'false');
+    refreshStatus();
+  } catch (_) { refreshStatus('تعذر إيقاف إشعارات الجهاز الآن. حاول عند عودة الاتصال.'); }
+});
 $('prayer-test').addEventListener('click', async () => {
   if (!await window.requestNotificationPermission()) { refreshStatus('لم يُسمح بالإشعارات. راجع إعدادات المتصفح.'); return; }
   const ok = await window.showLocalNotification('اختبار تنبيه الصلاة', { body: 'هذا تنبيه تجريبي على جهازك، وليس موعد صلاة.', tag: 'prayer-test-v6' });
@@ -147,6 +190,9 @@ $('prayer-test').addEventListener('click', async () => {
 });
 $('prayer-refresh').addEventListener('click', () => { void loadTimes(); });
 document.addEventListener('onesignal-ready', () => { void syncSettings(); });
+setInterval(() => {
+  if (!document.hidden && 'Notification' in window && Notification.permission === 'granted' && localStorage.getItem('notificationsEnabled') !== 'false' && window.getNotifyPrefs().stars) void window.checkAndNotify();
+}, 60000);
 window.addEventListener('online', () => { void loadTimes(); void syncSettings(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { paintSettings(); if (activeDate !== ksaDateKey()) void loadTimes(); } });
 setInterval(() => { if (activeDate !== ksaDateKey()) void loadTimes(); }, 60000);
