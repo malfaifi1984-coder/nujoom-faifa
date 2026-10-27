@@ -32,20 +32,42 @@ test('Faifa solar path begins on the right, ends on the left, and switches cards
   assert.equal(node('sky-moon-card').hidden, false);
   assert.match(node('sky-sun-set').textContent, /مساءً/);
 });
-test('Faifa Moon follows the actual overnight cycle and labels the next morning explicitly', () => {
-  const { node, update } = card();
-  update(new Date('2026-10-27T19:00:00+03:00'));
-  const first = x(node('sky-moon-marker'));
-  assert.equal(node('sky-moon-marker').dataset.aboveHorizon, 'true');
-  assert.match(node('sky-moon-rise').textContent, /مساءً/);
-  assert.match(node('sky-moon-set').textContent, /صباحًا غدًا/);
-  // Independent PyEphem calculation: 2026-10-28 08:12:37 KSA at sea level.
-  assert.match(node('sky-moon-set').textContent, /٨:١٢/);
-  update(new Date('2026-10-28T05:00:00+03:00'));
-  assert.ok(x(node('sky-moon-marker')) < first);
+test('night indicator runs from Maghrib to next sunrise and switches exactly at its endpoint', () => {
+  const { window, node, update } = card();
+  window.FaifaPrayerDays = {
+    '2026-10-27': { timings: { Sunrise: '06:03', Maghrib: '17:40' } },
+    '2026-10-28': { timings: { Sunrise: '06:04', Maghrib: '17:39' } },
+    '2026-10-29': { timings: { Sunrise: '06:07', Maghrib: '17:38' } }
+  };
+  update(new Date('2026-10-27T17:40:00+03:00'));
+  assert.equal(x(node('sky-moon-marker')), 298);
+  assert.equal(node('sky-moon-marker').style.opacity, '1');
+  assert.match(node('sky-moon-set').textContent, /٦:٠٤ صباحًا غدًا/);
+  update(new Date('2026-10-27T23:59:59+03:00'));
+  const beforeMidnight = x(node('sky-moon-marker'));
+  update(new Date('2026-10-28T00:00:00+03:00'));
+  assert.ok(Math.abs(x(node('sky-moon-marker')) - beforeMidnight) < 0.01);
   assert.match(node('sky-moon-rise').textContent, /أمس/);
   assert.doesNotMatch(node('sky-moon-set').textContent, /غدًا/);
-  update(new Date('2026-10-28T12:00:00+03:00'));
+  update(new Date('2026-10-28T06:03:59+03:00'));
+  assert.ok(x(node('sky-moon-marker')) < 23);
+  assert.equal(node('sky-moon-card').hidden, false);
+  update(new Date('2026-10-28T06:04:00+03:00'));
+  assert.equal(node('sky-moon-card').hidden, true);
+  assert.equal(node('sky-sun-card').hidden, false);
   assert.equal(node('sky-moon-marker').style.opacity, '0');
-  assert.equal(node('sky-moon-status').textContent, 'القمر تحت الأفق');
+  update(new Date('2026-10-28T17:39:00+03:00'));
+  assert.equal(node('sky-moon-card').hidden, false);
+  assert.match(node('sky-moon-set').textContent, /٦:٠٧ صباحًا غدًا/);
+});
+test('Faifa sunrise changes with the season without a fixed 06:04 setting', () => {
+  const { node, update } = card();
+  update(new Date('2026-10-27T20:00:00+03:00'));
+  assert.match(node('sky-moon-set').textContent, /٦:٠٤ صباحًا غدًا/);
+  update(new Date('2026-06-27T20:00:00+03:00'));
+  const summer = node('sky-moon-set').textContent;
+  assert.doesNotMatch(summer, /٦:٠٤/);
+  assert.match(summer, /صباحًا غدًا/);
+  update(new Date('2026-12-27T20:00:00+03:00'));
+  assert.notEqual(node('sky-moon-set').textContent, summer);
 });

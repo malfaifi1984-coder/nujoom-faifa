@@ -195,19 +195,14 @@ body.calm-sky.dark-mode #app .share-actions .primary{background:#d6c29b!importan
 .weather-credit-line{font-size:.62rem;color:#839ab4}.weather-credit-line a{color:#95acc6;text-underline-offset:3px}
 .sky-sampling-note{padding:6px 12px;color:#526075;font-size:11px;text-align:center;background:#fff}
 
-/* One quiet entry point for notification preferences, available on every page. */
+/* Notification controls are shown directly in About. */
 body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 .app-toolbar{position:absolute;inset:0 0 auto;z-index:50;height:calc(64px + var(--safe-top));padding:calc(8px + var(--safe-top)) 18px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #29374c;background:#0e1828;box-sizing:border-box}
 .app-toolbar-brand{display:flex;align-items:center;gap:10px;color:#e6edf7;text-decoration:none;font:700 1rem var(--font-ar);min-width:0}
 .app-toolbar-brand img{flex:none}.app-toolbar-brand span{white-space:nowrap}
-.notification-bell{position:relative;display:grid;place-items:center;width:44px;height:44px;flex:none;color:#d7bd8d;background:#19273b;border:1px solid #34445b;border-radius:14px;cursor:pointer}
-.notification-bell svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.notification-dot{position:absolute;top:9px;right:10px;width:6px;height:6px;border-radius:50%;background:#a5c9b3;border:2px solid #19273b}.notification-dot[hidden]{display:none}
-#notification-center{margin:auto;inset:0;width:min(460px,calc(100vw - 30px));max-width:460px;max-height:calc(100dvh - 50px);padding:0;color:#e6edf7;background:#111e30;border:1px solid #3b4b62;border-radius:24px;font-family:var(--font-ar);box-sizing:border-box;overflow:auto;box-shadow:0 20px 80px #0006}
-#notification-center::backdrop{background:#030a16b8;backdrop-filter:blur(5px)}
+#notification-center{margin:0 0 20px;padding:0;color:#e6edf7;background:#111e30;border:1px solid #3b4b62;border-radius:20px;font-family:var(--font-ar);box-sizing:border-box;overflow:hidden;scroll-margin-top:16px}
 .notification-center-head{display:flex;align-items:center;justify-content:space-between;padding:22px 22px 12px;gap:15px}
 .notification-center-head h2{margin:2px 0 0;font-size:1.35rem;color:#ead2a8}.notification-eyebrow{font-size:.7rem;color:#9cafc7}
-#notification-close{display:grid;place-items:center;background:#1c2c43;border:1px solid #354962;border-radius:12px;width:40px;height:40px;color:#d6e2f2;font:26px/1 sans-serif;cursor:pointer}
 #notification-center .prayer-settings{padding:0 22px 22px;margin:0;border:0;background:none;border-radius:0}
 #notification-center .prayer-push-status{margin:0;font-size:.78rem}
 #notification-center .prayer-settings-actions{margin:14px 0 18px}
@@ -221,11 +216,20 @@ body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 .notification-help{border-top:1px solid #293b53;margin-top:5px;padding-top:8px}
 .notification-help .prayer-footnote{margin:0 0 12px}
 #notification-center [hidden]{display:none!important}
-.prayer-center-link{display:flex;align-items:center;justify-content:space-between;width:100%;box-sizing:border-box;margin:16px 0;padding:13px 17px;background:#142238;color:#d9c395;border:1px solid #34455d;border-radius:14px;font:500 .8rem var(--font-ar);cursor:pointer}
-.prayer-center-link span{font:25px/1 sans-serif}
-.notification-bell:focus-visible,.app-toolbar-brand:focus-visible,#notification-center :focus-visible,.prayer-center-link:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
+.app-toolbar-brand:focus-visible,#notification-center :focus-visible{outline:2px solid #dfc593;outline-offset:3px}
 .sky-orbit-times{direction:rtl}.sky-orbit-times>div{text-align:right}.sky-orbit-times>div:last-child{text-align:left}
 .sky-orbit-times strong{font-size:.76rem;line-height:1.8}
 .meteoblue-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding:13px 16px;border:1px solid #344b67;border-radius:14px;background:#16253b;color:#d3e2f4;text-decoration:none}
 .meteoblue-link strong{font-size:.8rem;font-weight:500}.meteoblue-link small{display:block;font-size:.65rem;color:#a4b9d2;margin-top:4px}
 @media(max-width:360px){.app-toolbar{padding-inline:13px}.app-toolbar-brand{font-size:.9rem;gap:7px}.app-toolbar-brand img{width:30px;height:30px}#notification-center .prayer-settings{padding-inline:17px}.notification-center-head{padding-inline:17px}}
+
+.notification-state,.notification-choice-state{display:inline-block;color:#a7b4c7;background:#1b293d;border:1px solid #3d4a60;border-radius:20px;padding:3px 10px;font-size:.67rem;font-weight:500;white-space:nowrap}
+.notification-state[data-active="true"],.notification-choice-state[data-active="true"]{color:#e5cea1;background:#302a20;border-color:#746345}
+.notification-choice-state{margin-top:7px;padding:1px 9px;font-size:.62rem}
+#notification-center .prayer-settings-actions button{width:100%;min-height:48px;font-size:.84rem}
+#notification-center #prayer-enable-push{background:#d3bb8a;border-color:#e0c99b;color:#182234}
+#notification-center .prayer-pref-row input:checked{background:#d3bb8a;border-color:#e2cfa9}
+#notification-center .notification-reminder{align-items:flex-start;flex-direction:column;gap:9px;background:#17263b;padding:12px;border-radius:12px;border:1px solid #2e415b;margin-top:12px}
+#notification-center .notification-reminder select{width:100%;max-width:100%;font-size:.77rem;min-height:44px}
+.notification-test{margin-top:18px;min-height:44px;width:100%}
+.app-toolbar{justify-content:center}

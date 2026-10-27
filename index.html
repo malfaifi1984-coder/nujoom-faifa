@@ -2960,7 +2960,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   });
 </script>
 
-<link rel="stylesheet" href="/weather-ui.css?v=6.00-center1">
+<link rel="stylesheet" href="/weather-ui.css?v=6.00-approved1">
 </head>
 <body class="dark-mode calm-sky">
 
@@ -2978,7 +2978,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
 <div id="app" style="display:none">
   <header class="app-toolbar">
     <a class="app-toolbar-brand" href="/?page=home" aria-label="نجوم مذاري فيفاء، الرئيسية"><img src="/assets/brand-mark.svg" alt="" width="34" height="34"><span>نجوم مذاري فيفاء</span></a>
-    <button type="button" class="notification-bell" id="notification-bell" aria-label="إعدادات التنبيهات" aria-haspopup="dialog" aria-controls="notification-center"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="notification-dot" hidden></span></button>
+
   </header>
 
 
@@ -3094,15 +3094,15 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
         <p class="sky-update" id="sky-updated">تظهر ساعة جلب البيانات بعد الاتصال بالمصدر</p>
       </section>
       <section class="sky-section sky-astronomy" aria-labelledby="sky-astro-title">
-        <div class="sky-section-head"><div><h2 id="sky-astro-title">الشمس والقمر</h2><p class="sky-section-sub">مسارهما اليوم في سماء فيفاء</p></div><span class="sky-astro-live" id="sky-sun-state">سماء فيفاء</span></div>
+        <div class="sky-section-head"><div><h2 id="sky-astro-title">الشمس والقمر</h2><p class="sky-section-sub">الشروق والغروب وطور القمر في فيفاء</p></div><span class="sky-astro-live" id="sky-sun-state">سماء فيفاء</span></div>
         <div class="sky-astro-grid">
           <article class="sky-card sky-orbit-card" id="sky-sun-card"><div class="sky-orbit-heading"><span class="sky-orbit-title">الشمس</span><span id="sky-sun-status">جارٍ حساب المسار</span></div>
             <svg class="sky-orbit" viewBox="0 0 320 130" role="img" aria-label="موقع الشمس التقريبي على مسار اليوم من الشروق إلى الغروب"><defs><linearGradient id="sky-sun-glow" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#e3bc74" stop-opacity=".15"/><stop offset="1" stop-color="#e3bc74" stop-opacity="0"/></linearGradient></defs><path d="M22 108Q160 -52 298 108Z" fill="url(#sky-sun-glow)"/><path d="M22 108Q160 -52 298 108" class="sky-orbit-guide"/><path d="M12 108H308" class="sky-orbit-horizon"/><circle cx="22" cy="108" r="3" fill="#d9b777"/><circle cx="298" cy="108" r="3" fill="#d9b777"/><g id="sky-sun-marker" class="sky-orbit-marker"><circle r="13" fill="#ffd47c" fill-opacity=".12"/><circle r="7" fill="#f5c96e"/><path d="M0-12V-10M0 10V12M-12 0H-10M10 0H12M-9-9-7-7M7 7 9 9M-9 9-7 7M7-7 9-9" stroke="#e6bd70" stroke-width="1.3"/></g></svg>
             <div class="sky-orbit-times"><div><span>الشروق</span><strong id="sky-sun-rise">—</strong></div><div><span>الغروب</span><strong id="sky-sun-set">—</strong></div></div>
           </article>
           <article class="sky-card sky-orbit-card" id="sky-moon-card"><div class="sky-orbit-heading"><span class="sky-orbit-title">القمر</span><span id="sky-moon-status">جارٍ حساب المسار</span></div><div class="sky-moon-details"><span id="sky-moon-face" aria-hidden="true">☾</span><div><strong id="sky-moon-phase">طور القمر</strong><small id="sky-moon-illumination">—</small></div></div>
-            <svg class="sky-orbit sky-moon-orbit" viewBox="0 0 320 130" role="img" aria-label="موقع القمر التقريبي بين طلوعه وغروبه؛ يظهر الرمز عندما يكون فوق الأفق، من اليمين إلى اليسار"><path d="M22 108Q160 -52 298 108" class="sky-orbit-guide sky-moon-guide"/><path d="M12 108H308" class="sky-orbit-horizon"/><circle cx="22" cy="108" r="3" fill="#9cb7dc"/><circle cx="298" cy="108" r="3" fill="#9cb7dc"/><g id="sky-moon-marker" class="sky-orbit-marker"><circle r="15" fill="#9cb7dc" fill-opacity=".12"/><text id="sky-moon-moving-face" x="0" y="9" text-anchor="middle" font-size="25">☾</text></g></svg>
-            <div class="sky-orbit-times"><div><span>طلوع القمر</span><strong id="sky-moon-rise">—</strong></div><div><span>غروب القمر</span><strong id="sky-moon-set">—</strong></div></div>
+            <svg class="sky-orbit sky-moon-orbit" viewBox="0 0 320 130" role="img" aria-label="مؤشر الليل من المغرب إلى شروق الشمس، من اليمين إلى اليسار"><path d="M22 108Q160 -52 298 108" class="sky-orbit-guide sky-moon-guide"/><path d="M12 108H308" class="sky-orbit-horizon"/><circle cx="22" cy="108" r="3" fill="#9cb7dc"/><circle cx="298" cy="108" r="3" fill="#9cb7dc"/><g id="sky-moon-marker" class="sky-orbit-marker"><circle r="15" fill="#9cb7dc" fill-opacity=".12"/><text id="sky-moon-moving-face" x="0" y="9" text-anchor="middle" font-size="25">☾</text></g></svg>
+            <div class="sky-orbit-times"><div><span>المغرب</span><strong id="sky-moon-rise">—</strong></div><div><span>الشروق</span><strong id="sky-moon-set">—</strong></div></div>
           </article>
         </div>
       </section>
@@ -3197,7 +3197,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
 <button type="button" id="prayer-refresh" class="prayer-secondary">تحديث المواقيت</button>
       </div>
 
-      <button type="button" class="prayer-center-link" onclick="openNotificationCenter()">إعدادات تنبيهات الصلاة <span aria-hidden="true">‹</span></button>
+
       <!-- اتجاه القبلة -->
       <div class="weather-card qibla-card qibla-card-pro">
         <div class="qibla-topline">
@@ -3314,6 +3314,21 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
       <div class="info-page">
 
         <div class="info-header">نجوم مذاري فيفاء — <span id="info-title-year">—</span></div>
+
+<section id="notification-center" class="notification-settings info-section" aria-labelledby="notification-center-title">
+  <div class="notification-center-head"><div><span class="notification-eyebrow">على جهازك</span><h2 id="notification-center-title">التنبيهات</h2></div><span id="notification-device-state" class="notification-state" role="status"></span></div>
+  <div class="prayer-settings">
+    <p id="prayer-push-status" class="prayer-push-status" role="status" aria-live="polite"></p>
+    <div class="prayer-settings-actions"><button type="button" id="prayer-enable-push">تفعيل إشعارات الجهاز</button><button type="button" id="notification-disable" class="prayer-secondary" hidden>إيقاف إشعارات الجهاز</button></div>
+    <div id="prayer-preferences">
+      <label class="prayer-pref-row prayer-master"><span><strong>تنبيهات الصلاة</strong><small>خيار واحد لجميع الصلوات الخمس</small><span class="notification-choice-state" id="prayer-choice-state"></span></span><input type="checkbox" id="prayer-master" role="switch"></label>
+      <label class="prayer-pref-row notification-reminder"><span>موعد التذكير</span><select id="prayer-lead" aria-label="موعد تذكير جميع الصلوات"><option value="0">عند الأذان فقط</option><option value="5">عند الأذان وقبله بـ٥ دقائق</option><option value="10">عند الأذان وقبله بـ١٠ دقائق</option><option value="15">عند الأذان وقبله بـ١٥ دقيقة</option></select></label>
+      <label class="prayer-pref-row"><span><strong>النجوم والمواسم</strong><small>أثناء فتح التطبيق</small><span class="notification-choice-state" id="stars-choice-state"></span></span><input type="checkbox" id="notify-stars" role="switch"></label>
+    </div>
+    <button type="button" id="prayer-test" class="prayer-secondary notification-test">اختبار التنبيه على جهازي</button>
+    <p class="prayer-footnote" id="prayer-ios-tip" hidden>على آيفون: أضف التطبيق إلى الشاشة الرئيسية وافتحه منها لتفعيل الإشعارات.</p>
+  </div>
+</section>
 
         <div class="info-section" style="background:rgba(184,134,11,0.06);border-color:rgba(184,134,11,0.3);box-shadow:0 2px 12px rgba(0,0,0,.05);">
           <div style="display:flex;align-items:center;gap:18px;">
@@ -3462,27 +3477,15 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<dialog id="notification-center" aria-labelledby="notification-center-title">
-  <div class="notification-center-head"><div><span class="notification-eyebrow">على جهازك</span><h2 id="notification-center-title">التنبيهات</h2></div><button type="button" id="notification-close" aria-label="إغلاق التنبيهات">×</button></div>
-  <section class="prayer-settings" aria-label="إعدادات التنبيهات">
-    <p id="prayer-push-status" class="prayer-push-status" role="status" aria-live="polite"></p>
-    <div class="prayer-settings-actions"><button type="button" id="prayer-enable-push">تفعيل الإشعارات على جهازي</button><button type="button" id="notification-disable" class="prayer-secondary" hidden>إيقاف إشعارات هذا الجهاز</button></div>
-    <div id="prayer-preferences">
-      <label class="prayer-pref-row prayer-master"><span><strong>تنبيهات الصلاة</strong><small>خيار واحد لجميع الصلوات الخمس</small></span><input type="checkbox" id="prayer-master" role="switch"></label>
-      <details class="prayer-extra"><summary>موعد التذكير</summary><label class="prayer-pref-row"><span>عند دخول الوقت</span><select id="prayer-lead" aria-label="التذكير قبل الصلاة"><option value="0">دون تذكير مسبق</option><option value="5">وقبلها بـ٥ دقائق</option><option value="10">وقبلها بـ١٠ دقائق</option><option value="15">وقبلها بـ١٥ دقيقة</option></select></label></details>
-      <label class="prayer-pref-row"><span><strong>النجوم والمواسم</strong><small>تذكير بداية النجم أثناء فتح التطبيق</small></span><input type="checkbox" id="notify-stars" role="switch"></label>
-    </div>
-    <details class="notification-help"><summary>اختبار التنبيه ومساعدة الجهاز</summary><p class="prayer-footnote">اختيار نوع التنبيه لا يمنح إذن المتصفح تلقائيًا. اضغط «تفعيل» للسماح بالإشعارات.</p><button type="button" id="prayer-test" class="prayer-secondary">اختبار تنبيه على جهازي</button><p class="prayer-footnote" id="prayer-ios-tip" hidden>على آيفون: أضف التطبيق إلى الشاشة الرئيسية وافتحه منها لتفعيل الإشعارات.</p></details>
-  </section>
-</dialog>
+
 <dialog id="sky-chart-dialog" aria-labelledby="sky-chart-dialog-title"><div class="sky-chart-dialog-head"><h2 id="sky-chart-dialog-title">توقعات فيفاء التفصيلية</h2><button type="button" id="sky-chart-close">إغلاق ×</button></div><p>اسحب أفقيًا وعموديًا لقراءة الرسم · الوقت بتوقيت السعودية</p><div id="sky-chart-large"></div></dialog>
 <script src="/assets/vendor/suncalc/suncalc.js"></script>
 <script src="/assets/vendor/astronomy-engine/astronomy.browser.min.js"></script>
-<script src="/sky-astronomy.js?v=6.00-center1"></script>
-<script src="/weather-ui.js?v=6.00-center1"></script>
-<script type="module" src="/prayer-ui.js?v=6.00-center1"></script>
-<script src="/app-refinements.js?v=6.00-center1"></script>
-<script type="module" src="/qibla-ui.js?v=6.00-center1"></script>
+<script src="/sky-astronomy.js?v=6.00-approved1"></script>
+<script src="/weather-ui.js?v=6.00-approved1"></script>
+<script type="module" src="/prayer-ui.js?v=6.00-approved1"></script>
+<script src="/app-refinements.js?v=6.00-approved1"></script>
+<script type="module" src="/qibla-ui.js?v=6.00-approved1"></script>
 <script>window.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search).get('page');if(['home','weather','calendar','prayer','info'].includes(p))setTimeout(()=>showPage(p),2800)});</script>
 </body>
 </html>

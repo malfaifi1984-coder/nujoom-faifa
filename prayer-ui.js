@@ -35,9 +35,12 @@ function refreshStatus(message) {
   $('prayer-push-status').textContent = message || (!supported ? 'هذا المتصفح لا يدعم الإشعارات. جرّب التطبيق على جهاز يدعمها.' : denied ? 'الإشعارات محظورة من المتصفح. افتح إعدادات الموقع للسماح بها.' : sub?.optedIn ? 'إشعارات الجهاز مفعّلة. اختر التنبيهات المناسبة لك.' : local ? 'الإشعارات مفعّلة أثناء فتح التطبيق. تنبيه الصلاة والتطبيق مغلق يحتاج تفعيل الخدمة على هاتف مدعوم.' : 'الإشعارات متوقفة. اختر تفضيلاتك ثم اضغط «تفعيل».');
   $('prayer-enable-push').hidden = !!sub?.optedIn || (local && !window.isMobilePushDevice()) || !supported || denied;
   $('notification-disable').hidden = !active;
-  $('notification-bell').dataset.active = String(active);
-  $('notification-bell').querySelector('.notification-dot').hidden = !active;
-  $('notification-bell').setAttribute('aria-label', active ? 'إعدادات التنبيهات، إشعارات الجهاز مفعّلة' : 'إعدادات التنبيهات');
+  $('notification-device-state').textContent = active ? 'مفعّلة' : denied ? 'محظورة' : 'متوقفة';
+  $('notification-device-state').dataset.active = String(active);
+  for (const [id, value] of [['prayer-choice-state', enabled()], ['stars-choice-state', window.getNotifyPrefs().stars]]) {
+    $(id).textContent = value ? 'مفعّلة' : 'متوقفة';
+    $(id).dataset.active = String(value);
+  }
 }
 async function syncSettings() {
   const sdk = window.__oneSignalInstance;
@@ -85,6 +88,7 @@ function paintTimes() {
   window.renderPrayerCard(); window.adhanTick(); window.updateHomePrayer();
   const day = days.get(ksaDateKey());
   window.FaifaPrayerDay = day || null;
+  window.FaifaPrayerDays = Object.fromEntries(days);
   window.dispatchEvent(new Event('faifa-prayer-times'));
   $('prayer-source-status').textContent = day ? 'مواقيت فيفاء · أم القرى' : 'تعذر التحديث؛ المواقيت المعروضة تقريبية مؤقتًا.';
   $('prayer-source-status').dataset.state = day ? 'ready' : 'approximate';
@@ -154,13 +158,11 @@ try {
   }
 } catch (_) { /* Storage is optional. */ }
 const center = $('notification-center');
-window.openNotificationCenter = () => { paintSettings(); if (!center.open) center.showModal(); };
-$('notification-bell').addEventListener('click', window.openNotificationCenter);
-$('notification-close').addEventListener('click', () => center.close());
-center.addEventListener('click', (event) => {
-  const rect = center.getBoundingClientRect();
-  if (event.target === center && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) center.close();
-});
+window.openNotificationCenter = () => {
+  paintSettings();
+  window.showPage('info');
+  setTimeout(() => center.scrollIntoView({ block: 'start', behavior: 'smooth' }), 350);
+};
 window.addEventListener('hashchange', () => { if (location.hash === '#notifications') window.openNotificationCenter(); });
 if (location.hash === '#notifications') setTimeout(window.openNotificationCenter, 2800);
 const oldStatus = window.updateNotifBtn;
