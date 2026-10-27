@@ -3087,11 +3087,11 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
         <div class="sky-hours" id="sky-hours"></div>
       </section>
       <section class="sky-section" aria-labelledby="sky-meteogram-title">
-        <div class="sky-section-head"><h2 id="sky-meteogram-title">رسم التوقعات</h2><div class="sky-tabs" role="group" aria-label="مدة الرسم"><button type="button" data-sky-period="24" aria-pressed="false">٢٤ ساعة</button><button type="button" data-sky-period="48" aria-pressed="true">٤٨ ساعة</button><button type="button" data-sky-period="120" aria-pressed="false">٥ أيام</button></div></div>
+        <div class="sky-section-head"><h2 id="sky-meteogram-title">رسم التوقعات</h2><div class="sky-tabs" role="group" aria-label="مدة الرسم"><button type="button" data-sky-period="24" aria-pressed="false">٢٤ ساعة</button><button type="button" data-sky-period="48" aria-pressed="false">٤٨ ساعة</button><button type="button" data-sky-period="120" aria-pressed="true">٥ أيام</button></div></div>
         <div class="sky-card">
-          <div class="sky-chart-head"><div class="sky-chart-legend"><span><i></i>الحرارة °م</span><span><i class="rain-key"></i>المطر ملم/ساعة</span></div></div>
+          <div class="sky-chart-head"><span>رسم التوقعات التفصيلي</span><button type="button" id="sky-chart-expand" disabled>تكبير الرسم ⤢</button></div>
           <div class="sky-chart-scroll" id="sky-chart"><p class="sky-chart-empty">يظهر الرسم بعد جلب التوقعات</p></div>
-          <p class="sky-chart-caption">الوقت من اليسار إلى اليمين · المطر للساعة المنتهية عند الوقت المعروض</p>
+          <p class="sky-chart-caption">الوقت من اليسار إلى اليمين · المطر للساعة المنتهية عند الوقت المعروض. السحب طبقات عامة، وليست ارتفاعًا بالكيلومتر. اضغط «تكبير الرسم» لقراءة التفاصيل.</p>
           <details class="sky-data-table"><summary>عرض القيم في جدول</summary><div class="sky-table-scroll"><table><thead><tr><th scope="col">الوقت بتوقيت السعودية</th><th scope="col">الحرارة °م</th><th scope="col">المطر ملم/ساعة</th><th scope="col">السحب ٪</th><th scope="col">الرياح كم/س</th><th scope="col">الهبّات كم/س</th></tr></thead><tbody id="sky-table-body"></tbody></table></div></details>
         </div>
       </section>
@@ -3538,6 +3538,7 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<dialog id="sky-chart-dialog" aria-labelledby="sky-chart-dialog-title"><div class="sky-chart-dialog-head"><h2 id="sky-chart-dialog-title">توقعات فيفاء التفصيلية</h2><button type="button" id="sky-chart-close">إغلاق ×</button></div><p>اسحب أفقيًا وعموديًا لقراءة الرسم · الوقت بتوقيت السعودية</p><div id="sky-chart-large"></div></dialog>
 <script src="/assets/vendor/leaflet/leaflet.js"></script>
 <script src="/weather-ui.js"></script>
 <script type="module" src="/prayer-ui.js"></script>

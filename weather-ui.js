@@ -1,7 +1,7 @@
 /* Forecast data stays with Open-Meteo / ECMWF. No synthetic values or API key. */
 (() => {
   'use strict';
-  const CACHE_KEY = 'faifaWeatherCalmV2';
+  const CACHE_KEY = 'faifaWeatherCalmV3';
   const CACHE_TTL = 30 * 60 * 1000;
   const MAX_CACHE_AGE = 24 * 60 * 60 * 1000;
   const LOCATION = { latitude: 17.2478, longitude: 43.1035, elevation: 1200 };
@@ -17,7 +17,7 @@
   const dateKey = () => new Intl.DateTimeFormat('en-CA', { timeZone: TIME_ZONE, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
   let forecast = null;
   let fetchedAt = null;
-  let period = 48;
+  let period = 120;
   let inFlight = null;
   let currentIndex = -1;
   let hourIndexes = [];
@@ -85,7 +85,7 @@
     url.searchParams.set('forecast_days', '7');
     url.searchParams.delete('current');
     url.searchParams.set('daily', 'temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,precipitation_sum');
-    url.searchParams.set('hourly', 'temperature_2m,relative_humidity_2m,dew_point_2m,surface_pressure,cloud_cover,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m');
+    url.searchParams.set('hourly', 'temperature_2m,relative_humidity_2m,dew_point_2m,surface_pressure,cloud_cover,cloud_cover_low,cloud_cover_mid,cloud_cover_high,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m');
     return url;
   }
   function renderHome() {
@@ -123,76 +123,98 @@
     set('sky-grid-elevation', number(forecast.elevation) === null ? 'غير متاح' : `${format(forecast.elevation)} متر`);
   }
   function renderHours() {
-    hourIndexes = currentIndex < 0 ? [] : Array.from({ length: Math.min(period, forecast.hourly.time.length - currentIndex) }, (_, i) => currentIndex + i);
-    $('sky-hours').innerHTML = hourIndexes.slice(0, 12).map((i) => `<div class="sky-hour"><span class="sky-hour-time">${hourFormat.format(new Date(epoch(forecast.hourly.time[i])))}</span>${icon(valueAt('weather_code', i))}<strong class="sky-hour-temp">${format(valueAt('temperature_2m', i))}°</strong><span class="sky-hour-rain">${format(valueAt('precipitation', i), 1)} ملم</span></div>`).join('');
+    const start = period === 120 && currentIndex >= 0 ? forecast.hourly.time.findIndex((t) => t.startsWith(dateKey())) : currentIndex;
+    hourIndexes = start < 0 || currentIndex < 0 ? [] : Array.from({ length: Math.min(period, forecast.hourly.time.length - start) }, (_, i) => start + i);
+    const nextHours = currentIndex < 0 ? [] : Array.from({ length: Math.min(12, forecast.hourly.time.length - currentIndex) }, (_, i) => currentIndex + i);
+    $('sky-hours').innerHTML = nextHours.map((i) => `<div class="sky-hour"><span class="sky-hour-time">${hourFormat.format(new Date(epoch(forecast.hourly.time[i])))}</span>${icon(valueAt('weather_code', i))}<strong class="sky-hour-temp">${format(valueAt('temperature_2m', i))}°</strong><span class="sky-hour-rain">${format(valueAt('precipitation', i), 1)} ملم</span></div>`).join('');
     renderChart();
   }
   function renderChart() {
     const target = $('sky-chart');
-    if (!hourIndexes.length) {
-      target.innerHTML = '<p class="sky-chart-empty">لا تتوفر توقعات للساعات المطلوبة. أعد تحديث البيانات.</p>';
-      $('sky-table-body').replaceChildren(); return;
-    }
-    const points = hourIndexes;
-    const temps = points.map((i) => valueAt('temperature_2m', i));
-    const rains = points.map((i) => valueAt('precipitation', i));
-    const speed = (key, i) => {
-      const value = valueAt(key, i), unit = forecast.hourly_units?.[key];
-      return value === null ? null : unit === 'm/s' ? value * 3.6 : unit === 'km/h' ? value : null;
-    };
-    const winds = points.map((i) => speed('wind_speed_10m', i));
-    const gusts = points.map((i) => speed('wind_gusts_10m', i));
-    const finite = temps.filter((v) => v !== null);
-    const min = finite.length ? Math.floor(Math.min(...finite) - 2) : 0;
-    const max = finite.length ? Math.ceil(Math.max(...finite) + 2) : 10;
-    const rainMax = Math.max(1, ...rains.filter((v) => v !== null));
-    const windMax = Math.max(20, Math.ceil(Math.max(...winds, ...gusts) / 10) * 10);
-    const w = Math.max(640, points.length * (period === 120 ? 14 : 20) + 90), h = 610;
-    const left = 48, right = w - 47;
-    const x = (n) => left + n * (right - left) / Math.max(1, points.length - 1);
-    const panels = [{ top: 38, bottom: 176, min, max, color: '#d8bb84', label: 'الحرارة °م' }, { top: 245, bottom: 355, min: 0, max: rainMax, color: '#92c6ed', label: 'المطر ملم/ساعة · السحب ٪' }, { top: 429, bottom: 551, min: 0, max: windMax, color: '#96badc', label: 'الرياح والهبّات كم/س' }];
-    const y = (value, panel) => panel.bottom - (value - panel.min) / (panel.max - panel.min) * (panel.bottom - panel.top);
-    const title = period === 120 ? 'توقعات خمسة أيام' : `توقعات ${format(period)} ساعة`;
-    let svg = `<svg viewBox="0 0 ${w} ${h}" style="width:${w}px;min-width:${w}px" role="img" aria-labelledby="sky-chart-title sky-chart-desc"><title id="sky-chart-title">${title}: الحرارة والمطر والسحب والرياح</title><desc id="sky-chart-desc">ثلاثة رسوم متزامنة. الوقت من اليسار إلى اليمين بتوقيت السعودية. المطر كمية الساعة المنتهية عند الوقت المعروض. السحب نسبة غطاء سحابي وليست ارتفاع السحب. جدول القيم متاح أسفل الرسم.</desc>`;
-    points.forEach((index, n) => {
-      const time = forecast.hourly.time[index], day = time.slice(0, 10);
-      const dailyIndex = forecast.daily?.time?.indexOf(day) ?? -1;
-      const sunrise = epoch(forecast.daily?.sunrise?.[dailyIndex]);
-      const sunset = epoch(forecast.daily?.sunset?.[dailyIndex]);
-      const instant = epoch(time);
-      if (instant >= sunrise && instant < sunset) svg += `<rect x="${x(n) - 1}" y="29" width="${(right - left) / points.length + 2}" height="530" fill="#e5cc95" opacity=".035"/>`;
-      if (n === 0 || time.slice(11, 13) === '00') {
-        svg += `<line x1="${x(n)}" x2="${x(n)}" y1="26" y2="565" stroke="#566580" stroke-width=".7"/><text x="${x(n) + 5}" y="15" text-anchor="start" fill="#c2d1e4" font-size="10">${dateFormat.format(new Date(instant))}</text>`;
+    if (!hourIndexes.length) { target.innerHTML = '<p class="sky-chart-empty">لا تتوفر توقعات للساعات المطلوبة.</p>'; $('sky-table-body').replaceChildren(); return; }
+    const points = hourIndexes, times = points.map((i) => forecast.hourly.time[i]);
+    const temperatures = points.map((i) => valueAt('temperature_2m', i));
+    const rain = points.map((i) => valueAt('precipitation', i));
+    const speed = (key, i) => { const v = valueAt(key, i), unit = forecast.hourly_units?.[key]; return v === null ? null : unit === 'm/s' ? v * 3.6 : unit === 'km/h' ? v : null; };
+    const wind = points.map((i) => speed('wind_speed_10m', i)), gust = points.map((i) => speed('wind_gusts_10m', i));
+    const finite = temperatures.filter((v) => v !== null);
+    const minimum = finite.length ? Math.floor((Math.min(...finite) - 3) / 5) * 5 : 0;
+    const maximum = finite.length ? Math.ceil((Math.max(...finite) + 5) / 5) * 5 : 35;
+    const rainMax = Math.max(5, Math.ceil(Math.max(0, ...rain.filter((v) => v !== null))));
+    const windMax = Math.max(50, Math.ceil(Math.max(0, ...wind.filter((v) => v !== null), ...gust.filter((v) => v !== null)) / 25) * 25);
+    const width = 1560, height = 1010, left = 100, right = 1455;
+    const panels = [{ top: 150, bottom: 365, min: minimum, max: maximum }, { top: 425, bottom: 640, min: 0, max: rainMax }, { top: 700, bottom: 890, min: 0, max: windMax }];
+    const step = (right - left) / points.length;
+    const x = (n) => left + (n + .5) * step;
+    const y = (v, p) => p.bottom - (v - p.min) / (p.max - p.min) * (p.bottom - p.top);
+    const groups = [];
+    times.forEach((time, n) => { const date = time.slice(0, 10); let group = groups.at(-1); if (!group || group.date !== date) { group = { date, start: n, end: n }; groups.push(group); } group.end = n; });
+    const isDay = (time) => { const d = forecast.daily?.time?.indexOf(time.slice(0, 10)) ?? -1; const t = epoch(time); return t >= epoch(forecast.daily?.sunrise?.[d]) && t < epoch(forecast.daily?.sunset?.[d]); };
+    const chartTitle = period === 120 ? 'توقعات فيفاء · خمسة أيام' : `توقعات فيفاء · ${format(period)} ساعة`;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" style="font-family:Tahoma,Arial,sans-serif" role="img" aria-labelledby="sky-chart-title sky-chart-desc"><title id="sky-chart-title">${chartTitle}</title><desc id="sky-chart-desc">خلفية فاتحة وثلاثة رسوم متزامنة للحرارة والمطر وطبقات السحب والرياح. طبقات السحب فئات منخفضة ومتوسطة وعالية وليست قياس ارتفاع بالكيلومتر. القيم الناقصة لا ترسم. الوقت بتوقيت السعودية.</desc><defs><clipPath id="sky-temp-clip"><rect x="${left}" y="150" width="${right-left}" height="215"/></clipPath><linearGradient id="sky-temperature-colors" x1="0" y1="1" x2="0" y2="0">`;
+    const stops = [[-10,'#6559ba'],[0,'#23bcbd'],[10,'#15b8a1'],[15,'#319a2d'],[20,'#9ef52b'],[25,'#f2ff10'],[30,'#ffbf00'],[35,'#ff7900'],[40,'#fa2920'],[50,'#b50930']];
+    stops.forEach(([t,c]) => svg += `<stop offset="${Math.max(0,Math.min(100,(t-minimum)/(maximum-minimum)*100))}%" stop-color="${c}"/>`);
+    svg += `</linearGradient></defs><rect width="${width}" height="${height}" fill="white"/><text x="${right}" y="40" text-anchor="end" fill="#18273a" font-size="27" font-weight="600">${chartTitle}</text><text x="${right}" y="73" text-anchor="end" fill="#596474" font-size="17">جبال فيفاء · ارتفاع الطلب ١٢٠٠ متر</text><text x="${left}" y="73" text-anchor="start" direction="ltr" fill="#596474" font-size="17">17.2478° N, 43.1035° E</text>`;
+    panels.forEach((p, panelIndex) => {
+      svg += `<rect x="${left}" y="${p.top}" width="${right-left}" height="${p.bottom-p.top}" fill="#fff"/>`;
+      times.forEach((time,n) => { if (isDay(time)) svg += `<rect x="${left+n*step}" y="${p.top}" width="${step+.2}" height="${p.bottom-p.top}" fill="#f3f7c8"/>`; });
+      for(let row=0;row<=5;row++) {
+        const v=p.min+(p.max-p.min)*row/5, py=y(v,p);
+        svg += `<line x1="${left}" x2="${right}" y1="${py}" y2="${py}" stroke="#555" stroke-width=".7" stroke-dasharray="1 4"/><text x="${left-12}" y="${py+6}" text-anchor="end" fill="#222" font-size="19">${format(v,panelIndex===1?1:0)}</text>`;
       }
-    });
-    panels.forEach((panel, panelIndex) => {
-      svg += `<text x="${left}" y="${panel.top - 10}" fill="${panel.color}" font-size="11">${panel.label}</text>`;
-      for (let row = 0; row <= 3; row++) {
-        const value = panel.max - row * (panel.max - panel.min) / 3, py = y(value, panel);
-        svg += `<line x1="${left}" x2="${right}" y1="${py}" y2="${py}" stroke="#2b3a50" stroke-dasharray="3 5"/><text x="${left - 9}" y="${py + 4}" text-anchor="end" fill="#aab9cc" font-size="10">${format(value, panelIndex === 1 ? 1 : 0)}</text>`;
-      }
-      points.forEach((index, n) => {
-        if (n % (period === 120 ? 12 : period === 48 ? 8 : 4) === 0 || n === points.length - 1) svg += `<text x="${x(n)}" y="${panel.bottom + 19}" text-anchor="middle" fill="#aab9cc" font-size="10">${hourFormat.format(new Date(epoch(forecast.hourly.time[index])))}</text>`;
+      groups.forEach((g) => { const px=left+g.start*step;svg+=`<line x1="${px}" x2="${px}" y1="${p.top}" y2="${p.bottom}" stroke="#333" stroke-width="1"/>`; });
+      times.forEach((time,n) => {
+        const hour=Number(time.slice(11,13));
+        if(hour%3===0) svg+=`<line x1="${x(n)}" x2="${x(n)}" y1="${p.bottom-9}" y2="${p.bottom}" stroke="#222"/>`;
+        if(hour%6===0) svg+=`<text x="${x(n)}" y="${p.bottom+27}" text-anchor="middle" fill="#222" font-size="18">${String(hour).padStart(2,'0')}</text>`;
       });
+      svg+=`<rect x="${left}" y="${p.top}" width="${right-left}" height="${p.bottom-p.top}" fill="none" stroke="#333"/>`;
     });
-    const line = (values, panel, color, width) => {
-      let path = '', connected = false;
-      values.forEach((value, n) => { if (value === null) { connected = false; return; } path += `${connected ? 'L' : 'M'}${x(n).toFixed(1)} ${y(value, panel).toFixed(1)} `; connected = true; });
-      return `<path d="${path}" fill="none" stroke="${color}" stroke-width="${width}" stroke-linejoin="round"/>`;
+    groups.forEach((g) => { const date=new Date(epoch(g.date+'T12:00')), center=left+(g.start+g.end+1)*step/2;svg+=`<text x="${center}" y="112" text-anchor="middle" fill="#222" font-size="23">${dayFormat.format(date)}</text><text x="${center}" y="140" text-anchor="middle" fill="#222" font-size="19">${g.date.slice(8,10)}.${g.date.slice(5,7)}</text>`; });
+    const pathFor = (values,p) => { let path='', connected=false;values.forEach((v,n)=>{if(v===null){connected=false;return;}path+=`${connected?'L':'M'}${x(n).toFixed(2)} ${y(v,p).toFixed(2)} `;connected=true;});return path; };
+    // Each contiguous segment gets its own area; missing hours remain real gaps.
+    let segment=[];
+    const fillSegment=()=>{if(!segment.length)return;const p=panels[0];let d=`M${x(segment[0][0])} ${p.bottom} `;segment.forEach(([n,v])=>d+=`L${x(n)} ${y(v,p)} `);d+=`L${x(segment.at(-1)[0])} ${p.bottom}Z`;svg+=`<path d="${d}" fill="url(#sky-temperature-colors)" clip-path="url(#sky-temp-clip)"/>`;segment=[];};
+    temperatures.forEach((v,n)=>{if(v===null)fillSegment();else segment.push([n,v]);});fillSegment();
+    svg+=`<path d="${pathFor(temperatures,panels[0])}" fill="none" stroke="#f3130c" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    const weatherGlyph = (index, n) => {
+      const code=valueAt('weather_code',index), night=!isDay(times[n]);
+      const kind=condition(code)[0];if(kind==='unknown')return '';
+      let paths=iconPaths[kind];
+      if(night&&kind==='sun')paths='<path d="M31 5a19 19 0 1 0 9 32A19 19 0 0 1 31 5Z" fill="#f7f7ee"/>';
+      else if(kind==='sun')paths='<circle cx="24" cy="24" r="9" fill="#ffe551"/>'+iconPaths.sun;
+      const py=Math.max(158,Math.min(310,y(temperatures[n]??minimum,panels[0])-43));
+      return `<svg x="${x(n)-22}" y="${py}" width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="${kind==='sun'&&!night?'#c9a923':'#596878'}" stroke-width="2" aria-hidden="true">${paths}</svg>`;
     };
-    svg += line(temps, panels[0], '#d8bb84', 2.5);
-    points.forEach((index, n) => {
-      const rain = rains[n], cloud = valueAt('cloud_cover', index);
-      if (cloud !== null) svg += `<rect x="${x(n) - 3}" y="${panels[1].top}" width="${Math.max(5, (right - left) / points.length)}" height="16" fill="#bec9d8" opacity="${Math.min(1, Math.max(0, cloud / 100)) * .65}"><title>الغطاء السحابي: ${format(cloud)}٪</title></rect>`;
-      if (rain !== null && rain > 0) svg += `<rect x="${x(n) - 3}" y="${y(rain, panels[1])}" width="6" height="${panels[1].bottom - y(rain, panels[1])}" rx="2" fill="#7bb8e3"><title>${format(rain, 1)} ملم</title></rect>`;
-      if (temps[n] !== null && n % (period === 120 ? 4 : 1) === 0) svg += `<circle cx="${x(n)}" cy="${y(temps[n], panels[0])}" r="2.3" fill="#d8bb84"><title>${hourFormat.format(new Date(epoch(forecast.hourly.time[index])))}: ${format(temps[n], 1)}°</title></circle>`;
-      const direction = valueAt('wind_direction_10m', index);
-      if (direction !== null && n % (period === 120 ? 6 : 3) === 0) svg += `<g transform="translate(${x(n)},409) rotate(${direction + 180})" stroke="#b9cce1" fill="none" stroke-width="1.3"><title>رياح قادمة من ${format(direction)} درجة</title><path d="M0 7V-7m-4 4 4-4 4 4"/></g>`;
+    points.forEach((index,n)=>{if(Number(times[n].slice(11,13))%6===0)svg+=weatherGlyph(index,n);});
+    groups.forEach((g)=>{
+      const available=temperatures.slice(g.start,g.end+1).map((v,k)=>({v,n:g.start+k})).filter(({v})=>v!==null);
+      if(!available.length)return;
+      for(const mode of ['min','max']){const best=available.reduce((a,b)=>mode==='min'?(a.v<b.v?a:b):(a.v>b.v?a:b));svg+=`<text x="${x(best.n)}" y="${Math.max(175,Math.min(357,y(best.v,panels[0])+(mode==='min'?22:27)))}" fill="#171717" text-anchor="middle" font-size="21">${format(best.v)}</text>`;}
     });
-    svg += line(winds, panels[2], '#92c6ed', 2.4) + line(gusts, panels[2], '#9ac7b5', 1.8);
-    svg += `<text x="${left}" y="593" fill="#92c6ed" font-size="10">الأزرق: سرعة الرياح</text><text x="${left + 165}" y="593" fill="#9ac7b5" font-size="10">الأخضر: الهبّات</text><text x="${left + 330}" y="593" fill="#bec9d8" font-size="10">الرمادي: الغطاء السحابي</text>`;
-    target.innerHTML = svg + '</svg>';
-    $('sky-table-body').innerHTML = points.map((i) => `<tr><td>${dateFormat.format(new Date(epoch(forecast.hourly.time[i])))} · ${hourFormat.format(new Date(epoch(forecast.hourly.time[i])))}</td><td>${format(valueAt('temperature_2m', i), 1)}</td><td>${format(valueAt('precipitation', i), 1)}</td><td>${format(valueAt('cloud_cover', i))}</td><td>${format(speed('wind_speed_10m', i))}</td><td>${format(speed('wind_gusts_10m', i))}</td></tr>`).join('');
+    const layers=[['cloud_cover_high','عالية'],['cloud_cover_mid','متوسطة'],['cloud_cover_low','منخفضة']];
+    layers.forEach(([key,label],layer)=>{
+      const cy=panels[1].top+25+layer*59;
+      [[10,'#dedede'],[25,'#bcbcbc'],[50,'#969696'],[75,'#737373'],[90,'#505050']].forEach(([threshold,color])=>{
+        let run=[];
+        const finish=()=>{if(!run.length)return;let d=`M${x(run[0].n)-step/2} ${cy} `;for(const {n,v} of run)d+=`L${x(n)} ${cy-(5+12*(v-threshold)/(100-threshold))} `;d+=`L${x(run.at(-1).n)+step/2} ${cy} `;for(const {n,v} of [...run].reverse())d+=`L${x(n)} ${cy+(5+12*(v-threshold)/(100-threshold))} `;svg+=`<path d="${d}Z" fill="${color}"><title>سحب ${label}: تغطية ${format(threshold)}٪ فأكثر</title></path>`;run=[];};
+        points.forEach((index,n)=>{const v=valueAt(key,index);if(v===null||v<threshold)finish();else run.push({n,v});});finish();
+      });
+      svg+=`<text x="${right+10}" y="${cy+5}" fill="#444" font-size="16">${label}</text>`;
+    });
+    rain.forEach((v,n)=>{if(v===null||v<=0)return;const py=y(v,panels[1]);svg+=`<rect x="${x(n)-Math.max(2,step*.25)}" y="${py}" width="${Math.max(4,step*.5)}" height="${panels[1].bottom-py}" fill="#1739ff"><title>${format(v,1)} ملم · ${times[n]}</title></rect>`;});
+    svg+=`<path d="${pathFor(wind,panels[2])}" fill="none" stroke="#40b5ff" stroke-width="4"/><path d="${pathFor(gust,panels[2])}" fill="none" stroke="#159da2" stroke-width="3"/>`;
+    points.forEach((index,n)=>{const d=valueAt('wind_direction_10m',index);if(d===null||Number(times[n].slice(11,13))%3!==0)return;svg+=`<g transform="translate(${x(n)},719) rotate(${d+180})" fill="none" stroke="#111" stroke-width="2.7"><title>رياح قادمة من ${format(d)}°</title><path d="M0 13V-13m-5 7 5-7 5 7"/></g>`;});
+    const now=(Date.now()-epoch(times[0]))/3600000;
+    if(now>=0&&now<points.length){const px=left+(now+.5)*step;panels.forEach((p)=>svg+=`<line x1="${px}" x2="${px}" y1="${p.top}" y2="${p.bottom}" stroke="#111" stroke-width="2" stroke-dasharray="7 5"/>`);svg+=`<text x="${px}" y="94" text-anchor="middle" fill="#333" font-size="15">الآن</text>`;}
+    for(const [label,p,color] of [['الحرارة °م',panels[0],'#222'],['المطر ملم/ساعة',panels[1],'#1739ff'],['سرعة الرياح كم/س',panels[2],'#40b5ff']])svg+=`<text transform="translate(30 ${(p.top+p.bottom)/2}) rotate(-90)" text-anchor="middle" fill="${color}" font-size="22">${label}</text>`;
+    svg+=`<text transform="translate(1530 530) rotate(90)" text-anchor="middle" fill="#444" font-size="19">طبقات السحب</text><text transform="translate(1520 795) rotate(90)" text-anchor="middle" fill="#159da2" font-size="20">هبّات الرياح كم/س</text>`;
+    for(let row=0;row<=2;row++){const v=windMax*row/2;svg+=`<text x="${right+12}" y="${y(v,panels[2])+6}" fill="#159da2" font-size="18">${format(v)}</text>`;}
+    [[10,25,'#dedede'],[25,50,'#bcbcbc'],[50,75,'#969696'],[75,90,'#737373'],[90,100,'#505050']].forEach(([a,b,c],i)=>{const px=left+50+i*155;svg+=`<circle cx="${px}" cy="947" r="9" fill="${c}"/><text x="${px+17}" y="953" fill="#444" font-size="16">${a}–${b}%</text>`;});
+    svg+=`<text x="${left}" y="990" fill="#777" font-size="16">وقت جلب البيانات: ${stampFormat.format(new Date(fetchedAt))} · توقيت السعودية</text><text x="${right}" y="990" text-anchor="end" fill="#555" font-size="16">الرمادي: كثافة السحب · الأزرق: المطر · الخلفية الفاتحة: النهار</text></svg>`;
+    target.innerHTML=svg;
+    $('sky-table-body').innerHTML=points.map((i)=>`<tr><td>${dateFormat.format(new Date(epoch(forecast.hourly.time[i])))} · ${hourFormat.format(new Date(epoch(forecast.hourly.time[i])))}</td><td>${format(valueAt('temperature_2m',i),1)}</td><td>${format(valueAt('precipitation',i),1)}</td><td>${format(valueAt('cloud_cover',i))}</td><td>${format(speed('wind_speed_10m',i))}</td><td>${format(speed('wind_gusts_10m',i))}</td></tr>`).join('');
+    $('sky-chart-expand').disabled=false;
   }
   function renderDays() {
     const daily = forecast.daily;
@@ -372,6 +394,17 @@
       document.querySelectorAll('[data-sky-period]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
       if (forecast) renderHours();
     }));
+    $('sky-chart-expand').addEventListener('click', () => {
+      const chart = $('sky-chart').querySelector('svg'); if (!chart) return;
+      $('sky-chart-large').replaceChildren(chart.cloneNode(true));
+      // Clone-local IDs prevent duplicate SVG gradients and accessible titles.
+      const clone = $('sky-chart-large').querySelector('svg');
+      for (const node of clone.querySelectorAll('[id]')) node.id += '-large';
+      clone.setAttribute('aria-labelledby', 'sky-chart-title-large sky-chart-desc-large');
+      for (const node of clone.querySelectorAll('[fill],[clip-path]')) for (const attr of ['fill','clip-path']) { const v=node.getAttribute(attr); if(v?.startsWith('url(#')) node.setAttribute(attr,v.replace(')', '-large)')); }
+      $('sky-chart-dialog').showModal();
+    });
+    $('sky-chart-close').addEventListener('click', () => $('sky-chart-dialog').close());
     $('sky-load-map').addEventListener('click', loadMap);
     $('sky-map-refresh').addEventListener('click', loadMap);
     $('sky-map-hour').addEventListener('input', (event) => { mapHour = Number(event.target.value); renderRainMap(); });

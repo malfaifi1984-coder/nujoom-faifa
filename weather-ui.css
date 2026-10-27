@@ -182,3 +182,14 @@ body.calm-sky.dark-mode #app .qibla-compass{background:#101d2e!important;box-sha
 body.calm-sky.dark-mode #app .chars-section::before,body.calm-sky.dark-mode #app .chars-section::after{display:none!important}
 
 #prayer-source-status{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+
+/* Light scientific meteogram within the calm dark application. */
+#sky-chart{padding:0;background:#fff;overflow:hidden}
+#sky-chart>svg{width:100%;min-width:0;max-width:100%;height:auto;overflow:hidden}
+#sky-chart .sky-chart-empty{color:#526073}
+.sky-chart-head{background:#fff;color:#26364b;padding:12px 14px;font-size:12px}
+.sky-chart-head button{font:inherit;color:#243d58;background:#edf2f7;border:1px solid #bccbd8;border-radius:8px;padding:7px 11px}
+.sky-chart-caption{background:#fff;color:#5a6574;padding:8px 14px 13px;font-size:11px;line-height:1.9}
+#sky-chart-dialog{width:min(1600px,98vw);max-width:98vw;height:min(1100px,94dvh);max-height:94dvh;padding:0;background:#fff;color:#253246;border:1px solid #91a0b3;border-radius:15px;font-family:var(--font-ar)}
+#sky-chart-dialog::backdrop{background:#000b} .sky-chart-dialog-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;z-index:2;border-bottom:1px solid #ddd}.sky-chart-dialog-head h2{font-size:16px;margin:0}.sky-chart-dialog-head button{font:inherit;background:#edf2f7;border:1px solid #b3c0d0;border-radius:8px;padding:8px 14px;cursor:pointer}
+#sky-chart-dialog>p{font-size:12px;margin:10px 16px}#sky-chart-large{overflow:auto;max-height:calc(94dvh - 110px);direction:ltr}#sky-chart-large svg{display:block;width:1560px;min-width:1560px;height:auto}#sky-chart-large text{font-family:Tahoma,Arial,sans-serif}
