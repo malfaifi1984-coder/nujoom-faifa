@@ -2948,7 +2948,6 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   });
 </script>
 
-<link rel="stylesheet" href="/assets/vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="/weather-ui.css">
 </head>
 <body class="dark-mode calm-sky">
@@ -2972,7 +2971,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
       <div class="home-header">
         <div class="brand-text-header">
           <img class="brand-site-logo" src="/assets/brand-mark.svg" alt="شعار نجوم مذاري فيفاء">
-          <div class="brand-text-title">نجوم مذاري فيفاء</div><button type="button" class="about-app-button" onclick="showPage('info')">عن التطبيق</button>
+          <div class="brand-text-title">نجوم مذاري فيفاء</div>
         </div>
       </div>
 
@@ -3082,6 +3081,19 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
         </div>
         <p class="sky-update" id="sky-updated">تظهر ساعة جلب البيانات بعد الاتصال بالمصدر</p>
       </section>
+      <section class="sky-section sky-astronomy" aria-labelledby="sky-astro-title">
+        <div class="sky-section-head"><div><h2 id="sky-astro-title">الشمس والقمر</h2><p class="sky-section-sub">مسارهما اليوم في سماء فيفاء</p></div><span class="sky-astro-live" id="sky-sun-state">سماء فيفاء</span></div>
+        <div class="sky-astro-grid">
+          <article class="sky-card sky-orbit-card"><div class="sky-orbit-heading"><span class="sky-orbit-title">الشمس</span><span id="sky-sun-status">جارٍ حساب المسار</span></div>
+            <svg class="sky-orbit" viewBox="0 0 320 130" role="img" aria-label="موقع الشمس التقريبي على مسار اليوم من الشروق إلى الغروب"><defs><linearGradient id="sky-sun-glow" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#e3bc74" stop-opacity=".15"/><stop offset="1" stop-color="#e3bc74" stop-opacity="0"/></linearGradient></defs><path d="M22 108Q160 -52 298 108Z" fill="url(#sky-sun-glow)"/><path d="M22 108Q160 -52 298 108" class="sky-orbit-guide"/><path d="M12 108H308" class="sky-orbit-horizon"/><circle cx="22" cy="108" r="3" fill="#d9b777"/><circle cx="298" cy="108" r="3" fill="#d9b777"/><g id="sky-sun-marker" class="sky-orbit-marker"><circle r="13" fill="#ffd47c" fill-opacity=".12"/><circle r="7" fill="#f5c96e"/><path d="M0-12V-10M0 10V12M-12 0H-10M10 0H12M-9-9-7-7M7 7 9 9M-9 9-7 7M7-7 9-9" stroke="#e6bd70" stroke-width="1.3"/></g></svg>
+            <div class="sky-orbit-times"><div><span>الشروق</span><strong id="sky-sun-rise">—</strong></div><div><span>الغروب</span><strong id="sky-sun-set">—</strong></div></div>
+          </article>
+          <article class="sky-card sky-orbit-card"><div class="sky-orbit-heading"><span class="sky-orbit-title">القمر</span><span id="sky-moon-status">جارٍ حساب المسار</span></div><div class="sky-moon-details"><span id="sky-moon-face" aria-hidden="true">☾</span><div><strong id="sky-moon-phase">طور القمر</strong><small id="sky-moon-illumination">—</small></div></div>
+            <svg class="sky-orbit sky-moon-orbit" viewBox="0 0 320 130" role="img" aria-label="موقع القمر التقريبي بين طلوعه وغروبه؛ يخفت الرمز عندما يكون تحت الأفق"><path d="M22 108Q160 -52 298 108" class="sky-orbit-guide sky-moon-guide"/><path d="M12 108H308" class="sky-orbit-horizon"/><circle cx="22" cy="108" r="3" fill="#9cb7dc"/><circle cx="298" cy="108" r="3" fill="#9cb7dc"/><g id="sky-moon-marker" class="sky-orbit-marker"><circle r="15" fill="#9cb7dc" fill-opacity=".12"/><text id="sky-moon-moving-face" x="0" y="9" text-anchor="middle" font-size="25">☾</text></g></svg>
+            <div class="sky-orbit-times"><div><span>طلوع القمر</span><strong id="sky-moon-rise">—</strong></div><div><span>غروب القمر</span><strong id="sky-moon-set">—</strong></div></div>
+          </article>
+        </div><p class="sky-astro-note" id="sky-astro-updated"></p><p class="sky-astro-note">حساب فلكي تقريبي؛ الجبال قد تؤثر في وقت ظهور الشمس والقمر من موقعك.</p>
+      </section>
       <section class="sky-section" aria-labelledby="sky-hours-title">
         <div class="sky-section-head"><div><h2 id="sky-hours-title">الساعات القادمة</h2><p class="sky-section-sub">توقعات كل ساعة · المطر للساعة المنتهية عند الوقت المعروض</p></div></div>
         <div class="sky-hours" id="sky-hours"></div>
@@ -3095,24 +3107,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
           <details class="sky-data-table"><summary>عرض القيم في جدول</summary><div class="sky-table-scroll"><table><thead><tr><th scope="col">الوقت بتوقيت السعودية</th><th scope="col">الحرارة °م</th><th scope="col">المطر ملم/ساعة</th><th scope="col">السحب ٪</th><th scope="col">الرياح كم/س</th><th scope="col">الهبّات كم/س</th></tr></thead><tbody id="sky-table-body"></tbody></table></div></details>
         </div>
       </section>
-      <section class="sky-section" aria-labelledby="sky-days-title">
-        <div class="sky-section-head"><div><h2 id="sky-days-title">الأيام السبعة القادمة</h2><p class="sky-section-sub">الصغرى / العظمى · مجموع المطر اليومي</p></div></div>
-        <div class="sky-card sky-days" id="sky-days"><p class="sky-chart-empty">بانتظار التوقعات اليومية</p></div>
-      </section>
-      <section class="sky-section sky-card" aria-labelledby="sky-map-title">
-        <div class="sky-map-head"><h2 id="sky-map-title">أين يُتوقع المطر؟</h2><p class="sky-section-sub">نقاط توقع المطر حول فيفاء · اختر الساعة وكمية الهطول</p><span class="sky-map-source">نقاط توقعات · ليست رادارًا</span></div>
-        <div class="sky-map-stage" id="sky-map-stage">
-          <svg class="sky-map-contours" viewBox="0 0 600 320" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M-50 95Q90-100 210 130T450 155T700 50M-50 120Q90-75 210 155T450 180T700 75M-50 145Q90-50 210 180T450 205T700 100M-50 170Q90-25 210 205T450 230T700 125M-50 195Q90 0 210 230T450 255T700 150M-50 220Q90 25 210 255T450 280T700 175M-50 245Q90 50 210 280T450 305T700 200M-50 270Q90 75 210 305T450 330T700 225"/></svg>
-          <div class="sky-map-placeholder" id="sky-map-placeholder"><div class="sky-map-pin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22S4 14 4 9a8 8 0 0 1 16 0c0 5-8 13-8 13Z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>المطر حول جبال فيفاء</h3><p>شاهد كميات المطر المتوقعة في نقاط المنطقة خلال الساعات القادمة، على خريطة قابلة للتكبير.</p><button type="button" class="sky-map-button" id="sky-load-map">تحميل خريطة التوقعات</button></div>
-          <div id="sky-rain-map" class="sky-rain-map" role="region" aria-label="خريطة نقاط توقع المطر حول فيفاء" hidden></div>
-        </div>
-        <p class="sky-map-notice" id="sky-map-notice" role="status" aria-live="polite" hidden></p>
-        <div class="sky-map-controls" id="sky-map-controls" hidden><label for="sky-map-hour">ساعة التوقع <output id="sky-map-time" for="sky-map-hour"></output></label><input type="range" min="0" max="23" step="1" value="0" id="sky-map-hour" aria-label="ساعة توقع المطر من الساعة الحالية إلى ٢٣ ساعة لاحقة"><button type="button" id="sky-map-now">الساعة الحالية</button><div class="sky-map-legend" aria-label="مفتاح كمية المطر بالملم خلال الساعة"><span><i style="background:#607388"></i>٠</span><span><i style="background:#85c9ed"></i>أقل من ١</span><span><i style="background:#458ee0"></i>١–٥</span><span><i style="background:#b3a0eb"></i>٥–١٠</span><span><i style="background:#e3ab6d"></i>١٠ فأكثر</span><span>ملم/ساعة</span></div></div>
-        <div class="sky-map-foot"><p id="sky-map-data-note">تُحمّل التوقعات عند الطلب. النقاط تمثل خلايا النموذج، ولا تحدد مكان المطر بدقة الشارع.</p><button type="button" class="sky-map-retry" id="sky-map-refresh" hidden>تحديث الخريطة</button></div>
-        <details class="sky-data-table" id="sky-map-table" hidden><summary>عرض توقعات نقاط الخريطة في جدول</summary><div class="sky-table-scroll"><table><thead><tr><th scope="col">موقع خلية النموذج</th><th scope="col">المطر ملم/ساعة</th></tr></thead><tbody id="sky-map-table-body"></tbody></table></div></details>
-      </section>
-      <p class="sky-radar-note"><strong>هل هذه خريطة رادار؟</strong> لا، هذه توقعات نموذج. الرادار يرصد الهطول الفعلي؛ توفر تغطية رادار موثوقة لفيفاء يحتاج مصدرًا منفصلًا. لا تُعرض هنا صور رادار أو أمطار مصطنعة.</p>
-      <details class="sky-source"><summary>عن المصدر ودقة التوقعات</summary><p>المصدر <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a> باستخدام نموذج ECMWF. البيانات تقديرات نموذجية وليست رصدًا من محطة في فيفاء. اختلاف الارتفاع والتضاريس قد يغيّر الطقس من موقع لآخر، وتقل موثوقية التفاصيل كلما ابتعد موعد التوقع.</p><dl><dt>إحداثيات الطلب</dt><dd dir="ltr">17.2478° N · 43.1035° E</dd><dt>خلية النموذج المُعادة</dt><dd id="sky-grid-location" dir="ltr">—</dd><dt>ارتفاع الطلب</dt><dd>١٢٠٠ متر</dd><dt>الارتفاع المُعاد</dt><dd id="sky-grid-elevation">—</dd></dl><p>وقت الجلب يوضح آخر اتصال ناجح من جهازك، وليس وقت إصدار النموذج. كمية المطر بالملّيمتر ليست احتمال المطر. الرؤية غير متاحة في البيانات الحالية؛ لا نستنتج ضبابًا من قيمة مفقودة.</p><p>تستخدم نقاط الخريطة الارتفاع الذي يحدده المصدر لكل موقع، وقد تختلف كمية أقرب نقطة عن بطاقة فيفاء ذات ارتفاع الطلب الثابت. خريطة الأساس © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">مساهمي OpenStreetMap</a>.</p></details>
+      <details class="sky-section sky-days-summary"><summary><span>ملخص الأيام الخمسة</span><small>العظمى والصغرى والمطر</small><span class="sky-summary-chevron" aria-hidden="true">⌄</span></summary><div class="sky-card sky-days" id="sky-days"><p class="sky-chart-empty">بانتظار التوقعات اليومية</p></div></details>
       <p class="sky-footer">نجوم مذاري فيفاء · الأرض والسماء<br>للقراءة والتخطيط العام؛ راجع التنبيهات الرسمية عند الحالات الجوية.</p>
     </div>
   </div>
@@ -3313,6 +3308,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   <div id="page-info" class="page">
     <div class="scrollable">
       <div class="info-page">
+        <div class="info-section sky-data-credit"><h3>بيانات الطقس والحسابات الفلكية</h3><p>بيانات الطقس: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>، نموذج ECMWF. الحسابات الفلكية: SunCalc. التوقعات تقديرات نموذجية، والمسارات الفلكية تقريبية ولا تراعي حجب الأفق بالجبال.</p></div>
         <div class="info-header">نجوم مذاري فيفاء — <span id="info-title-year">—</span></div>
 
         <div class="info-section" style="background:rgba(184,134,11,0.06);border-color:rgba(184,134,11,0.3);box-shadow:0 2px 12px rgba(0,0,0,.05);">
@@ -3518,6 +3514,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
       <div class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 3c0 2.6-4.2 3.6-4.2 7.2h8.4C16.2 6.6 12 5.6 12 3z"/><path d="M4.8 10.2V20h14.4v-9.8"/><path d="M10 20v-3.6a2 2 0 0 1 4 0V20"/></svg></div><div class="nav-label">الصلاة</div>
     </button>
 
+    <button class="nav-btn" onclick="showPage('info',this)" data-page="info"><div class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5"/><circle cx="12" cy="8" r=".4" fill="currentColor"/></svg></div><div class="nav-label">عن التطبيق</div></button>
   </nav>
 </div>
 
@@ -3539,7 +3536,8 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <dialog id="sky-chart-dialog" aria-labelledby="sky-chart-dialog-title"><div class="sky-chart-dialog-head"><h2 id="sky-chart-dialog-title">توقعات فيفاء التفصيلية</h2><button type="button" id="sky-chart-close">إغلاق ×</button></div><p>اسحب أفقيًا وعموديًا لقراءة الرسم · الوقت بتوقيت السعودية</p><div id="sky-chart-large"></div></dialog>
-<script src="/assets/vendor/leaflet/leaflet.js"></script>
+<script src="/assets/vendor/suncalc/suncalc.js"></script>
+<script src="/sky-astronomy.js"></script>
 <script src="/weather-ui.js"></script>
 <script type="module" src="/prayer-ui.js"></script>
 <script>window.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search).get('page');if(['home','weather','calendar','prayer','info'].includes(p))setTimeout(()=>showPage(p),2800)});</script>

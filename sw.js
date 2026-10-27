@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-meteogram2';
-const APP_SHELL = ['/', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js', '/prayer-shared.mjs', '/weather-ui.css', '/weather-ui.js', '/assets/vendor/leaflet/leaflet.css', '/assets/vendor/leaflet/leaflet.js'];
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-sky-preview';
+const APP_SHELL = ['/', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js', '/prayer-shared.mjs', '/weather-ui.css', '/weather-ui.js', '/sky-astronomy.js', '/assets/vendor/suncalc/suncalc.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));

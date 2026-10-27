@@ -114,42 +114,8 @@ body.calm-sky.dark-mode #app .wx-legacy{display:none!important}
 .sky-day-temp .low{color:#9db2cc}
 .sky-day-temp .high{color:#e6d2af}
 .sky-day-rain{text-align:left;color:#a7cff0;font-size:.72rem;white-space:nowrap}
-.sky-map-head{padding:19px 18px 14px}
-.sky-map-source{font-size:.65rem;color:#abc5e2;border:1px solid #344b65;border-radius:20px;padding:3px 8px;display:inline-block;margin-top:8px}
-.sky-map-stage{position:relative;min-height:310px;background:#122338;border-top:1px solid #2b3d53;border-bottom:1px solid #2b3d53;display:grid;place-items:center;overflow:hidden}
-.sky-map-contours{position:absolute;inset:0;width:100%;height:100%;opacity:.5;fill:none;stroke:#355772;stroke-width:1;pointer-events:none}
-.sky-map-placeholder{position:relative;text-align:center;padding:24px;max-width:370px;z-index:1}
-.sky-map-pin{display:grid;place-items:center;width:48px;height:48px;border:1px solid #8c8066;border-radius:50%;margin:0 auto 13px;background:#1b2b3c;color:#e3c990}
-.sky-map-pin svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.5}
-.sky-map-placeholder h3{font-size:.95rem;font-weight:600;color:#e3ebf6}
-.sky-map-placeholder p{font-size:.72rem;color:#aab9cc;margin:7px 0 18px;line-height:1.9}
-.sky-map-button{border:1px solid #8294ac;border-radius:12px;padding:10px 21px;background:#d3deec;color:#142033;font-size:.76rem!important;font-weight:700!important}
-.sky-rain-map{display:block;width:100%;height:400px;background:#172a3f;z-index:1;direction:ltr}
-.sky-rain-map .leaflet-popup-content,.sky-rain-map .leaflet-tooltip{direction:rtl;font-family:var(--font-ar);font-size:12px;line-height:1.8}
-.sky-rain-map .leaflet-tooltip,.sky-rain-map .leaflet-popup-content-wrapper,.sky-rain-map .leaflet-popup-tip{background:#14243a;color:#e6edf6;border-color:#445c78}
-.sky-rain-map .leaflet-control-attribution{font-size:10px;background:#fff;color:#222}
-.sky-rain-map .leaflet-control-attribution a{color:#125478}
-.sky-map-controls{padding:14px 18px;border-bottom:1px solid #29374c}
-.sky-map-controls label{display:block;font-size:.72rem;color:#aab9cc}
-.sky-map-controls output{display:block;color:#e0eaf7;font-size:.8rem;margin-top:5px;font-variant-numeric:tabular-nums}
-.sky-map-controls input{display:block;width:100%;margin:18px 0;accent-color:#9cbede;direction:ltr;min-height:24px}
-.sky-map-controls button,.sky-map-retry{border:1px solid #3a506b;color:#d3e3f5;background:#192c43;border-radius:8px;padding:6px 10px;font-size:.7rem!important;white-space:nowrap}
-.sky-map-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;color:#aab9cc;font-size:.62rem}
-.sky-map-legend span{display:flex;align-items:center;gap:4px}.sky-map-legend i{display:inline-block;width:10px;height:10px;border-radius:50%}
-body.calm-sky.dark-mode #app .sky-home-update{font:11px/1.9 var(--font-ar);color:#aab9cc;margin:-3px 22px 18px}
-body.calm-sky.dark-mode #app .v2-condition-icon svg{width:39px;height:39px;fill:none;stroke:#d5c08f;stroke-width:1.5}
-.sky-map-foot{padding:14px 18px;display:flex;justify-content:space-between;gap:14px;align-items:center}
-.sky-map-foot p{font-size:.65rem;color:#aab9cc;line-height:1.9;max-width:360px}
-.sky-map-foot a{color:#b4d3ed;font-size:.72rem;white-space:nowrap;text-underline-offset:4px}
-.sky-map-notice{padding:10px 18px;font-size:.72rem;color:#d8c49e;background:#29261f;border-bottom:1px solid #4f4839;line-height:1.9}
-.sky-radar-note{font-size:.72rem;color:#aab9cc;line-height:2;margin-top:12px!important;padding-inline:2px}
-.sky-radar-note strong{color:#d4e0ef;font-weight:600}
-.sky-source{margin-top:22px;padding:17px 18px;border:1px solid #29374c;border-radius:15px;background:#101c2c}
-.sky-source summary{font-size:.76rem;color:#c4d2e4;cursor:pointer;line-height:1.8}
-.sky-source p{font-size:.71rem;color:#aab9cc;line-height:2;margin-top:12px}
-.sky-source a{color:#afcdea;text-underline-offset:4px}
-.sky-source dl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0;font-size:.68rem}
-.sky-source dt{color:#aab9cc}.sky-source dd{margin:0;color:#d9e3f0;text-align:left}
+.calm-sky .sky-home-update{font:11px/1.9 var(--font-ar);color:#aab9cc;margin:-3px 22px 18px}
+.calm-sky .v2-condition-icon svg{width:39px;height:39px;fill:none;stroke:#d5c08f;stroke-width:1.5}
 .sky-footer{color:#8fa3bd;font-size:.65rem;text-align:center;margin-top:22px!important;line-height:1.9}
 .about-app-button{font:12px var(--font-ar);color:#b7c9e0;background:#19283d;border:1px solid #35465f;border-radius:10px;padding:8px 12px;cursor:pointer;margin-inline-start:auto;white-space:nowrap}
 body.calm-sky.dark-mode #page-home .brand-text-header{flex-wrap:wrap;gap:10px!important}
@@ -174,8 +140,8 @@ body.calm-sky.dark-mode #app .qibla-compass{background:#101d2e!important;box-sha
 .prayer-push-status{font-size:.73rem;color:#b7cce4;line-height:2;margin:15px 0 0}.prayer-footnote{font-size:.68rem;line-height:2;color:#9fb2ca;margin:15px 0 0}
 #prayer-source-status{line-height:1.9;font-size:.73rem}#prayer-source-status[data-state="approximate"]{color:#e1c393}#prayer-refresh{display:block;margin:12px auto 0}
 @media(min-width:650px){.prayer-choice-grid{display:grid;grid-template-columns:1fr 1fr;column-gap:25px}}
-@media(min-width:820px){body.calm-sky.dark-mode #app{width:900px;max-width:calc(100% - 40px)}.sky-now{padding:28px}.sky-temperature{font-size:86px}.sky-current{margin-block:5px 16px}.sky-metrics{gap:30px}.sky-now-top,.sky-current,.sky-range,.sky-divider,.sky-metrics,.sky-update{position:relative;z-index:1}.sky-now::after{content:"✧";position:absolute;left:60px;top:15px;font:200px/1.4 Georgia,serif;color:#9fbbdc0c;pointer-events:none}.sky-hour{flex-basis:87px}.sky-map-stage{min-height:350px}.sky-rain-map{height:450px}}
-@media(max-width:380px){#page-weather .sky-weather{padding-inline:14px!important}.sky-heading h1{font-size:1.5rem}.sky-now{padding:19px}.sky-temperature{font-size:64px}.sky-metric strong{font-size:.94rem}.sky-section-head{flex-wrap:wrap}.sky-day{gap:5px;font-size:.7rem}.sky-day-rain{font-size:.65rem}.sky-map-foot{flex-wrap:wrap}.sky-topline{gap:5px}.sky-date{font-size:.62rem}}
+@media(min-width:820px){body.calm-sky.dark-mode #app{width:900px;max-width:calc(100% - 40px)}.sky-now{padding:28px}.sky-temperature{font-size:86px}.sky-current{margin-block:5px 16px}.sky-metrics{gap:30px}.sky-now-top,.sky-current,.sky-range,.sky-divider,.sky-metrics,.sky-update{position:relative;z-index:1}.sky-now::after{content:"✧";position:absolute;left:60px;top:15px;font:200px/1.4 Georgia,serif;color:#9fbbdc0c;pointer-events:none}.sky-hour{flex-basis:87px}}
+@media(max-width:380px){#page-weather .sky-weather{padding-inline:14px!important}.sky-heading h1{font-size:1.5rem}.sky-now{padding:19px}.sky-temperature{font-size:64px}.sky-metric strong{font-size:.94rem}.sky-section-head{flex-wrap:wrap}.sky-day{gap:5px;font-size:.7rem}.sky-day-rain{font-size:.65rem}.sky-topline{gap:5px}.sky-date{font-size:.62rem}}
 @media(prefers-reduced-motion:reduce){.calm-sky *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
 .home-calendar-date{margin:8px 16px 18px;position:relative;padding:15px 18px;border:1px solid #29394f;border-radius:17px;background:#111e30;font-family:var(--font-ar);color:#c5d3e6}
 .home-calendar-date>span{font-size:.78rem;color:#cdb586;float:left}.home-calendar-date div{font-size:1rem;color:#e6eef9}.home-calendar-date div strong{font-weight:600}.home-calendar-date p{font-size:.75rem;color:#aab9cc;margin:5px 0 0}
@@ -193,3 +159,26 @@ body.calm-sky.dark-mode #app .chars-section::before,body.calm-sky.dark-mode #app
 #sky-chart-dialog{width:min(1600px,98vw);max-width:98vw;height:min(1100px,94dvh);max-height:94dvh;padding:0;background:#fff;color:#253246;border:1px solid #91a0b3;border-radius:15px;font-family:var(--font-ar)}
 #sky-chart-dialog::backdrop{background:#000b} .sky-chart-dialog-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;z-index:2;border-bottom:1px solid #ddd}.sky-chart-dialog-head h2{font-size:16px;margin:0}.sky-chart-dialog-head button{font:inherit;background:#edf2f7;border:1px solid #b3c0d0;border-radius:8px;padding:8px 14px;cursor:pointer}
 #sky-chart-dialog>p{font-size:12px;margin:10px 16px}#sky-chart-large{overflow:auto;max-height:calc(94dvh - 110px);direction:ltr}#sky-chart-large svg{display:block;width:1560px;min-width:1560px;height:auto}#sky-chart-large text{font-family:Tahoma,Arial,sans-serif}
+/* Sun and Moon preview: live astronomical progress, calm motion, compact summaries. */
+.sky-astro-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.sky-orbit-card{padding:18px 18px 16px;background:radial-gradient(ellipse at 50% 100%,#20324b55,transparent 75%),#111e30}
+.sky-orbit-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.69rem;color:#a9bdd4}
+.sky-orbit-heading .sky-orbit-title{font-size:.94rem;color:#e4d0a8;font-weight:700}
+.sky-orbit{display:block;width:100%;height:140px;overflow:visible;margin-top:10px;direction:ltr}
+.sky-orbit-guide{fill:none;stroke:#c6a56d;stroke-width:1.3;stroke-dasharray:3 5;opacity:.65}
+.sky-orbit-horizon{fill:none;stroke:#35475e;stroke-width:1}
+.sky-moon-guide{stroke:#9fbadd}.sky-orbit-marker{transition:transform 30s linear,opacity .4s ease;transform:translate(22px,108px)}
+.sky-orbit-times{display:flex;align-items:center;justify-content:space-between;gap:12px;direction:ltr}
+.sky-orbit-times>div{display:flex;flex-direction:column;gap:3px;direction:rtl;text-align:left}.sky-orbit-times>div:last-child{text-align:right}
+.sky-orbit-times span{color:#8fa6bf;font-size:.68rem}.sky-orbit-times strong{color:#d7e3f3;font-size:.83rem;font-weight:500;font-variant-numeric:tabular-nums}
+.sky-astro-live{font-size:.65rem;white-space:nowrap;padding:4px 10px;border:1px solid #38495f;border-radius:24px;color:#c6d5e8;background:#16263a}
+.sky-moon-details{display:flex;align-items:center;gap:10px;margin-top:13px;height:35px}.sky-moon-details>span{font-size:32px;line-height:1}.sky-moon-details>div{display:flex;flex-direction:column;gap:2px}.sky-moon-details strong{font-size:.75rem;font-weight:500;color:#dae5f4}.sky-moon-details small{font-size:.65rem;color:#a5bdd8}
+.sky-moon-orbit{height:105px;margin-top:-6px}
+.sky-astro-note{font-size:.64rem;color:#8fa5be;line-height:1.9;margin-top:8px!important}
+.sky-days-summary{border:1px solid #293a50;border-radius:16px;background:#111e30;overflow:hidden}
+.sky-days-summary>summary{position:relative;padding:16px 18px;cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;font-size:.83rem;color:#d9e6f6}
+.sky-days-summary>summary::-webkit-details-marker{display:none}.sky-days-summary summary small{font-size:.67rem;color:#9cb0c8}.sky-summary-chevron{margin-inline-start:auto;color:#a8bdd6;transition:transform .2s}.sky-days-summary[open] .sky-summary-chevron{transform:rotate(180deg)}
+.sky-days-summary .sky-days{border:0;border-top:1px solid #293a50;border-radius:0}
+.sky-data-credit h3{font-size:.85rem;margin:0 0 7px;color:#c5d6eb}.sky-data-credit p{font-size:.72rem;line-height:2;color:#aabdd5}.sky-data-credit a{color:#b4d4ef;text-underline-offset:3px}
+@media(min-width:560px){.sky-astro-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.sky-orbit-marker,.sky-summary-chevron{transition:none!important}}

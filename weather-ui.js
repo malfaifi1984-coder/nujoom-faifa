@@ -4,7 +4,6 @@
   const CACHE_KEY = 'faifaWeatherCalmV3';
   const CACHE_TTL = 30 * 60 * 1000;
   const MAX_CACHE_AGE = 24 * 60 * 60 * 1000;
-  const LOCATION = { latitude: 17.2478, longitude: 43.1035, elevation: 1200 };
   const TIME_ZONE = 'Asia/Riyadh';
   const $ = (id) => document.getElementById(id);
   const number = (value) => typeof value === 'number' && Number.isFinite(value) ? value : null;
@@ -22,12 +21,7 @@
   let currentIndex = -1;
   let hourIndexes = [];
   let cacheStale = false;
-  let rainMap = null;
-  let rainLayer = null;
-  let mapForecasts = [];
-  let mapSavedAt = null;
-  let mapLoading = false;
-  let mapHour = 0;
+
 
   const iconPaths = {
     sun: '<circle cx="24" cy="24" r="8"/><path d="M24 3v6m0 30v6M3 24h6m30 0h6M9 9l4 4m22 22 4 4M9 39l4-4M35 13l4-4"/>',
@@ -222,7 +216,7 @@
       $('sky-days').innerHTML = '<p class="sky-chart-empty">التوقعات اليومية غير متاحة.</p>';
       return;
     }
-    const days = daily.time.map((time, i) => ({ time, i })).filter(({ time }) => time >= dateKey()).slice(0, 7);
+    const days = daily.time.map((time, i) => ({ time, i })).filter(({ time }) => time >= dateKey()).slice(0, 5);
     $('sky-days').innerHTML = days.length ? days.map(({ time, i }) => {
       const date = new Date(epoch(time + 'T12:00'));
       const rain = number(daily.precipitation_sum?.[i]);
@@ -297,93 +291,6 @@
     $('sky-chart').innerHTML = '<p class="sky-chart-empty">لا توجد بيانات لرسم التوقعات.</p>';
     $('sky-table-body').replaceChildren();
   }
-  function mapNotice(message) {
-    $('sky-map-notice').hidden = false;
-    set('sky-map-notice', message);
-  }
-  function rainColor(rain) {
-    if (rain === null) return '#a9b0ba';
-    if (rain === 0) return '#607388';
-    if (rain < 1) return '#85c9ed';
-    if (rain < 5) return '#458ee0';
-    if (rain < 10) return '#b3a0eb';
-    return '#e3ab6d';
-  }
-  function renderRainMap() {
-    if (!rainLayer || !mapForecasts.length) return;
-    const base = Math.floor(Date.now() / 3600000) * 3600000;
-    const selectedTime = base + (mapHour + 1) * 3600000;
-    rainLayer.clearLayers();
-    mapForecasts.forEach((point) => {
-      const index = point.hourly.time.findIndex((time) => epoch(time) === selectedTime);
-      const rain = number(point.hourly.precipitation[index]);
-      const label = `خلية النموذج ${point.latitude.toFixed(2)}° N، ${point.longitude.toFixed(2)}° E: ${rain === null ? 'بيانات غير متاحة' : format(rain, 1) + ' ملم خلال الساعة'}`;
-      const marker = L.circleMarker([point.latitude, point.longitude], { radius: 14, color: rainColor(rain), fillColor: rainColor(rain), fillOpacity: rain === null || rain === 0 ? .18 : .65, weight: 2, dashArray: rain === null ? '3 3' : null });
-      marker.bindTooltip(label, { direction: 'top' }).bindPopup(label).addTo(rainLayer);
-    });
-    set('sky-map-time', stampFormat.format(new Date(selectedTime)) + ' · نهاية ساعة التوقع');
-    set('sky-map-data-note', `جُلبت ${stampFormat.format(new Date(mapSavedAt))} · ${format(mapForecasts.length)} نقاط نموذج · توقيت السعودية`);
-    // The equivalent table is usable without tiles, hover or map interaction.
-    $('sky-map-table-body').innerHTML = mapForecasts.map((point) => {
-      const index = point.hourly.time.findIndex((time) => epoch(time) === selectedTime);
-      return `<tr><td dir="ltr">${point.latitude.toFixed(2)}° N, ${point.longitude.toFixed(2)}° E</td><td>${format(number(point.hourly.precipitation[index]), 1)}</td></tr>`;
-    }).join('');
-  }
-  async function loadMap() {
-    if (mapLoading) return;
-    if (!window.L) {
-      mapNotice('تعذر تحميل مكوّن الخريطة المحلي. أعد تحميل الصفحة.');
-      return;
-    }
-    if (!rainMap) {
-      $('sky-map-placeholder').hidden = true;
-      $('sky-rain-map').hidden = false;
-      rainMap = L.map('sky-rain-map', { scrollWheelZoom: false, attributionControl: true }).setView([LOCATION.latitude, LOCATION.longitude], 9);
-      const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 13,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
-      }).addTo(rainMap);
-      let tileWarning = false;
-      tiles.on('tileerror', () => { tileWarning = true; mapNotice('تعذر تحميل بعض صور الخريطة الأساسية. نقاط التوقعات والجدول قد يظلان متاحين؛ لا تعتبر الخلفية الفارغة خريطة مكتملة.'); });
-      tiles.on('load', () => { if (!tileWarning && mapForecasts.length) mapNotice('النقاط تمثل مواقع خلايا النموذج، وليست رادارًا أو قياسات مطر فعلية. قرّب الخريطة واختر نقطة لعرض الكمية.'); });
-      L.circleMarker([LOCATION.latitude, LOCATION.longitude], { radius: 5, color: '#111e30', weight: 2, fillColor: '#e2bc73', fillOpacity: 1 }).bindTooltip('فيفاء · موقع الطلب', { permanent: true, direction: 'bottom' }).addTo(rainMap);
-      rainLayer = L.layerGroup().addTo(rainMap);
-      setTimeout(() => rainMap.invalidateSize(), 0);
-    }
-    mapLoading = true;
-    $('sky-map-refresh').disabled = true;
-    mapNotice('جارٍ جلب كميات المطر المتوقعة حول فيفاء…');
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-    try {
-      // Nine point forecasts, fetched only on request. No spatial interpolation or simulated radar.
-      const points = [-.3, 0, .3].flatMap((lat) => [-.3, 0, .3].map((lon) => [LOCATION.latitude + lat, LOCATION.longitude + lon]));
-      const url = new URL('https://api.open-meteo.com/v1/ecmwf');
-      url.search = new URLSearchParams({ latitude: points.map((p) => p[0].toFixed(4)).join(','), longitude: points.map((p) => p[1].toFixed(4)).join(','), hourly: 'precipitation', forecast_days: '2', timezone: TIME_ZONE });
-      const response = await fetch(url, { signal: controller.signal });
-      if (!response.ok) throw new Error(`Rain map HTTP ${response.status}`);
-      const data = await response.json();
-      const base = (Math.floor(Date.now() / 3600000) + 1) * 3600000;
-      const valid = Array.isArray(data) ? data.filter((point) => number(point.latitude) !== null && number(point.longitude) !== null && Array.isArray(point.hourly?.time) && Array.isArray(point.hourly?.precipitation) && point.hourly.time.length === point.hourly.precipitation.length && point.hourly.time.some((time, i) => epoch(time) === base && number(point.hourly.precipitation[i]) !== null)) : [];
-      if (!valid.length) throw new Error('Rain map has no usable current forecast');
-      // The provider can return the same grid cell for two requested points.
-      const unique = new Map(valid.map((point) => [`${point.latitude},${point.longitude}`, point]));
-      mapForecasts = [...unique.values()];
-      mapSavedAt = Date.now();
-      $('sky-map-controls').hidden = false;
-      $('sky-map-table').hidden = false;
-      mapNotice('النقاط تمثل مواقع خلايا النموذج، وليست رادارًا أو قياسات مطر فعلية. إذا لم تظهر الخلفية الجغرافية فراجع جدول النقاط أدناه.');
-      renderRainMap();
-    } catch (_) {
-      mapNotice(mapForecasts.length ? 'تعذر تحديث نقاط المطر. المعروض من الجلب السابق؛ راجع وقته أسفل الخريطة.' : 'تعذر جلب نقاط توقع المطر. ظهور الخريطة الأساسية وحدها لا يعني توفر بيانات المطر. أعد المحاولة.');
-    } finally {
-      clearTimeout(timeout);
-      mapLoading = false;
-      $('sky-map-refresh').disabled = false;
-      $('sky-map-refresh').hidden = false;
-    }
-  }
-
   // Replace the old loader before its DOMContentLoaded handler runs. All callers share one request.
   window.loadWeather = load;
   document.addEventListener('DOMContentLoaded', () => {
@@ -405,10 +312,6 @@
       $('sky-chart-dialog').showModal();
     });
     $('sky-chart-close').addEventListener('click', () => $('sky-chart-dialog').close());
-    $('sky-load-map').addEventListener('click', loadMap);
-    $('sky-map-refresh').addEventListener('click', loadMap);
-    $('sky-map-hour').addEventListener('input', (event) => { mapHour = Number(event.target.value); renderRainMap(); });
-    $('sky-map-now').addEventListener('click', () => { mapHour = 0; $('sky-map-hour').value = '0'; renderRainMap(); });
     window.addEventListener('online', () => load(true));
     // Freshen both the chosen hour and the forecast after the tab returns from sleep.
     document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
