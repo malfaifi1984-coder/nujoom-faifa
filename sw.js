@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-sky-preview';
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-sky-cycle';
 const APP_SHELL = ['/', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js', '/prayer-shared.mjs', '/weather-ui.css', '/weather-ui.js', '/sky-astronomy.js', '/assets/vendor/suncalc/suncalc.js'];
 
 self.addEventListener('install', event => {

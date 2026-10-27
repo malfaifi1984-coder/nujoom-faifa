@@ -35,7 +35,7 @@
   }
   function update(now = new Date()) {
     if (!$('sky-sun-marker') || !window.SunCalc) return;
-    const key = dayKey.format(now), start = new Date(`${key}T00:00:00+03:00`), end = start.getTime() + 86400000;
+    const key = dayKey.format(now), start = new Date(`${key}T00:00:00+03:00`);
     const solar = SunCalc.getTimes(new Date(`${key}T12:00:00+03:00`), lat, lon);
     const duration = solar.sunset - solar.sunrise;
     const sunlight = valid(solar.sunrise) && valid(solar.sunset) && now >= solar.sunrise && now <= solar.sunset;
@@ -50,12 +50,19 @@
     $('sky-moon-illumination').textContent = `${Math.round(light.fraction * 100).toLocaleString('ar-SA')}٪ إضاءة`;
     $('sky-moon-face').textContent = faces[phase];
     $('sky-moon-moving-face').textContent = faces[phase];
-    const events = moonEvents(start), today = events.filter((e) => e.at >= start && e.at < end);
-    $('sky-moon-rise').textContent = time(today.find((e) => e.kind === 'rise')?.at);
-    $('sky-moon-set').textContent = time(today.find((e) => e.kind === 'set')?.at);
+    const events = moonEvents(start);
     const above = SunCalc.getMoonPosition(now, lat, lon).altitude > .133 * Math.PI / 180;
     const previousRise = events.filter((e) => e.kind === 'rise' && e.at <= now).at(-1);
     const nextSet = events.find((e) => e.kind === 'set' && e.at > now);
+    const cycleRise = above ? previousRise : events.find((e) => e.kind === 'rise' && e.at > now);
+    const cycleSet = above ? nextSet : events.find((e) => e.kind === 'set' && cycleRise && e.at > cycleRise.at);
+    const cycleTime = (event) => {
+      if (!event) return 'غير متاح';
+      const date = dayKey.format(event.at);
+      return `${time(event.at)}${date > key ? ' غدًا' : date < key ? ' أمس' : ''}`;
+    };
+    $('sky-moon-rise').textContent = cycleTime(cycleRise);
+    $('sky-moon-set').textContent = cycleTime(cycleSet);
     const progress = above && previousRise && nextSet ? (now - previousRise.at) / (nextSet.at - previousRise.at) : 0;
     marker('sky-moon-marker', progress, above);
     $('sky-moon-status').textContent = above ? 'القمر فوق الأفق' : 'القمر تحت الأفق';
