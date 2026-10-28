@@ -8,7 +8,21 @@
   const valid = (date) => date instanceof Date && Number.isFinite(date.getTime());
   const time = (date) => valid(date) ? clock.formatToParts(date).map((part) => part.type === 'dayPeriod' ? (part.value.startsWith('ص') ? 'صباحًا' : 'مساءً') : part.value).join('') : 'لا يحدث اليوم';
   const phases = ['محاق', 'هلال متزايد', 'تربيع أول', 'أحدب متزايد', 'بدر', 'أحدب متناقص', 'تربيع أخير', 'هلال متناقص'];
-  const faces = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+  function moonShape(phase) {
+    const radius = 10, waxing = phase < .5, edge = waxing ? 1 : -1;
+    const terminator = Math.cos(phase * 2 * Math.PI);
+    const points = [];
+    for (let i = 0; i <= 32; i++) {
+      const y = -radius + 2 * radius * i / 32;
+      points.push([edge * Math.sqrt(Math.max(0, radius * radius - y * y)), y]);
+    }
+    for (let i = 32; i >= 0; i--) {
+      const y = -radius + 2 * radius * i / 32;
+      points.push([edge * terminator * Math.sqrt(Math.max(0, radius * radius - y * y)), y]);
+    }
+    const path = points.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(3)},${y.toFixed(3)}`).join('') + 'Z';
+    return `<circle r="10" fill="#26374e"/><path d="${path}" fill="#e5d5b4"/><circle r="10" fill="none" stroke="#aebdd0" stroke-width=".5"/>`;
+  }
   let boundaryTimer;
   function marker(id, progress, visible) {
     const p = Math.max(0, Math.min(1, progress));
@@ -65,8 +79,9 @@
     const phase = Math.round(light.phase * 8) % 8;
     $('sky-moon-phase').textContent = phases[phase];
     $('sky-moon-illumination').textContent = `${Math.round(light.fraction * 100).toLocaleString('ar-SA')}٪ إضاءة`;
-    $('sky-moon-face').textContent = faces[phase];
-    $('sky-moon-moving-face').textContent = faces[phase];
+    const shape = moonShape(light.phase);
+    $('sky-moon-face').innerHTML = `<svg viewBox="-12 -12 24 24" aria-hidden="true">${shape}</svg>`;
+    $('sky-moon-moving-face').innerHTML = shape;
     // This is a night-progress indicator. Its endpoints are Maghrib and sunrise,
     // not the physical Moon's rise/set times (which can occur during daylight).
     const beforeSunrise = now < solar.sunrise;

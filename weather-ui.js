@@ -9,6 +9,28 @@
   const source = frame.dataset.src;
   const MAX_AGE = 30 * 60 * 1000;
   let loadedAt = 0;
+  const zone = 'Asia/Riyadh';
+  const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: zone, year: 'numeric', month: '2-digit', day: '2-digit' });
+  const weekday = new Intl.DateTimeFormat('ar-SA', { timeZone: zone, weekday: 'long' });
+  const dateLabel = new Intl.DateTimeFormat('ar-SA-u-ca-gregory', { timeZone: zone, day: 'numeric', month: 'short' });
+  let dayTimer;
+  function renderDayGuide() {
+    const key = dayKey.format(new Date()), guide = $('meteogram-days');
+    if (guide.dataset.day === key) return;
+    const noon = new Date(`${key}T12:00:00+03:00`).getTime();
+    guide.replaceChildren(...Array.from({ length: 5 }, (_, index) => {
+      const date = new Date(noon + index * 86400000);
+      const item = document.createElement('div'); item.setAttribute('role', 'listitem');
+      const title = document.createElement('strong'); title.textContent = weekday.format(date);
+      const stamp = document.createElement('time'); stamp.dateTime = dayKey.format(date); stamp.textContent = dateLabel.format(date);
+      if (index === 0) item.setAttribute('aria-current', 'date');
+      item.append(title, stamp); return item;
+    }));
+    guide.dataset.day = key;
+    clearTimeout(dayTimer);
+    dayTimer = setTimeout(renderDayGuide, new Date(`${key}T00:00:00+03:00`).getTime() + 86400000 - Date.now() + 20);
+  }
+
   function offlineStatus() {
     const offline = navigator.onLine === false;
     $('meteogram-status').hidden = !offline;
@@ -23,6 +45,7 @@
     loadedAt = 0;
   }
   function load(force = false) {
+    renderDayGuide();
     offlineStatus();
     if (active()) void window.ensureAstronomy?.();
     if (!active() || navigator.onLine === false) return;
