@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-fast2-height500';
-const APP_SHELL = ['/', '/start.html', '/assets/fonts/cairo-arabic.woff2', '/app-base.css?v=6.00-fast2', '/app-runtime.js?v=6.00-fast2', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-fast2', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-height500', '/weather-ui.js?v=6.00-fast2', '/sky-astronomy.js?v=6.00-fast2', '/app-refinements.js?v=6.00-fast2', '/qibla-ui.js?v=6.00-fast2', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-fast2-height600';
+const APP_SHELL = ['/', '/start.html', '/assets/fonts/cairo-arabic.woff2', '/app-base.css?v=6.00-fast2', '/app-runtime.js?v=6.00-fast2', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-fast2', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-height600', '/weather-ui.js?v=6.00-fast2', '/sky-astronomy.js?v=6.00-fast2', '/app-refinements.js?v=6.00-fast2', '/qibla-ui.js?v=6.00-fast2', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
