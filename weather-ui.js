@@ -16,6 +16,12 @@
     $('sky-refresh').disabled = offline;
   }
   function active() { return $('page-weather').classList.contains('active'); }
+  function release() {
+    if (active()) return;
+    if (dialog.open) dialog.close();
+    frame.removeAttribute('src');
+    loadedAt = 0;
+  }
   function load(force = false) {
     offlineStatus();
     if (!active() || navigator.onLine === false) return;
@@ -32,6 +38,7 @@
     else target.append(stage);
   }
   window.loadWeather = load;
+  new MutationObserver(release).observe($('page-weather'), { attributes: true, attributeFilter: ['class'] });
   // Remove cached data from the retired provider, without touching app preferences.
   try {
     for (const key of ['faifaWeatherECMWF1', 'faifaWeatherCalmV3']) localStorage.removeItem(key);

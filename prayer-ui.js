@@ -164,7 +164,7 @@ window.openNotificationCenter = () => {
   setTimeout(() => center.scrollIntoView({ block: 'start', behavior: 'smooth' }), 350);
 };
 window.addEventListener('hashchange', () => { if (location.hash === '#notifications') window.openNotificationCenter(); });
-if (location.hash === '#notifications') setTimeout(window.openNotificationCenter, 2800);
+if (location.hash === '#notifications') setTimeout(window.openNotificationCenter, 350);
 const oldStatus = window.updateNotifBtn;
 window.updateNotifBtn = () => { oldStatus?.(); refreshStatus(); };
 paintSettings();
