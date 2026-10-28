@@ -24,6 +24,7 @@
   }
   function load(force = false) {
     offlineStatus();
+    if (active()) void window.ensureAstronomy?.();
     if (!active() || navigator.onLine === false) return;
     if (!frame.hasAttribute('src') || force || Date.now() - loadedAt > MAX_AGE) {
       frame.loading = 'eager';

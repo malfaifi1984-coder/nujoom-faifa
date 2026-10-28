@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
-function worker(fetcher, cached) {
+function worker(fetcher, cached, options = {}) {
   const listeners = {}, timers = [];
   const cache = { match: async () => cached, put: async () => {} };
   runInNewContext(readFileSync(new URL('../sw.js', import.meta.url), 'utf8'), {
-    self: { location: { origin: 'https://example.test' }, addEventListener: (name, fn) => { listeners[name] = fn; } },
-    caches: { open: async () => cache }, fetch: fetcher, URL, Response, AbortController,
+    self: { location: { origin: 'https://example.test' }, addEventListener: (name, fn) => { listeners[name] = fn; },
+      clients: { claim: async () => {}, matchAll: async () => options.clients || [] } },
+    caches: { open: async () => cache, keys: async () => options.keys || [], delete: async () => true }, fetch: fetcher, URL, Response, AbortController,
     setTimeout: (fn) => { timers.push(fn); return timers.length; }, clearTimeout() {}
   });
   function request(path, mode = 'navigate') {
@@ -16,7 +17,11 @@ function worker(fetcher, cached) {
     listeners.fetch(event);
     return event;
   }
-  return { request, timers };
+  return { request, timers, activate: () => {
+    let result;
+    listeners.activate({ waitUntil: (promise) => { result = promise; } });
+    return result;
+  } };
 }
 test('cached app opens while the navigation network request is still stalled', async () => {
   const { request } = worker(() => new Promise(() => {}), new Response('cached application'));
@@ -39,4 +44,17 @@ test('prayer API responses bypass the static asset cache', () => {
   const event = request('/.netlify/functions/prayer-times?date=2026-10-28', 'cors');
   assert.equal(event.result, undefined);
   assert.equal(called, false);
+});
+test('updating an old installed app refreshes its document without waiting on its own navigation', async () => {
+  let destination;
+  const { activate } = worker(() => {}, undefined, {
+    keys: ['nujoom-faifa-pwa-old'],
+    clients: [{ url: 'https://example.test/?page=prayer', navigate: (url) => {
+      destination = new URL(url);
+      return new Promise(() => {});
+    } }]
+  });
+  await Promise.race([activate(), new Promise((_, reject) => setTimeout(() => reject(new Error('Activation waited for navigation')), 200))]);
+  assert.equal(destination.searchParams.get('page'), 'prayer');
+  assert.match(destination.searchParams.get('updated'), /^nujoom-faifa-pwa-/);
 });

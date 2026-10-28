@@ -1,5 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-fast1';
-const APP_SHELL = ['/', '/app-base.css?v=6.00-fast1', '/app-runtime.js?v=6.00-fast1', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-fast1', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-fast1', '/weather-ui.js?v=6.00-fast1', '/sky-astronomy.js?v=6.00-fast1', '/app-refinements.js?v=6.00-fast1', '/qibla-ui.js?v=6.00-fast1', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-fast2';
+const APP_SHELL = ['/', '/start.html', '/assets/fonts/cairo-arabic.woff2', '/app-base.css?v=6.00-fast2', '/app-runtime.js?v=6.00-fast2', '/data-credits.html', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png', '/assets/brand-mark.svg', '/prayer-ui.js?v=6.00-fast2', '/prayer-shared.mjs', '/weather-ui.css?v=6.00-fast2', '/weather-ui.js?v=6.00-fast2', '/sky-astronomy.js?v=6.00-fast2', '/app-refinements.js?v=6.00-fast2', '/qibla-ui.js?v=6.00-fast2', '/qibla-math.mjs', '/assets/vendor/suncalc/suncalc.js', '/assets/vendor/astronomy-engine/astronomy.browser.min.js'];
 
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
@@ -7,13 +7,22 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.filter(key => key.startsWith('nujoom-faifa-pwa-') && key !== CACHE_NAME)
-          .map(key => caches.delete(key))
-    ))
-  );
-  self.clients.claim();
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    const previous = keys.filter(key => key.startsWith('nujoom-faifa-pwa-') && key !== CACHE_NAME);
+    await Promise.all(previous.map(key => caches.delete(key)));
+    await self.clients.claim();
+    if (previous.length) {
+      const clients = await self.clients.matchAll({ type: 'window' });
+      for (const client of clients) {
+        const target = new URL(client.url);
+        if (!['/', '/index.html'].includes(target.pathname) || target.searchParams.get('updated') === CACHE_NAME) continue;
+        target.searchParams.set('updated', CACHE_NAME);
+        // Do not await a navigation that may itself need this activation to finish.
+        void client.navigate(target.href).catch(() => {});
+      }
+    }
+  })());
 });
 
 self.addEventListener('fetch', event => {

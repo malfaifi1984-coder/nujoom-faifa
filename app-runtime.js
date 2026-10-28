@@ -25,6 +25,21 @@
     if (window.__oneSignalInstance || !window.isMobilePushDevice()) return Promise.resolve();
     return script('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js').catch(() => null);
   };
+  window.ensureAstronomy = () => {
+    const update = () => window.FaifaAstronomy?.update();
+    return Promise.allSettled([
+      window.SunCalc ? Promise.resolve() : script('/assets/vendor/suncalc/suncalc.js').then(update),
+      window.Astronomy ? Promise.resolve() : script('/assets/vendor/astronomy-engine/astronomy.browser.min.js').then(update)
+    ]).then(update);
+  };
+  if ('serviceWorker' in navigator) {
+    let lastUpdate = 0;
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden || Date.now() - lastUpdate < 5 * 60 * 1000) return;
+      lastUpdate = Date.now();
+      void navigator.serviceWorker.getRegistration('/').then(registration => registration?.update()).catch(() => {});
+    });
+  }
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       if ('Notification' in window && Notification.permission === 'granted') {
