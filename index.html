@@ -2960,7 +2960,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   });
 </script>
 
-<link rel="stylesheet" href="/weather-ui.css?v=6.00-meteoblue1">
+<link rel="stylesheet" href="/weather-ui.css?v=6.00-meteoblue2">
 </head>
 <body class="dark-mode calm-sky">
 
@@ -3022,7 +3022,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
         </div>
       </div>
 
-      <button type="button" class="home-forecast-link" onclick="showPage('weather')"><span><strong>توقعات فيفاء</strong><small>مخطط meteoblue · خمسة أيام</small></span><span aria-hidden="true">‹</span></button>
+      <button type="button" class="home-forecast-link" onclick="showPage('weather')"><span><strong>توقعات فيفاء</strong><small>مخطط الأيام الخمسة</small></span><span aria-hidden="true">‹</span></button>
       <!-- زر تثبيت التطبيق -->
       <button class="home-install" id="home-install" onclick="homeInstall()">
         <span style="font-size:1.2rem;">📲</span> ثبّت التطبيق على جوالك
@@ -3060,10 +3060,10 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
         <div class="sky-section-head"><h2 id="meteogram-title">توقعات فيفاء</h2><button type="button" class="meteogram-expand" id="meteogram-expand">تكبير المخطط ⤢</button></div>
         <p class="meteogram-status" id="meteogram-status" role="status" aria-live="polite" hidden></p>
         <div id="meteogram-slot"><div class="meteogram-stage" id="meteogram-stage"><div class="meteogram-scroll">
-          <iframe id="meteoblue-frame" title="مخطط meteoblue لتوقعات فيفاء لخمسة أيام" data-src="https://www.meteoblue.com/en/weather/widget/meteogram/17.248N43.104E1186_Asia%2FRiyadh?geoloc=fixed&amp;temperature_units=CELSIUS&amp;windspeed_units=KILOMETER_PER_HOUR&amp;precipitation_units=MILLIMETER&amp;forecast_days=5&amp;layout=dark&amp;autowidth=auto&amp;user_key=02e7ac3d3f7029cf&amp;embed_key=c2b7688920e2fc5a&amp;sig=c93032c6f3610cfaabc082bbf281c43f70ae085fcb7134e7a3980e529e7eb1e1" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" loading="lazy" style="width:100%;height:700px;border:0;overflow:hidden;"></iframe>
+          <iframe id="meteoblue-frame" title="مخطط توقعات فيفاء لخمسة أيام" data-src="https://www.meteoblue.com/en/weather/widget/meteogram/17.248N43.104E1186_Asia%2FRiyadh?geoloc=fixed&amp;temperature_units=CELSIUS&amp;windspeed_units=KILOMETER_PER_HOUR&amp;precipitation_units=MILLIMETER&amp;forecast_days=5&amp;layout=bright&amp;autowidth=auto&amp;user_key=02e7ac3d3f7029cf&amp;embed_key=744b8d02d4983bb3&amp;sig=dcc50200698062be1451e166d7c03f58336bb2e05a0ae0af32a9473f76db43f9" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" loading="lazy" style="width:100%;height:450px;border:0;overflow:hidden;"></iframe>
         </div>
-        <div class="meteogram-attribution"><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/week/index" target="_blank" rel="noopener">meteoblue</a><a id="meteogram-direct" href="https://www.meteoblue.com/en/weather/widget/meteogram/17.248N43.104E1186_Asia%2FRiyadh?geoloc=fixed&amp;temperature_units=CELSIUS&amp;windspeed_units=KILOMETER_PER_HOUR&amp;precipitation_units=MILLIMETER&amp;forecast_days=5&amp;layout=dark&amp;autowidth=auto&amp;user_key=02e7ac3d3f7029cf&amp;embed_key=c2b7688920e2fc5a&amp;sig=c93032c6f3610cfaabc082bbf281c43f70ae085fcb7134e7a3980e529e7eb1e1" target="_blank" rel="noopener">فتح المخطط في نافذة مستقلة ↗</a></div></div></div>
-        <p class="meteogram-hint">اسحب المخطط أفقيًا لقراءة التفاصيل، أو اضغط «تكبير المخطط».</p>
+        <div class="meteogram-attribution"><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/week/index" target="_blank" rel="noopener">meteoblue</a></div></div></div>
+        <p class="meteogram-hint">اضغط «تكبير المخطط» لقراءة التفاصيل بوضوح.</p>
       </section>
       <section class="sky-section sky-astronomy" aria-labelledby="sky-astro-title">
         <div class="sky-section-head"><div><h2 id="sky-astro-title">الشمس والقمر</h2><p class="sky-section-sub">الشروق والغروب وطور القمر في فيفاء</p></div><span class="sky-astro-live" id="sky-sun-state">سماء فيفاء</span></div>
@@ -3385,14 +3385,14 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<dialog id="meteogram-dialog" aria-labelledby="meteogram-dialog-title"><div class="meteogram-dialog-head"><h2 id="meteogram-dialog-title">توقعات فيفاء · خمسة أيام</h2><button type="button" id="meteogram-close" aria-label="إغلاق المخطط المكبر">إغلاق ×</button></div><div id="meteogram-large"></div><p>اسحب أفقيًا لقراءة التفاصيل · توقيت السعودية</p></dialog>
+<dialog id="meteogram-dialog" aria-labelledby="meteogram-dialog-title"><div class="meteogram-dialog-head"><h2 id="meteogram-dialog-title">توقعات فيفاء · خمسة أيام</h2><button type="button" id="meteogram-close" aria-label="إغلاق المخطط المكبر">إغلاق ×</button></div><div id="meteogram-large"></div><p>توقيت السعودية · إغلاق النافذة يعيدك إلى المخطط</p></dialog>
 <script src="/assets/vendor/suncalc/suncalc.js"></script>
 <script src="/assets/vendor/astronomy-engine/astronomy.browser.min.js"></script>
-<script src="/sky-astronomy.js?v=6.00-meteoblue1"></script>
-<script src="/weather-ui.js?v=6.00-meteoblue1"></script>
-<script type="module" src="/prayer-ui.js?v=6.00-meteoblue1"></script>
-<script src="/app-refinements.js?v=6.00-meteoblue1"></script>
-<script type="module" src="/qibla-ui.js?v=6.00-meteoblue1"></script>
+<script src="/sky-astronomy.js?v=6.00-meteoblue2"></script>
+<script src="/weather-ui.js?v=6.00-meteoblue2"></script>
+<script type="module" src="/prayer-ui.js?v=6.00-meteoblue2"></script>
+<script src="/app-refinements.js?v=6.00-meteoblue2"></script>
+<script type="module" src="/qibla-ui.js?v=6.00-meteoblue2"></script>
 <script>window.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search).get('page');if(['home','weather','calendar','prayer','info'].includes(p))setTimeout(()=>showPage(p),2800)});</script>
 </body>
 </html>
