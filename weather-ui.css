@@ -262,3 +262,5 @@ body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 .meteogram-pan-controls button{min-width:44px;min-height:40px;padding:8px 12px;border:1px solid #435a77;border-radius:10px;background:#21334b;color:#e6d4b0;cursor:pointer;font:700 19px/1 system-ui}
 .meteogram-pan-controls button:disabled{opacity:.35;cursor:default}.meteogram-pan-controls span{direction:rtl;text-align:center;font:500 .7rem/1.7 Cairo,Tahoma,sans-serif}
 .meteogram-pan-controls[hidden]{display:none!important}.meteogram-pan-controls button:focus-visible,.meteogram-scroll:focus-visible{outline:2px solid #dfc593;outline-offset:-3px}
+
+.app-toolbar-brand{font-family:'Noto Kufi Arabic',Cairo,sans-serif}
