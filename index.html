@@ -1297,7 +1297,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   });
 </script>
 
-<link rel="stylesheet" href="/weather-ui.css?v=6.00-type1">
+<link rel="stylesheet" href="/weather-ui.css?v=6.00-readable1">
 </head>
 <body class="dark-mode calm-sky">
 
@@ -1396,11 +1396,11 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
       <section class="sky-section meteogram-section" aria-labelledby="meteogram-title">
         <div class="sky-section-head"><h2 id="meteogram-title">توقعات فيفاء</h2><button type="button" class="meteogram-expand" id="meteogram-expand">تكبير المخطط ⤢</button></div>
         <p class="meteogram-status" id="meteogram-status" role="status" aria-live="polite" hidden></p>
-        <div id="meteogram-slot"><div class="meteogram-stage" id="meteogram-stage"><div class="meteogram-day-guide"><p>دليل الأيام · توقيت السعودية</p><div id="meteogram-days" role="list" aria-label="الأيام الخمسة بتوقيت السعودية"></div></div><div class="meteogram-scroll">
+        <div id="meteogram-slot"><div class="meteogram-stage" id="meteogram-stage"><div class="meteogram-day-guide"><p>دليل الأيام · توقيت السعودية</p><div id="meteogram-days" role="list" aria-label="الأيام الخمسة بتوقيت السعودية"></div></div><div class="meteogram-pan-controls" id="meteogram-pan" hidden><button type="button" id="meteogram-earlier" aria-label="عرض أوقات أسبق">←</button><span>اسحب أفقيًا أو استخدم السهمين لعرض الأيام</span><button type="button" id="meteogram-later" aria-label="عرض أوقات لاحقة">→</button></div><div class="meteogram-scroll" tabindex="0" role="region" aria-label="مخطط توقعات قابل للتمرير الأفقي">
           <iframe id="meteoblue-frame" title="مخطط توقعات فيفاء لخمسة أيام" data-src="https://www.meteoblue.com/en/weather/widget/meteogram/17.248N43.104E1186_Asia%2FRiyadh?geoloc=fixed&amp;temperature_units=CELSIUS&amp;windspeed_units=KILOMETER_PER_HOUR&amp;precipitation_units=MILLIMETER&amp;forecast_days=5&amp;layout=bright&amp;autowidth=auto&amp;user_key=02e7ac3d3f7029cf&amp;embed_key=4de6f165d4322c40&amp;sig=c3be5dc89abbe86aa0b729f66665c0e96a016a0f3040a6c9f288659557b9a693" frameborder="0" scrolling="NO" allowtransparency="true" sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox" loading="lazy" style="width:100%;height:600px;border:0;overflow:hidden;"></iframe>
         </div>
         <div class="meteogram-attribution"><!-- DO NOT REMOVE THIS LINK --><a href="https://www.meteoblue.com/en/weather/week/index" target="_blank" rel="noopener">meteoblue</a></div></div></div>
-        <p class="meteogram-hint">اضغط «تكبير المخطط» لقراءة التفاصيل بوضوح.</p>
+        <p class="meteogram-hint">المخطط بعرض مناسب للقراءة؛ اسحب أفقيًا لعرض بقية الأيام أو اضغط «تكبير المخطط».</p>
       </section>
       <section class="sky-section sky-astronomy" aria-labelledby="sky-astro-title">
         <div class="sky-section-head"><div><h2 id="sky-astro-title">الشمس والقمر</h2><p class="sky-section-sub">الشروق والغروب وطور القمر في فيفاء</p></div><span class="sky-astro-live" id="sky-sun-state">سماء فيفاء</span></div>
@@ -1722,12 +1722,12 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 
 
 
-<dialog id="meteogram-dialog" aria-labelledby="meteogram-dialog-title"><div class="meteogram-dialog-head"><h2 id="meteogram-dialog-title">توقعات فيفاء · خمسة أيام</h2><button type="button" id="meteogram-close" aria-label="إغلاق المخطط المكبر">إغلاق ×</button></div><div id="meteogram-large"></div><p>توقيت السعودية · إغلاق النافذة يعيدك إلى المخطط</p></dialog>
+<dialog id="meteogram-dialog" aria-labelledby="meteogram-dialog-title"><div class="meteogram-dialog-head"><h2 id="meteogram-dialog-title">توقعات فيفاء · خمسة أيام</h2><button type="button" id="meteogram-close" aria-label="إغلاق المخطط المكبر">إغلاق ×</button></div><div id="meteogram-large"></div><p>اسحب أفقيًا لعرض بقية الأيام · توقيت السعودية</p></dialog>
 <script src="/app-runtime.js?v=6.00-fast2"></script>
 
 
 <script src="/sky-astronomy.js?v=6.00-type1"></script>
-<script src="/weather-ui.js?v=6.00-type1"></script>
+<script src="/weather-ui.js?v=6.00-readable1"></script>
 <script type="module" src="/prayer-ui.js?v=6.00-fast2"></script>
 <script src="/app-refinements.js?v=6.00-fast2"></script>
 <script type="module" src="/qibla-ui.js?v=6.00-fast2"></script>

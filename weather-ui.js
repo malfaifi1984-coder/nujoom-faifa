@@ -7,6 +7,23 @@
   const slot = $('meteogram-slot');
   const dialog = $('meteogram-dialog');
   const source = frame.dataset.src;
+  const scroller = stage.querySelector('.meteogram-scroll');
+  const pan = $('meteogram-pan');
+  function updatePan() {
+    const limit = scroller.scrollWidth - scroller.clientWidth;
+    pan.hidden = limit < 2;
+    $('meteogram-earlier').disabled = scroller.scrollLeft < 2;
+    $('meteogram-later').disabled = scroller.scrollLeft >= limit - 2;
+  }
+  function panBy(direction) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    scroller.scrollBy({ left: direction * Math.max(180, scroller.clientWidth * .75), behavior: reduced ? 'auto' : 'smooth' });
+  }
+  $('meteogram-earlier').addEventListener('click', () => panBy(-1));
+  $('meteogram-later').addEventListener('click', () => panBy(1));
+  scroller.addEventListener('scroll', updatePan, { passive: true });
+  if ('ResizeObserver' in window) new ResizeObserver(updatePan).observe(scroller);
+  else window.addEventListener('resize', updatePan);
   const MAX_AGE = 30 * 60 * 1000;
   let loadedAt = 0;
   const zone = 'Asia/Riyadh';
@@ -47,6 +64,7 @@
   function load(force = false) {
     renderDayGuide();
     offlineStatus();
+    updatePan();
     if (active()) void window.ensureAstronomy?.();
     if (!active() || navigator.onLine === false) return;
     if (!frame.hasAttribute('src') || force || Date.now() - loadedAt > MAX_AGE) {
