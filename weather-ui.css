@@ -88,16 +88,6 @@ body.calm-sky.dark-mode #app .wx-legacy{display:none!important}
 .sky-hour svg{width:28px;height:28px;fill:none;stroke:#c8d9ec;stroke-width:1.5}
 .sky-hour-temp{font-size:1.05rem;color:#eef3f9;direction:ltr}
 .sky-hour-rain{font-size:.64rem;color:#9bc6ed;white-space:nowrap}
-.sky-chart-head{padding:17px 18px 0;display:flex;justify-content:space-between;gap:12px;align-items:center}
-.sky-chart-legend{display:flex;align-items:center;gap:14px;color:#c2cedf;font-size:.68rem}
-.sky-chart-legend span{display:flex;align-items:center;gap:6px}
-.sky-chart-legend i{display:inline-block;width:15px;height:3px;border-radius:3px;background:#d8bb84}
-.sky-chart-legend .rain-key{height:10px;width:8px;background:#72addb}
-.sky-chart-empty{padding:45px 20px;text-align:center;color:#aab9cc;font-size:.8rem}
-.sky-chart-scroll{overflow-x:auto;direction:ltr;padding:6px 10px 0;scrollbar-width:thin;scrollbar-color:#415773 transparent}
-.sky-chart-scroll svg{display:block;min-width:580px;width:100%;height:auto;overflow:visible}
-.sky-chart-scroll text{font-family:Tahoma,Arial,sans-serif}
-.sky-chart-caption{padding:0 18px 13px;font-size:.65rem;color:#aab9cc}
 .sky-data-table{border-top:1px solid #29374c;font-size:.73rem}
 .sky-data-table summary{padding:12px 18px;color:#bfd0e4;cursor:pointer}
 .sky-table-scroll{overflow:auto;max-height:320px}
@@ -149,16 +139,6 @@ body.calm-sky.dark-mode #app .chars-section::before,body.calm-sky.dark-mode #app
 
 #prayer-source-status{white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
 
-/* Light scientific meteogram within the calm dark application. */
-#sky-chart{padding:0;background:#fff;overflow:hidden}
-#sky-chart>svg{width:100%;min-width:0;max-width:100%;height:auto;overflow:hidden}
-#sky-chart .sky-chart-empty{color:#526073}
-.sky-chart-head{background:#fff;color:#26364b;padding:12px 14px;font-size:12px}
-.sky-chart-head button{font:inherit;color:#243d58;background:#edf2f7;border:1px solid #bccbd8;border-radius:8px;padding:7px 11px}
-.sky-chart-caption{background:#fff;color:#5a6574;padding:8px 14px 13px;font-size:11px;line-height:1.9}
-#sky-chart-dialog{width:min(1600px,98vw);max-width:98vw;height:min(1100px,94dvh);max-height:94dvh;padding:0;background:#fff;color:#253246;border:1px solid #91a0b3;border-radius:15px;font-family:var(--font-ar)}
-#sky-chart-dialog::backdrop{background:#000b} .sky-chart-dialog-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;z-index:2;border-bottom:1px solid #ddd}.sky-chart-dialog-head h2{font-size:16px;margin:0}.sky-chart-dialog-head button{font:inherit;background:#edf2f7;border:1px solid #b3c0d0;border-radius:8px;padding:8px 14px;cursor:pointer}
-#sky-chart-dialog>p{font-size:12px;margin:10px 16px}#sky-chart-large{overflow:auto;max-height:calc(94dvh - 110px);direction:ltr}#sky-chart-large svg{display:block;width:1560px;min-width:1560px;height:auto}#sky-chart-large text{font-family:Tahoma,Arial,sans-serif}
 /* Sun and Moon preview: live astronomical progress, calm motion, compact summaries. */
 .sky-astro-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
 .sky-orbit-card{padding:18px 18px 16px;background:radial-gradient(ellipse at 50% 100%,#20324b55,transparent 75%),#111e30}
@@ -193,7 +173,6 @@ body.calm-sky.dark-mode #app .share-preview-wrap{background:#0b1423!important;bo
 body.calm-sky.dark-mode #app .share-actions button{background:#1a2c44!important;color:#d9e5f5!important;border-color:#3b506d!important}
 body.calm-sky.dark-mode #app .share-actions .primary{background:#d6c29b!important;color:#15233a!important;border-color:#e0cfae!important}
 .weather-credit-line{font-size:.62rem;color:#839ab4}.weather-credit-line a{color:#95acc6;text-underline-offset:3px}
-.sky-sampling-note{padding:6px 12px;color:#526075;font-size:11px;text-align:center;background:#fff}
 
 /* Notification controls are shown directly in About. */
 body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
@@ -219,8 +198,6 @@ body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 .app-toolbar-brand:focus-visible,#notification-center :focus-visible{outline:2px solid #dfc593;outline-offset:3px}
 .sky-orbit-times{direction:rtl}.sky-orbit-times>div{text-align:right}.sky-orbit-times>div:last-child{text-align:left}
 .sky-orbit-times strong{font-size:.76rem;line-height:1.8}
-.meteoblue-link{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;padding:13px 16px;border:1px solid #344b67;border-radius:14px;background:#16253b;color:#d3e2f4;text-decoration:none}
-.meteoblue-link strong{font-size:.8rem;font-weight:500}.meteoblue-link small{display:block;font-size:.65rem;color:#a4b9d2;margin-top:4px}
 @media(max-width:360px){.app-toolbar{padding-inline:13px}.app-toolbar-brand{font-size:.9rem;gap:7px}.app-toolbar-brand img{width:30px;height:30px}#notification-center .prayer-settings{padding-inline:17px}.notification-center-head{padding-inline:17px}}
 
 .notification-state,.notification-choice-state{display:inline-block;color:#a7b4c7;background:#1b293d;border:1px solid #3d4a60;border-radius:20px;padding:3px 10px;font-size:.67rem;font-weight:500;white-space:nowrap}
@@ -234,34 +211,13 @@ body.calm-sky #app>.page{top:calc(64px + var(--safe-top))}
 .notification-test{margin-top:18px;min-height:44px;width:100%}
 .app-toolbar{justify-content:center}
 
-/* The provider's official responsive meteogram replaces all local forecast charts. */
 .home-forecast-link{display:flex;align-items:center;justify-content:space-between;gap:14px;width:calc(100% - 32px);margin:0 16px 18px;padding:17px 19px;text-align:right;background:#142238;color:#e6edf7;border:1px solid #34455d;border-radius:18px;font-family:var(--font-ar);cursor:pointer}
 .home-forecast-link strong{display:block;font-size:.9rem;font-weight:600;color:#dfc99f}.home-forecast-link small{display:block;margin-top:5px;font-size:.7rem;color:#a9bdd5}.home-forecast-link>span:last-child{font:28px/1 sans-serif;color:#d7c092}
-.meteogram-section{margin-top:0}.meteogram-expand{font:500 .73rem var(--font-ar);color:#e1cfad;background:#1b2b41;border:1px solid #42536a;border-radius:10px;min-height:44px;padding:9px 13px;white-space:nowrap;cursor:pointer}
-.meteogram-stage{background:#fff;border:1px solid #3b4555;border-radius:18px;overflow:hidden;width:100%}.meteogram-scroll{overflow-x:auto;overflow-y:hidden;direction:ltr;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
-#meteoblue-frame{display:block;width:100%;min-width:960px;height:600px;border:0;background:#fff}
-.meteogram-attribution{padding:0 14px 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;font-size:.72rem;direction:ltr}.meteogram-attribution a{color:#245781;text-underline-offset:4px}.meteogram-attribution a:last-child{font-size:.68rem;direction:rtl}
-.meteogram-hint{font-size:.68rem;line-height:1.9;color:#9eb2cd;margin-top:10px!important}.meteogram-status{padding:12px 15px;margin-bottom:12px!important;background:#242a32;border:1px solid #665a41;border-radius:12px;color:#e7cfaa;font-size:.74rem;line-height:1.9}
-#meteogram-dialog{margin:auto;inset:0;width:min(1500px,98vw);max-width:98vw;max-height:94dvh;padding:0;background:#0e192a;color:#e5edf8;border:1px solid #4c5c73;border-radius:18px;font-family:var(--font-ar);overflow:auto}
-#meteogram-dialog::backdrop{background:#020710bf;backdrop-filter:blur(5px)}.meteogram-dialog-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:#111e30;border-bottom:1px solid #344760}.meteogram-dialog-head h2{font-size:1rem;font-weight:600}.meteogram-dialog-head button{font:inherit;font-size:.8rem;padding:8px 14px;min-height:44px;background:#23364e;color:#dce7f5;border:1px solid #50637d;border-radius:10px;cursor:pointer}
-#meteogram-large .meteogram-stage{border:0;border-radius:0}#meteogram-large iframe{min-width:960px;height:700px}#meteogram-dialog>p{padding:10px 18px;font-size:.7rem;color:#adc0da}
-.meteogram-expand:focus-visible,.home-forecast-link:focus-visible,#meteogram-dialog button:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
+.home-forecast-link:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
 
-/* Readable Arabic calendar guide and vector lunar phase. */
-.meteogram-day-guide{padding:14px 12px 13px;background:#142238;border-bottom:1px solid #34455d;color:#dce6f3}
-.meteogram-day-guide>p{margin:0 0 10px!important;font-size:.7rem;color:#a5b9d3}
-#meteogram-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;direction:ltr}
-#meteogram-days>div{min-width:0;text-align:center;direction:rtl;padding:8px 1px;border:1px solid transparent;border-radius:10px}
-#meteogram-days>div[aria-current="date"]{background:#24344a;border-color:#536079}
-#meteogram-days strong{display:block;font:700 .83rem/1.8 Cairo,Tahoma,sans-serif;color:#e9e1d0;white-space:nowrap}
-#meteogram-days time{display:block;font:500 .65rem/1.8 Cairo,Tahoma,sans-serif;color:#b2c5dd;white-space:nowrap}
+/* Vector lunar phase. */
 #sky-moon-face svg{display:block;width:38px;height:38px;overflow:visible}.sky-moon-details{height:auto;min-height:38px}
-@media(max-width:350px){.meteogram-day-guide{padding-inline:7px}#meteogram-days{gap:2px}#meteogram-days strong{font-size:.76rem}#meteogram-days time{font-size:.6rem}}
 
-.meteogram-pan-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#142238;color:#c9d7e8;border-bottom:1px solid #34455d;direction:ltr}
-.meteogram-pan-controls button{min-width:44px;min-height:40px;padding:8px 12px;border:1px solid #435a77;border-radius:10px;background:#21334b;color:#e6d4b0;cursor:pointer;font:700 19px/1 system-ui}
-.meteogram-pan-controls button:disabled{opacity:.35;cursor:default}.meteogram-pan-controls span{direction:rtl;text-align:center;font:500 .7rem/1.7 Cairo,Tahoma,sans-serif}
-.meteogram-pan-controls[hidden]{display:none!important}.meteogram-pan-controls button:focus-visible,.meteogram-scroll:focus-visible{outline:2px solid #dfc593;outline-offset:-3px}
 
 .app-toolbar-brand{font-family:'Noto Kufi Arabic',Cairo,sans-serif}
 
@@ -292,33 +248,9 @@ body.calm-sky.dark-mode #app .detail-chars-text{font-size:.95rem!important;line-
 .home-prayer-arrow{margin-right:auto;font:26px/1 sans-serif;color:#a6b9d0}
 .home-next-prayer:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
 .page-eyebrow{display:block;font-size:.69rem;color:#cdb586;margin-bottom:3px}
-.weather-reading-guide{background:#111e30;border:1px solid #29374c;border-radius:20px;margin-bottom:25px;overflow:hidden}
-.weather-reading-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 14px}
-.weather-reading-heading h2{font-size:.94rem;font-weight:700;color:#e6d4b1}
-.weather-reading-heading>span{font-size:.66rem;color:#9fb2ca;white-space:nowrap}
-.weather-reading-keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));padding:0 10px 17px}
-.weather-reading-keys>div{display:flex;flex-direction:column;align-items:center;gap:5px;padding:5px 3px;text-align:center;min-width:0;border-left:1px solid #2a3a50}
-.weather-reading-keys>div:last-child{border-left:0}
-.weather-reading-keys svg{width:25px;height:25px;fill:none;stroke:#cdb586;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;margin-bottom:3px}
-.weather-reading-keys strong{font-size:.8rem;font-weight:600;color:#e1eaf5}
-.weather-reading-keys span{font-size:.68rem;color:#a7bad2}
-.weather-reading-help{border-top:1px solid #29394f}
-.weather-reading-help summary{position:relative;cursor:pointer;padding:13px 18px;font-size:.76rem;color:#c8d7e9;line-height:1.8}
-.weather-reading-help>div{padding:0 18px 15px}
-.weather-reading-help p{font-size:.77rem;color:#b8c9dd;line-height:2;margin:0 0 9px!important}
-.weather-reading-help p:last-child{margin-bottom:0!important}
-.weather-reading-help strong{color:#e1d2b7;font-weight:600}
 .sky-heading h1{font-weight:700;font-size:1.65rem}
 .sky-section-head h2{font-size:1rem}
 .sky-section-head{align-items:center}
-.meteogram-stage{background:#231f20;border-color:#35445b}
-#meteoblue-frame{background:#231f20}
-.meteogram-attribution a{color:#b8d2ed}
-.meteogram-attribution{padding:0 16px 14px;margin-top:9px}
-.meteogram-day-guide{border-bottom-color:#2e4058}
-.meteogram-pan-controls{background:#142238;border-bottom-color:#2e4058}
-.meteogram-expand{font-size:.75rem;font-weight:600;min-height:46px}
-.meteogram-hint{font-size:.74rem;line-height:2}
 body.calm-sky.dark-mode #app .qibla-card-pro{padding:22px 18px!important}
 body.calm-sky.dark-mode #app #page-prayer .home-header{position:static!important;background:transparent!important;box-shadow:none!important;border:0!important;padding-block:16px!important}
 body.calm-sky.dark-mode #app #page-prayer .home-title{font-size:1.4rem!important;font-weight:700!important;text-shadow:none!important}
@@ -362,11 +294,6 @@ body.calm-sky.dark-mode #app .app-install-section .install-btn.hidden{display:no
 #notification-center .prayer-push-status{font-size:.78rem}
 #notification-center .notification-test{font-size:.81rem}
 @media(max-width:360px){
-  .weather-reading-heading{padding-inline:13px;gap:7px}
-  .weather-reading-heading h2{font-size:.85rem}
-  .weather-reading-heading>span{font-size:.6rem}
-  .weather-reading-keys strong{font-size:.72rem}
   .sky-section-head h2{font-size:.91rem}
-  .meteogram-expand{padding-inline:10px;font-size:.7rem}
   .sky-section-sub{font-size:.65rem}
 }
