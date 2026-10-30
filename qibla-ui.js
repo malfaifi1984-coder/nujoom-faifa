@@ -1,7 +1,10 @@
-import { bearing, difference, distance, normalize, trustworthyHeading, validCoordinates } from './qibla-math.mjs?v=6.00-compass3';
+import { assessLocation, bearing, difference, normalize, trustworthyHeading } from './qibla-math.mjs?v=6.00-compass4';
 
 const $ = (id) => document.getElementById(id);
 const degrees = (number) => Math.round(number).toLocaleString('ar-SA') + '°';
+const accuracyText = (meters) => meters < 1000
+  ? `${Math.ceil(meters).toLocaleString('ar-SA')} م`
+  : `${(meters / 1000).toLocaleString('ar-SA', {maximumFractionDigits: 1})} كم`;
 const angle = () => window.screen?.orientation?.angle ?? window.orientation ?? 0;
 const active = () => !document.hidden && $('page-prayer').classList.contains('active');
 let position = null, target = null, heading = null;
@@ -12,7 +15,7 @@ const locationErrors = {
   LOCATION_DENIED: ['لم يُسمح بتحديد موقعك', 'اسمح بالموقع من إعدادات المتصفح ثم أعد المحاولة.'],
   LOCATION_TIMEOUT: ['انتهت مهلة تحديد الموقع', 'أعد المحاولة في مكان مفتوح مع تشغيل خدمات الموقع.'],
   LOCATION_UNAVAILABLE: ['تعذر الحصول على موقعك', 'تحقق من تشغيل خدمات الموقع ثم أعد المحاولة.'],
-  LOCATION_INACCURATE: ['تحديد الموقع غير دقيق', 'أعد المحاولة في مكان مفتوح للحصول على موقع أدق.'],
+  LOCATION_INACCURATE: ['دقة الموقع لا تكفي للتوجيه', 'فعّل الموقع الدقيق من إعدادات الجهاز أو أعد المحاولة في مكان مفتوح.'],
   NEAR_KAABA: ['أنت قريب من الكعبة', 'اتبع العلامات والإرشادات المحلية؛ دقة الموقع لا تكفي لتوجيه السهم من هذا القرب.']
 };
 const sensorMessages = {
@@ -31,13 +34,13 @@ function render() {
   $('qb-needle').setAttribute('visibility', target === null ? 'hidden' : 'visible');
   $('qb-needle').setAttribute('transform', `rotate(${target ?? 0},100,100)`);
   $('qb-dial').setAttribute('transform', `rotate(${heading === null ? 0 : -heading},100,100)`);
-  const aligned = target !== null && heading !== null && Math.abs(difference(target, heading)) <= 5;
+  const aligned = target !== null && heading !== null && !position.approximate && Math.abs(difference(target, heading)) <= 5;
   $('qibla-compass').classList.toggle('aligned', aligned);
   $('qibla-btn').disabled = starting;
   $('qibla-btn').textContent = starting ? 'جارٍ طلب الإذن…' : listening ? 'إيقاف البوصلة'
     : position ? 'تفعيل البوصلة' : 'تحديد موقعي وتشغيل البوصلة';
   $('qibla-location-text').textContent = position
-    ? `موقعك الحالي: ${position.latitude.toFixed(4)}°، ${position.longitude.toFixed(4)}°`
+    ? `${position.approximate ? 'موقعك التقريبي' : 'موقعك الحالي'}: ${position.latitude.toFixed(4)}°، ${position.longitude.toFixed(4)}°${position.approximate ? ` · الدقة المعلنة نحو ${accuracyText(position.accuracy)}` : ''}`
     : locationPending ? 'جارٍ تحديد موقعك الحالي…' : 'لم يُحدد موقعك بعد';
   if (target === null) {
     $('qibla-direction').textContent = 'حدد موقعك لعرض اتجاه القبلة';
@@ -49,19 +52,20 @@ function render() {
     return;
   }
   const directions = ['الشمال','الشمال الشرقي','الشرق','الجنوب الشرقي','الجنوب','الجنوب الغربي','الغرب','الشمال الغربي'];
-  $('qibla-direction').textContent = `القبلة نحو ${directions[Math.round(target / 45) % 8]} · ${degrees(target)} من الشمال`;
+  $('qibla-direction').textContent = `${position.approximate ? 'الاتجاه التقريبي للقبلة' : 'القبلة'} نحو ${directions[Math.round(target / 45) % 8]} · ${degrees(target)} من الشمال`;
   if (heading !== null) {
     const delta = difference(target, heading);
-    $('qibla-quality').textContent = aligned ? 'قريب من القبلة' : 'البوصلة تعمل';
-    $('qibla-status').textContent = aligned ? 'اتجاهك قريب من القبلة' : delta > 0 ? 'أدر الجوال يمينًا' : 'أدر الجوال يسارًا';
+    $('qibla-quality').textContent = position.approximate ? 'توجيه تقريبي' : aligned ? 'قريب من القبلة' : 'البوصلة تعمل';
+    $('qibla-status').textContent = position.approximate && Math.abs(delta) <= 5 ? 'الاتجاه المعروض تقريبي'
+      : aligned ? 'اتجاهك قريب من القبلة' : delta > 0 ? 'أدر الجوال يمينًا' : 'أدر الجوال يسارًا';
     $('qibla-degrees').textContent = `${degrees(Math.abs(delta))} عن اتجاه القبلة`;
-    $('qibla-note').textContent = 'قراءة الحساس تتأثر بالمعادن والمغناطيس.';
+    $('qibla-note').textContent = `${position.approximate ? 'فعّل الموقع الدقيق لتحسين التوجيه. ' : ''}قراءة الحساس تتأثر بالمعادن والمغناطيس.`;
   } else {
     const [title, note] = sensorMessages[sensorState] || sensorMessages.idle;
-    $('qibla-quality').textContent = 'اتجاه ثابت من الشمال';
+    $('qibla-quality').textContent = position.approximate ? 'اتجاه تقريبي من الشمال' : 'اتجاه ثابت من الشمال';
     $('qibla-status').textContent = title;
     $('qibla-degrees').textContent = '';
-    $('qibla-note').textContent = sensorNote || note;
+    $('qibla-note').textContent = `${sensorNote || note}${position.approximate ? ' فعّل الموقع الدقيق لتحسين التوجيه.' : ''}`;
   }
 }
 
@@ -109,13 +113,13 @@ function currentLocation() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) { reject(new Error('LOCATION_UNAVAILABLE')); return; }
     navigator.geolocation.getCurrentPosition(({coords}) => {
-      if (!validCoordinates(coords.latitude, coords.longitude) || !Number.isFinite(coords.accuracy) || coords.accuracy > 1000) {
-        reject(new Error('LOCATION_INACCURATE')); return;
+      const quality = assessLocation(coords.latitude, coords.longitude, coords.accuracy);
+      if (!quality.usable) {
+        const error = new Error(quality.reason === 'near-kaaba' ? 'NEAR_KAABA' : 'LOCATION_INACCURATE');
+        error.accuracy = coords.accuracy; reject(error); return;
       }
-      if (distance(coords.latitude, coords.longitude) <= Math.max(100, coords.accuracy * 2)) {
-        reject(new Error('NEAR_KAABA')); return;
-      }
-      resolve({latitude: coords.latitude, longitude: coords.longitude, accuracy: coords.accuracy});
+      resolve({latitude: coords.latitude, longitude: coords.longitude, accuracy: coords.accuracy,
+        approximate: quality.approximate, uncertaintyDegrees: quality.uncertaintyDegrees});
     }, (error) => reject(new Error(error.code === 1 ? 'LOCATION_DENIED' : error.code === 3 ? 'LOCATION_TIMEOUT' : 'LOCATION_UNAVAILABLE')),
     {enableHighAccuracy: true, timeout: 12000, maximumAge: 0});
   });
@@ -129,7 +133,9 @@ async function updateLocation() {
     position = result; target = bearing(result.latitude, result.longitude);
   } catch (error) {
     if (request !== locationRequestId || !active()) return;
-    locationError = locationErrors[error.message] || locationErrors.LOCATION_UNAVAILABLE;
+    const detail = locationErrors[error.message] || locationErrors.LOCATION_UNAVAILABLE;
+    locationError = error.message === 'LOCATION_INACCURATE' && Number.isFinite(error.accuracy) && error.accuracy >= 0
+      ? [detail[0], `${detail[1]} الدقة المعلنة نحو ${accuracyText(error.accuracy)}.`] : detail;
   } finally {
     if (request === locationRequestId) { locationPending = false; render(); }
   }

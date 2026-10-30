@@ -59,8 +59,8 @@ function harness({ supported = true, permission = 'granted' } = {}) {
     setPermission(value) { permissionResult = value; },
     emit(name, event) { for (const callback of [...(windowEvents.get(name) || [])]) callback(event); },
     listenerCount(name) { return windowEvents.get(name)?.size || 0; },
-    locate(latitude, longitude, index = requests.length - 1) {
-      requests[index].success({coords: {latitude, longitude, accuracy: 10}});
+    locate(latitude, longitude, accuracy = 10, index = requests.length - 1) {
+      requests[index].success({coords: {latitude, longitude, accuracy}});
     },
     pendingTimerIds() { return [...timers.keys()]; },
     expire() { for (const [id, timer] of [...timers]) { timers.delete(id); timer.callback(); } },
@@ -104,6 +104,29 @@ test('GPS denial does not disable the sensor and location refresh changes the be
   ui.locate(35.6762, 139.6503); await refreshed;
   assertBearing(ui, 35.6762, 139.6503);
   assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
+});
+
+test('usable coarse GPS gives an explicitly approximate direction without green alignment and precise refresh restores it', async () => {
+  for (const [accuracy, label] of [[1500, '١٫٥ كم'], [5000, '٥ كم']]) {
+    const ui = harness();
+    const started = ui.window.startQibla(); ui.locate(40.7128, -74.006, accuracy); await started;
+    ui.emit('deviceorientation', {webkitCompassHeading: 58.48, webkitCompassAccuracy: 5});
+    assertBearing(ui, 40.7128, -74.006);
+    assert.match(ui.node('qibla-location-text').textContent, /موقعك التقريبي/);
+    assert.ok(ui.node('qibla-location-text').textContent.includes(`الدقة المعلنة نحو ${label}`));
+    assert.equal(ui.node('qibla-quality').textContent, 'توجيه تقريبي');
+    assert.equal(ui.node('qibla-compass').classList.contains('aligned'), false);
+    assert.doesNotMatch(ui.node('qibla-status').textContent, /اتجاهك قريب من القبلة/);
+    assert.match(ui.node('qibla-note').textContent, /فعّل الموقع الدقيق لتحسين التوجيه/);
+    assert.equal(ui.requests.length, 1, 'a usable coarse fix must not start a continuous location watch');
+    const refreshed = ui.window.refreshQiblaLocation();
+    ui.locate(40.7128, -74.006, 10); await refreshed;
+    assert.equal(ui.node('qibla-compass').classList.contains('aligned'), true);
+    assert.equal(ui.node('qibla-quality').textContent, 'قريب من القبلة');
+    assert.doesNotMatch(ui.node('qibla-location-text').textContent, /التقريبي/);
+    assert.equal(ui.requests.length, 2);
+    assert.equal(ui.order.filter((item) => item === 'permission').length, 1);
+  }
 });
 
 test('sensor denial retains a valid static bearing and calibration retries the real permission request', async () => {
@@ -204,6 +227,18 @@ test('GPS positions too close to the Kaaba never produce a misleading arrow', as
   assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
   assert.match(ui.node('qibla-status').textContent, /قريب من الكعبة/);
   assert.match(ui.node('qibla-note').textContent, /الإرشادات المحلية/);
+});
+
+test('an unusably wide or invalid GPS fix remains rejected and reports its stated accuracy when available', async () => {
+  for (const [latitude, longitude, accuracy] of [[22, 39.8, 100000], [40.7128, -74.006, NaN]]) {
+    const ui = harness();
+    const started = ui.window.startQibla(); ui.locate(latitude, longitude, accuracy); await started;
+    assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
+    assert.equal(ui.node('qibla-compass').classList.contains('aligned'), false);
+    assert.match(ui.node('qibla-status').textContent, /دقة الموقع لا تكفي للتوجيه/);
+    if (Number.isFinite(accuracy)) assert.match(ui.node('qibla-note').textContent, /الدقة المعلنة نحو ١٠٠ كم/);
+    assert.equal(ui.listenerCount('deviceorientation'), 1);
+  }
 });
 
 test('leaving the page clears old GPS coordinates so a later visit cannot claim a stale current position', async () => {
