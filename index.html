@@ -1297,7 +1297,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
   });
 </script>
 
-<link rel="stylesheet" href="/weather-ui.css?v=6.00-design2">
+<link rel="stylesheet" href="/weather-ui.css?v=6.00-compass3">
 </head>
 <body class="dark-mode calm-sky">
 
@@ -1503,14 +1503,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
           <button type="button" class="qibla-btn qibla-btn-secondary" onclick="recalibrateQibla()">إعادة التشغيل والمعايرة</button>
         </div>
         <p class="qibla-note" id="qibla-note">أبقِ شاشة الجوال للأعلى وحافته العلوية للأمام، وابتعد عن المعادن والمغناطيس.</p>
-        <button type="button" class="qibla-manual-toggle" id="qibla-manual-toggle" aria-expanded="false" aria-controls="qibla-manual">تحديد الموقع يدويًا</button>
-        <form id="qibla-manual" class="qibla-manual" hidden novalidate>
-          <p>أدخل إحداثيات مكانك من تطبيق الخرائط. القيم السالبة للجنوب والغرب.</p>
-          <div class="qibla-coordinate-fields"><label>خط العرض<input type="text" id="qibla-latitude" dir="ltr" inputmode="text" autocomplete="off" placeholder="−90 إلى 90" aria-describedby="qibla-manual-note"></label><label>خط الطول<input type="text" id="qibla-longitude" dir="ltr" inputmode="text" autocomplete="off" placeholder="−180 إلى 180" aria-describedby="qibla-manual-note"></label></div>
-          <p id="qibla-manual-note">يمكنك إدخال الأرقام العربية أو الإنجليزية.</p>
-          <p id="qibla-manual-error" role="alert" hidden></p>
-          <div class="qibla-manual-actions"><button type="submit">استخدام هذا الموقع</button><button type="button" id="qibla-manual-cancel">إلغاء</button></div>
-        </form>
+
       </div>
 
       <div style="height:20px;"></div>
@@ -1763,7 +1756,7 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 <script src="/weather-ui.js?v=6.00-design2"></script>
 <script type="module" src="/prayer-ui.js?v=6.00-fast2"></script>
 <script src="/app-refinements.js?v=6.00-design2"></script>
-<script type="module" src="/qibla-ui.js?v=6.00-design2"></script>
+<script type="module" src="/qibla-ui.js?v=6.00-compass3"></script>
 <script>window.addEventListener('DOMContentLoaded',()=>{const p=new URLSearchParams(location.search).get('page');if(['home','weather','calendar','prayer','info'].includes(p))setTimeout(()=>showPage(p),350)});</script>
 </body>
 </html>

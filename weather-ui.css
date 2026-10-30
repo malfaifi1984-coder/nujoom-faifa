@@ -348,21 +348,7 @@ body.calm-sky.dark-mode #app .qibla-btn{min-height:46px!important;padding:11px 8
 body.calm-sky.dark-mode #app .qibla-btn-main{background:#d6bf93!important;color:#142137!important;border-color:#e0cca5!important}
 .qibla-btn:disabled{opacity:.65;cursor:wait}
 .qibla-note{font-size:.75rem!important;line-height:1.9;color:#a7bad2;margin-top:14px!important}
-.qibla-manual-toggle{display:block;margin:14px auto 0;padding:8px 12px;min-height:44px;border:0;background:transparent;text-decoration:underline;text-underline-offset:4px;color:#b8cce4;font:500 .75rem var(--font-ar);cursor:pointer}
-.qibla-manual{margin-top:12px;padding:15px;background:#142339;border:1px solid #344a64;border-radius:14px;font-family:var(--font-ar)}
-.qibla-manual[hidden]{display:none!important}
-.qibla-manual p{font-size:.74rem;line-height:1.9;color:#aabed8;margin:0 0 12px}
-#qibla-manual-error{color:#f0c4b0;padding:10px;border:1px solid #805b4d;border-radius:9px;background:#352c2b}
-#qibla-manual-error[hidden]{display:none}
-.qibla-coordinate-fields input[aria-invalid="true"]{border-color:#d59579}
-.qibla-coordinate-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.qibla-coordinate-fields label{min-width:0;font-size:.76rem;color:#dbe5f2}
-.qibla-coordinate-fields input{display:block;width:100%;min-width:0;min-height:46px;border:1px solid #49617e;background:#0e1c2f;color:#e6edf8;border-radius:9px;padding:10px;font:16px var(--font-ar);margin:7px 0 10px;scroll-margin-block:140px}
-.qibla-coordinate-fields input::placeholder{color:#92a8c3;font-size:12px}
-.qibla-manual-actions{display:flex;flex-wrap:wrap;gap:9px}
-.qibla-manual-actions button{min-height:44px;padding:10px 13px;background:#d6bf93;border:1px solid #e0cca5;border-radius:9px;color:#142137;font:600 .75rem var(--font-ar);cursor:pointer}
-.qibla-manual-actions button:last-child{background:transparent;border-color:#49617e;color:#c7d7eb}
-.qibla-card button:focus-visible,.qibla-manual input:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
+.qibla-card button:focus-visible{outline:2px solid #dfc593;outline-offset:3px}
 .app-install-section h2{font:700 1rem var(--font-ar);color:#e5cea1;margin-bottom:8px}
 .app-install-section p{font:400 .79rem/1.9 var(--font-ar);color:#aebfd5;margin:0 0 14px}
 body.calm-sky.dark-mode #app .app-install-section .install-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:0;min-height:48px;padding:12px;background:#21344d!important;border:1px solid #425a77!important;box-shadow:none!important;color:#e7edf7!important;border-radius:12px;font:600 .84rem var(--font-ar)}
@@ -383,5 +369,4 @@ body.calm-sky.dark-mode #app .app-install-section .install-btn.hidden{display:no
   .sky-section-head h2{font-size:.91rem}
   .meteogram-expand{padding-inline:10px;font-size:.7rem}
   .sky-section-sub{font-size:.65rem}
-  .qibla-coordinate-fields{grid-template-columns:1fr}
 }

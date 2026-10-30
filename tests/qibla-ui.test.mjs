@@ -18,7 +18,7 @@ function harness({ supported = true, permission = 'granted' } = {}) {
     if (!nodes.has(id)) {
       const attributes = new Map(), events = new Map(), classes = new Set(id === 'page-prayer' ? ['active'] : []);
       nodes.set(id, {
-        textContent: '', disabled: false, hidden: id === 'qibla-manual', value: '',
+        textContent: '', disabled: false,
         setAttribute: (name, value) => attributes.set(name, String(value)),
         getAttribute: (name) => attributes.get(name),
         removeAttribute: (name) => attributes.delete(name), focus() {},
@@ -62,6 +62,7 @@ function harness({ supported = true, permission = 'granted' } = {}) {
     locate(latitude, longitude, index = requests.length - 1) {
       requests[index].success({coords: {latitude, longitude, accuracy: 10}});
     },
+    pendingTimerIds() { return [...timers.keys()]; },
     expire() { for (const [id, timer] of [...timers]) { timers.delete(id); timer.callback(); } },
     leave() { node('page-prayer').classList.remove('active'); observer(); },
     hide() { document.hidden = true; for (const callback of documentEvents.get('visibilitychange') || []) callback(); }
@@ -119,38 +120,71 @@ test('sensor denial retains a valid static bearing and calibration retries the r
   assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
 });
 
-test('timeouts stop sensor listeners and calibration restarts them; leaving the page cancels stale GPS', async () => {
+test('a paused sensor discards stale heading and resumes on the next valid event without restarting', async () => {
+  const ui = harness();
+  const started = ui.window.startQibla(); ui.locate(40.7128, -74.006); await started;
+  ui.emit('deviceorientationabsolute', {alpha: 301.52, absolute: true, beta: 0, gamma: 0});
+  assert.equal(ui.node('qibla-compass').classList.contains('aligned'), true);
+  ui.expire();
+  assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
+  assert.equal(ui.node('qibla-compass').classList.contains('aligned'), false);
+  assert.equal(ui.node('qibla-degrees').textContent, '');
+  assert.match(ui.node('qibla-status').textContent, /بانتظار قراءة حديثة/);
+  assert.match(ui.node('qibla-quality').textContent, /اتجاه ثابت من الشمال/);
+  ui.emit('deviceorientationabsolute', {alpha: 200, absolute: true, beta: 0, gamma: 0});
+  assert.equal(ui.node('qb-dial').getAttribute('transform'), 'rotate(-160,100,100)');
+  assert.match(ui.node('qibla-quality').textContent, /البوصلة تعمل/);
+  assert.equal(ui.order.filter((item) => item === 'permission').length, 1);
+  assert.equal(ui.requests.length, 1);
+});
+
+test('empty absolute and relative samples preserve a valid native heading without extending its freshness deadline', async () => {
+  const ui = harness();
+  const started = ui.window.startQibla(); ui.locate(40.7128, -74.006); await started;
+  ui.emit('deviceorientation', {webkitCompassHeading: 60, webkitCompassAccuracy: 5});
+  const rotation = ui.node('qb-dial').getAttribute('transform');
+  const deadline = ui.pendingTimerIds();
+  assert.equal(deadline.length, 1);
+  assert.equal(ui.node('qibla-compass').classList.contains('aligned'), true);
+  for (const event of [
+    {absolute: true, alpha: null, beta: null, gamma: null},
+    {absolute: true, alpha: NaN, beta: 0, gamma: 0},
+    {absolute: false, alpha: 170, beta: 0, gamma: 0}
+  ]) {
+    ui.emit('deviceorientationabsolute', event);
+    assert.equal(ui.node('qb-dial').getAttribute('transform'), rotation);
+    assert.equal(ui.node('qibla-compass').classList.contains('aligned'), true);
+    assert.deepEqual(ui.pendingTimerIds(), deadline);
+  }
+  ui.expire();
+  assert.equal(ui.node('qibla-compass').classList.contains('aligned'), false);
+  assert.match(ui.node('qibla-status').textContent, /بانتظار قراءة حديثة/);
+  assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
+});
+
+test('initial sensor silence still accepts a later first reading, while an explicit stop removes listeners', async () => {
   const ui = harness();
   const started = ui.window.startQibla(); ui.locate(-33.8688, 151.2093); await started;
   ui.expire();
+  assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
+  assert.match(ui.node('qibla-status').textContent, /بانتظار قراءة حديثة/);
+  ui.emit('deviceorientationabsolute', {alpha: 90, absolute: true, beta: 0, gamma: 0});
+  assert.equal(ui.node('qb-dial').getAttribute('transform'), 'rotate(-270,100,100)');
+  await ui.window.startQibla();
   assert.equal(ui.listenerCount('deviceorientationabsolute'), 0);
-  assert.match(ui.node('qibla-status').textContent, /لم تصل قراءة موثوقة/);
-  const retry = ui.window.recalibrateQibla(); await settle();
+  assert.equal(ui.listenerCount('deviceorientation'), 0);
+  ui.emit('deviceorientationabsolute', {alpha: 100, absolute: true, beta: 0, gamma: 0});
+  assert.equal(ui.node('qb-dial').getAttribute('transform'), 'rotate(0,100,100)');
+});
+
+test('leaving the page removes sensor listeners and cancels a pending GPS result', async () => {
+  const ui = harness();
+  const started = ui.window.startQibla(); await settle();
   assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
   ui.leave();
   assert.equal(ui.listenerCount('deviceorientationabsolute'), 0);
-  ui.locate(40.7128, -74.006); await retry;
+  ui.locate(40.7128, -74.006); await started;
   assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
-});
-
-test('Arabic manual coordinates are explicit and remain usable without GPS; empty input creates no bearing', async () => {
-  const ui = harness();
-  ui.node('qibla-manual').emit('submit', {preventDefault() {}});
-  assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
-  assert.match(ui.node('qibla-status').textContent, /إحداثيات صحيحة/);
-  assert.equal(ui.node('qibla-manual-error').hidden, false);
-  ui.node('qibla-latitude').value = '−٣٣٫٨٦٨٨';
-  ui.node('qibla-longitude').value = '١٥١٫٢٠٩٣';
-  ui.node('qibla-manual').emit('submit', {preventDefault() {}});
-  assertBearing(ui, -33.8688, 151.2093);
-  assert.match(ui.node('qibla-location-text').textContent, /مُدخل يدويًا/);
-  assert.equal(ui.node('qibla-manual-error').hidden, true);
-  await ui.window.startQibla();
-  assert.equal(ui.requests.length, 0);
-  assert.equal(ui.listenerCount('deviceorientationabsolute'), 1);
-  ui.hide();
-  assert.equal(ui.listenerCount('deviceorientationabsolute'), 0);
-  assertBearing(ui, -33.8688, 151.2093);
 });
 
 test('unsupported sensors still allow static GPS bearings, while GPS timeout is distinct from denial', async () => {
@@ -163,18 +197,13 @@ test('unsupported sensors still allow static GPS bearings, while GPS timeout is 
   assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
 });
 
-test('GPS and manual positions too close to the Kaaba never produce a misleading arrow', async () => {
+test('GPS positions too close to the Kaaba never produce a misleading arrow', async () => {
   const ui = harness();
   const started = ui.window.startQibla();
   ui.locate(math.KAABA.latitude, math.KAABA.longitude); await started;
   assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
   assert.match(ui.node('qibla-status').textContent, /قريب من الكعبة/);
-  ui.node('qibla-latitude').value = String(math.KAABA.latitude);
-  ui.node('qibla-longitude').value = String(math.KAABA.longitude);
-  ui.node('qibla-manual').emit('submit', {preventDefault() {}});
-  assert.equal(ui.node('qb-needle').getAttribute('visibility'), 'hidden');
   assert.match(ui.node('qibla-note').textContent, /الإرشادات المحلية/);
-  assert.equal(ui.node('qibla-manual-error').hidden, false);
 });
 
 test('leaving the page clears old GPS coordinates so a later visit cannot claim a stale current position', async () => {
