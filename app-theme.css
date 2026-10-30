@@ -1,0 +1,237 @@
+/* One palette for the installed app and every page. The dark-mode class is legacy. */
+:root, html[data-theme='dark'] {
+  color-scheme: dark;
+  --app-bg: #192c3f;
+  --app-panel: #294258;
+  --app-soft: #233b50;
+  --app-text: #f4f7fa;
+  --app-muted: #c3d1dd;
+  --app-gold: #dec18c;
+  --app-gold-fill: #dfbc75;
+  --app-line: #4c677e;
+  --app-blue: #b0d3ed;
+  --app-selected: #355a78;
+  --app-selected-line: #7395ae;
+  --app-primary-bg: #dfc38c;
+  --app-primary-text: #1b3044;
+  --app-mountain: #4a6c84;
+  --app-mountain-far: #5a7b93;
+  --app-success: #bbdec9;
+  --app-success-bg: #284d47;
+  --app-warn-bg: #463e2d;
+  --app-warn-line: #9b855b;
+  --app-warn-text: #f0dfbc;
+  --app-error-bg: #46343a;
+  --app-error-line: #9e767c;
+  --app-error-text: #f4d1d1;
+  --app-shadow: 0 8px 22px #0c1c2a18;
+  --app-overlay: #0b192aa8;
+}
+html[data-theme='light'] {
+  color-scheme: light;
+  --app-bg: #edf3f7;
+  --app-panel: #ffffff;
+  --app-soft: #f4f8fc;
+  --app-text: #173453;
+  --app-muted: #526d8b;
+  --app-gold: #936619;
+  --app-gold-fill: #d7a74f;
+  --app-line: #cdddec;
+  --app-blue: #2e6c9f;
+  --app-selected: #e8f4ff;
+  --app-selected-line: #8db8dd;
+  --app-primary-bg: #e4f1fd;
+  --app-primary-text: #194f79;
+  --app-mountain: #bfd4e5;
+  --app-mountain-far: #d8e7f1;
+  --app-success: #235f46;
+  --app-success-bg: #e9f5ee;
+  --app-warn-bg: #fff5df;
+  --app-warn-line: #c3a56c;
+  --app-warn-text: #74531b;
+  --app-error-bg: #fff0ee;
+  --app-error-line: #cd9b9d;
+  --app-error-text: #84333a;
+  --app-shadow: 0 8px 22px #24405a0a;
+  --app-overlay: #20374d66;
+}
+html[data-theme] { background: var(--app-bg) !important; color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode {
+  --bg: var(--app-bg); --bg2: var(--app-panel); --bg3: var(--app-soft); --card: var(--app-panel);
+  --text: var(--app-text); --text2: var(--app-muted); --text3: var(--app-muted); --border: var(--app-line);
+  --gold: var(--app-gold); --gold-l: var(--app-gold); --gold-d: var(--app-gold); --ui-gold-soft: var(--app-text);
+  --winter: var(--app-blue); --spring: var(--app-success); --summer: var(--app-gold); --autumn: var(--app-gold);
+  --nf-bg: var(--app-bg); --nf-bg-2: var(--app-panel); --nf-card: var(--app-panel);
+  --nf-text: var(--app-text); --nf-muted: var(--app-muted); --nf-faint: var(--app-muted);
+  --nf-line: var(--app-line); --nf-line-strong: var(--app-selected-line);
+  --nf-gold: var(--app-gold); --nf-gold-2: var(--app-gold); --nf-green-soft: var(--app-success);
+  --nf-shadow: var(--app-shadow); --nf-shadow-soft: var(--app-shadow);
+  background: var(--app-bg) !important; color: var(--app-text) !important;
+}
+html[data-theme] body.calm-sky::before { background: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app { background: var(--app-bg) !important; color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app > .page { background: var(--app-bg) !important; }
+html[data-theme] body.calm-sky.dark-mode #splash { background: var(--app-bg) !important; }
+html[data-theme] body.calm-sky.dark-mode .splash-title { color: var(--app-text) !important; text-shadow: none; }
+html[data-theme] body.calm-sky.dark-mode .splash-sub { color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .app-toolbar { background: var(--app-panel) !important; border-color: var(--app-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .app-toolbar-brand { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .app-toolbar-brand img { border-radius: 11px; }
+html[data-theme] body.calm-sky.dark-mode #app #nav { background: var(--app-panel) !important; border-color: var(--app-line) !important; box-shadow: var(--app-shadow) !important; backdrop-filter: none; }
+html[data-theme] body.calm-sky.dark-mode #app #nav .nav-btn { color: var(--app-muted) !important; min-width: 0; border: 1px solid transparent !important; }
+html[data-theme] body.calm-sky.dark-mode #app #nav .nav-btn.active { background: var(--app-selected) !important; border-color: var(--app-selected-line) !important; color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #nav .nav-btn.active .nav-icon { color: var(--app-gold); filter: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #nav .nav-label { font-weight: 700 !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.hero-card, .chars-section, .info-section, .info-card, .weather-card, .detail-hero, .date-card, .detail-chars, .star-row, .notify-panel, .prayer-card, .qibla-card) {
+  background: var(--app-panel) !important; color: var(--app-text) !important; border-color: var(--app-line) !important; box-shadow: var(--app-shadow) !important;
+}
+html[data-theme] body.calm-sky.dark-mode #app :is(.home-title, .weather-title, .info-header, .info-sec-title, .chars-title, .detail-chars-title, .detail-title, .cal-title, .detail-star-name) {
+  color: var(--app-text) !important; text-shadow: none !important; filter: none !important;
+}
+html[data-theme] body.calm-sky.dark-mode #app :is(.chars-text, .detail-chars-text, .note-text, .pr-time, .ic-value, .star-name-text, .dnb-name) { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.pr-note, .pr-name, .star-dates, .date-card-lbl, .dnb-lbl, .ic-label, .qibla-subtitle, .qibla-note, .qibla-direction, .qibla-degrees, .prayer-push-status, .prayer-footnote, .notification-eyebrow, .version-tag, .launch-line) { color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.chars-title, .info-sec-title, .detail-chars-title)::after { background: var(--app-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.hero-card, .detail-hero) :is(.hero-star-name, .detail-star-name) { color: var(--app-text) !important; text-shadow: none !important; }
+
+/* The date, next prayer and current agricultural star form the Home hierarchy. */
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date {
+  margin: 12px 16px 10px; padding: 15px 16px; border: 1px solid var(--app-line); border-radius: 17px;
+  background: var(--app-panel); color: var(--app-text); box-shadow: var(--app-shadow);
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date > span { color: var(--app-text); font-size: .84rem; font-weight: 700; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date div { color: var(--app-text); font-size: 1.08rem; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date p { color: var(--app-muted); font-size: .8rem; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer { display: flex; gap: 10px; margin: 0 16px 10px; padding: 12px 13px; background: var(--app-panel); border-color: var(--app-line); border-radius: 17px; color: var(--app-text); box-shadow: var(--app-shadow); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-symbol { width: 39px; height: 42px; border-radius: 0; background: transparent; color: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-symbol svg { width: 28px; height: 28px; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer > span:nth-child(2) { min-width: 0; flex: 1 1 auto; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer small { font-size: .69rem; line-height: 1.8; color: var(--app-muted); margin: 0; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer strong { font-size: 1rem; color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-time { flex: 0 0 auto; border-inline-start: 1px solid var(--app-line); padding-inline-start: 11px; color: var(--app-text); font-size: clamp(1.1rem, 4.8vw, 1.45rem); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-arrow { flex-shrink: 0; color: var(--app-blue); margin: 0; font-size: 1.8rem; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-card { isolation: isolate; position: relative; min-height: 283px !important; margin: 0 16px 10px !important; padding: 18px 17px 14px !important; border-radius: 20px !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-card > * { position: relative; z-index: 1; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-card::before { content: ''; display: block !important; position: absolute; inset: 70px auto auto 22px; width: 36px; height: 48px; border: 0 !important; border-radius: 0; background: var(--app-gold-fill); box-shadow: none !important; clip-path: polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%); opacity: .8; pointer-events: none; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-card::after { content: '' !important; display: block !important; position: absolute; inset: auto 0 41px !important; width: auto !important; height: 175px !important; padding: 0 !important; border-radius: 0 !important; z-index: 0; opacity: .33; pointer-events: none; color: transparent; font-size: 0 !important; background: var(--app-mountain) !important; clip-path: polygon(0 36%,8% 27%,16% 37%,24% 18%,34% 42%,42% 32%,53% 56%,62% 28%,72% 51%,81% 43%,90% 63%,100% 57%,100% 100%,0 100%); mask-image: linear-gradient(90deg,#000,transparent 92%); -webkit-mask-image: linear-gradient(90deg,#000,transparent 92%); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-topline { align-items: center; margin-bottom: 9px !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-label { color: var(--app-text) !important; opacity: 1; font-size: .91rem; margin-bottom: 0; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-season-badge { padding: 5px 11px; margin: 0 !important; color: var(--app-blue) !important; background: var(--app-selected) !important; border: 1px solid var(--app-selected-line) !important; font-size: .75rem; backdrop-filter: none; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-name-day-row { display: flex; align-items: flex-start !important; flex-direction: column; gap: 6px !important; margin-bottom: 3px !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-star-name { color: var(--app-text) !important; font-size: clamp(2.25rem, 11vw, 3.5rem) !important; line-height: 1.3 !important; margin: 0 !important; max-width: 100%; overflow-wrap: anywhere; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-day-inline { color: var(--app-text) !important; border: 0 !important; padding: 0 !important; background: none !important; border-radius: 0; font-size: .95rem !important; font-weight: 700; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-day-word { color: var(--app-text) !important; opacity: 1; font-size: inherit !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home #hero-day-ordinal { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-progress-modern { height: 9px !important; margin: 15px 0 8px !important; padding: 0 !important; border: 1px solid var(--app-line) !important; border-radius: 9px; background: var(--app-soft) !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .progress-fill { background: var(--app-gold-fill) !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-dates { color: var(--app-muted) !important; font-size: .8rem !important; line-height: 1.9 !important; opacity: 1; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home :is(.hero-date-start, .hero-date-end, .hero-date-sep) { color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-date-label { color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-countdown-separator { display: none; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-countdown { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 13px !important; padding: 9px 14px !important; background: var(--app-soft) !important; border: 1px solid var(--app-line) !important; border-radius: 14px !important; min-height: 52px; backdrop-filter: none; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .countdown-num { color: var(--app-gold) !important; font-size: 2.45rem !important; line-height: 1.2; text-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .countdown-lbl { color: var(--app-text) !important; font-size: .86rem !important; opacity: 1; margin: 0; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .chars-section { margin: 0 16px 10px; border-radius: 18px !important; padding: 16px 17px !important; }
+html[data-theme] body.calm-sky.dark-mode #app .star-characteristics li { border-bottom-color: var(--app-line); padding-block: 9px; }
+html[data-theme] body.calm-sky.dark-mode #app .star-characteristics li::before { background: var(--app-gold-fill); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .chars-title { margin-bottom: 7px; font-size: .98rem; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .chars-text { font-size: .93rem !important; line-height: 1.95 !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .share-today-btn { width: calc(100% - 32px); margin: 0 16px 12px; min-height: 46px; border: 1px solid var(--app-selected-line) !important; background: var(--app-panel) !important; color: var(--app-blue) !important; box-shadow: none !important; font-size: .88rem; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .share-btn-icon { color: var(--app-blue); border: 0; background: transparent; box-shadow: none; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-install { width: calc(100% - 32px) !important; margin: 0 16px 10px !important; padding: 10px 12px; min-height: 44px; font-size: .83rem; background: var(--app-soft) !important; color: var(--app-blue) !important; border-color: var(--app-line) !important; box-shadow: none !important; }
+
+/* Calendar and star detail surfaces use the same readable palette. */
+html[data-theme] body.calm-sky.dark-mode #app :is(.cal-header, .detail-header, .home-header) { background: var(--app-bg) !important; border-color: var(--app-line) !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.cycle-menu, .cycle-current, .cycle-arrow, .cycle-item, .filter-btn, .calendar-pdf-btn, .year-badge, .year-arrow, .back-btn, .detail-nav-btn) { background: var(--app-panel) !important; color: var(--app-text) !important; border-color: var(--app-line) !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.cycle-item.sel, .filter-btn.active, .cycle-btn.active) { background: var(--app-selected) !important; color: var(--app-text) !important; border-color: var(--app-selected-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .star-row.current { background: var(--app-selected) !important; border-color: var(--app-gold) !important; box-shadow: inset -3px 0 0 var(--app-gold) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .star-row.past { opacity: .84; }
+html[data-theme] body.calm-sky.dark-mode #app .star-dates * { color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .star-num { background: var(--app-soft) !important; color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.star-row.current .star-num, .current-badge, .ci-now, .note-circle) { background: var(--app-gold-fill) !important; color: #1c3046 !important; box-shadow: none; }
+html[data-theme] body.calm-sky.dark-mode #app .detail-season { background: var(--app-soft); color: var(--app-blue); border: 1px solid var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app .date-card-greg { color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .date-card-hijri { color: var(--app-text); }
+
+/* Prayer and compass styling changes color only; sensor and SVG rotations stay intact. */
+html[data-theme] body.calm-sky.dark-mode #app .adhan-time { color: var(--app-gold) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.adhan-next, .adhan-count) { color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app .adhan-count-lbl { color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .pr-row { border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app .pr-row.pr-next { background: var(--app-selected) !important; border-color: var(--app-selected-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.qibla-quality, .qibla-location-pro) { background: var(--app-soft) !important; color: var(--app-muted) !important; border-color: var(--app-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .qibla-compass-pro { background: var(--app-soft) !important; border-color: var(--app-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .qibla-compass-pro.aligned { background: var(--app-success-bg) !important; border-color: var(--app-success) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .qibla-center-label { background: var(--app-soft) !important; color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .qibla-main-status { color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app .qibla-main-status.ok { color: var(--app-success); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.qb-ring, .qb-inner-ring, .qb-mark) { stroke: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-cardinal { fill: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-n { fill: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-qibla-line { stroke: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-arrow { fill: var(--app-gold); stroke: var(--app-panel); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-tail { fill: var(--app-blue); }
+html[data-theme] body.calm-sky.dark-mode #app .qb-hub { stroke: var(--app-panel); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.qibla-btn, .prayer-secondary, .prayer-settings-actions button, .install-sheet-close) { min-height: 44px; background: var(--app-soft) !important; color: var(--app-text) !important; border-color: var(--app-line) !important; box-shadow: none !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.qibla-btn-main, #prayer-enable-push, .app-install-section .install-btn) { background: var(--app-primary-bg) !important; color: var(--app-primary-text) !important; border-color: var(--app-selected-line) !important; }
+
+/* Sun and Moon retain their astronomical positions and day/night switching. */
+html[data-theme] body.calm-sky.dark-mode #app .sky-orbit-card { background: var(--app-panel); border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.sky-section h2, .sky-moon-details strong, .sky-orbit-times strong) { color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.sky-section-sub, .sky-orbit-heading, .sky-orbit-times span, .sky-moon-details small, .sky-footer) { color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .sky-orbit-heading .sky-orbit-title { color: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app .sky-astro-live { background: var(--app-soft); border-color: var(--app-line); color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .sky-orbit-guide { stroke: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app .sky-moon-guide { stroke: var(--app-blue); }
+html[data-theme] body.calm-sky.dark-mode #app .sky-orbit-horizon { stroke: var(--app-line); }
+
+/* About, installation, notification controls, and their inline legacy text. */
+html[data-theme] body.calm-sky.dark-mode #app #page-info .info-section :is(div, p)[style*='color:#fff'] { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-info .info-section div[style*='font-size:.8rem'] { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.app-install-section h2, .notification-center-head h2, .install-sheet-title, .share-sheet-title) { color: var(--app-text) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.app-install-section p, .install-sheet-body, .share-sheet-sub) { color: var(--app-muted) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #notification-center { color: var(--app-text); background: var(--app-panel); border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app #notification-center .prayer-pref-row { border-color: var(--app-line); color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app #notification-center .prayer-pref-row strong { color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app #notification-center .prayer-pref-row small { color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app #notification-center :is(.prayer-extra, .notification-reminder) { background: var(--app-soft); border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.notification-state, .notification-choice-state) { background: var(--app-soft); border-color: var(--app-line); color: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.notification-state, .notification-choice-state)[data-active='true'] { background: var(--app-selected); border-color: var(--app-selected-line); color: var(--app-gold); }
+html[data-theme] body.calm-sky.dark-mode #app .prayer-pref-row input { background: var(--app-soft); border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app .prayer-pref-row input::before { background: var(--app-muted); }
+html[data-theme] body.calm-sky.dark-mode #app .prayer-pref-row input:checked { background: var(--app-gold-fill) !important; border-color: var(--app-gold-fill) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .prayer-pref-row input:checked::before { background: #1c3046; }
+html[data-theme] body.calm-sky.dark-mode #app select { background: var(--app-soft); border-color: var(--app-line); color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app .notification-help { border-color: var(--app-line); }
+html[data-theme] body.calm-sky.dark-mode #app .about-data-credit { color: var(--app-muted); font-size: .73rem; line-height: 1.9; margin: 15px 2px; }
+html[data-theme] body.calm-sky.dark-mode #app .about-data-credit a { color: var(--app-blue); text-underline-offset: 3px; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.install-overlay, .share-overlay) { background: var(--app-overlay); }
+html[data-theme] body.calm-sky.dark-mode #app :is(.install-sheet, .share-sheet, .share-preview-wrap) { background: var(--app-panel) !important; color: var(--app-text); border-color: var(--app-line) !important; box-shadow: var(--app-shadow) !important; }
+html[data-theme] body.calm-sky.dark-mode #app :is(.share-close, .share-actions button) { background: var(--app-soft) !important; color: var(--app-text) !important; border-color: var(--app-line) !important; }
+html[data-theme] body.calm-sky.dark-mode #app .share-actions .primary { background: var(--app-primary-bg) !important; color: var(--app-primary-text) !important; border-color: var(--app-selected-line) !important; }
+
+/* Explicit two-choice theme controls keep their selection and keyboard focus visible. */
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-settings { min-width: 0; padding: 15px 17px 18px; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-settings legend { padding-inline: 7px; color: var(--app-text); font-size: 1rem; font-weight: 700; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-option { display: grid; grid-template-columns: 20px minmax(0, 1fr); align-items: center; gap: 9px; min-width: 0; min-height: 108px; padding: 11px; border: 1px solid var(--app-line); border-radius: 14px; background: var(--app-soft); cursor: pointer; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-option:has(input:checked) { background: var(--app-selected); border-color: var(--app-selected-line); box-shadow: inset 0 0 0 1px var(--app-selected-line); }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-option input { appearance: none; -webkit-appearance: none; margin: 0; width: 20px; height: 20px; border: 2px solid var(--app-muted); border-radius: 50%; background: var(--app-panel); cursor: pointer; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-option input:checked { background: var(--app-blue); border-color: var(--app-blue); box-shadow: inset 0 0 0 4px var(--app-panel); }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-swatch { display: block; width: 100%; height: 38px; border-radius: 8px; border: 1px solid #9db6cb; background: linear-gradient(156deg,#294258 52%,#192c3f 53%); }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-swatch[data-theme-preview='light'] { background: linear-gradient(156deg,#fff 52%,#e3edf5 53%); }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-copy { grid-column: 1 / -1; color: var(--app-text); }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-copy strong { display: block; font-size: .87rem; font-weight: 700; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-copy small { display: block; font-size: .71rem; color: var(--app-muted); line-height: 1.9; }
+html[data-theme] body.calm-sky.dark-mode #app .app-theme-option:has(input:focus-visible) { outline: 2px solid var(--app-blue); outline-offset: 3px; }
+html[data-theme] body.calm-sky.dark-mode #app :is(button, a, select, input, summary, [tabindex]):focus-visible { outline-color: var(--app-blue) !important; }
+@media (max-width: 350px) {
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date { padding: 13px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-calendar-date div { font-size: .96rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer { gap: 6px; padding-inline: 10px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-symbol { width: 29px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-symbol svg { width: 25px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-next-prayer small { font-size: .62rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-prayer-time { padding-inline-start: 8px; font-size: 1.08rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .hero-card { padding-inline: 14px !important; }
+  html[data-theme] body.calm-sky.dark-mode #app .app-theme-option { padding: 9px; gap: 7px; }
+}

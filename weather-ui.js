@@ -1,6 +1,6 @@
 /* Forecasts load only when Weather is visible; opening the app never waits for them. */
-import { mountWeatherCards } from './weather-cards.mjs?v=6.00-cards1';
-import { normalizeForecast, WEATHER_REQUEST_URL } from './weather-data.mjs?v=6.00-cards1';
+import { mountWeatherCards } from './weather-cards.mjs?v=6.00-themes1';
+import { normalizeForecast, WEATHER_REQUEST_URL } from './weather-data.mjs?v=6.00-themes1';
 
 const page = document.getElementById('page-weather');
 const root = document.getElementById('weather-cards');
@@ -32,28 +32,22 @@ function cacheUsable() {
   if (!Number.isFinite(age) || age < -60000 || age > KEEP_FOR) return false;
   try { normalizeForecast(saved.payload); return true; } catch (_) { return false; }
 }
-function credit(fetchedAt) {
-  const node = root.querySelector('.wc-attribution');
-  const link = document.createElement('a');
-  link.href = 'https://open-meteo.com/'; link.target = '_blank'; link.rel = 'noopener';
-  link.textContent = 'Open-Meteo';
-  node.replaceChildren(document.createTextNode('بيانات التوقعات: '), link);
-  if (fetchedAt) node.append(document.createTextNode(` · جُلبت ${timeLabel.format(new Date(fetchedAt))}`));
-  node.hidden = false;
+function updateTime(fetchedAt) {
+  const node = root.querySelector('.wc-update');
+  node.textContent = fetchedAt ? `جُلبت التوقعات ${timeLabel.format(new Date(fetchedAt))} بتوقيت السعودية` : '';
+  node.hidden = !fetchedAt;
 }
 function renderSaved(state = 'ready', status = '') {
   cards.render({ ...normalizeForecast(saved.payload), state, status });
-  credit(saved.fetchedAt);
+  updateTime(saved.fetchedAt);
 }
 function unavailable(offline) {
   cards.render({
     current: {}, daily: [], hourly: [],
-    summary: 'التوقعات غير متاحة حاليًا',
-    rain: { probability: null, windowLabel: 'غير متاح' },
     state: offline ? 'offline' : 'error',
     status: offline ? 'أنت غير متصل بالإنترنت. أعد المحاولة عند عودة الاتصال.' : 'تعذر تحميل توقعات الطقس. اضغط زر التحديث للمحاولة مجددًا.'
   });
-  credit();
+  updateTime();
 }
 
 async function load(force = false) {
@@ -91,7 +85,7 @@ async function load(force = false) {
       saved = { version: 1, fetchedAt: now, payload };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(saved)); } catch (_) { /* Weather also works without storage. */ }
       cards.render(forecast);
-      credit(now);
+      updateTime(now);
     } catch (_) {
       if (id !== requestId) return;
       const noConnection = navigator.onLine === false;
