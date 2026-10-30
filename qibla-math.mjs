@@ -4,6 +4,21 @@ export const difference = (target, heading) => normalize(target - heading + 180)
 export function validCoordinates(latitude, longitude) {
   return Number.isFinite(latitude) && Math.abs(latitude) <= 90 && Number.isFinite(longitude) && Math.abs(longitude) <= 180;
 }
+export function parseCoordinate(value) {
+  if (typeof value !== 'string') return null;
+  const text = value.trim()
+    .replace(/[\u061c\u200e\u200f]/g, '')
+    .replace(/[\u0660-\u0669\u06f0-\u06f9]/g, (digit) => String(digit.charCodeAt(0) % 16))
+    .replace(/\u2212/g, '-')
+    .replace(/[\u066b,]/g, '.');
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text)) return null;
+  const number = Number(text);
+  return Number.isFinite(number) ? number : null;
+}
+export function parseCoordinates(latitude, longitude) {
+  const lat = parseCoordinate(latitude), lon = parseCoordinate(longitude);
+  return validCoordinates(lat, lon) ? { latitude: lat, longitude: lon } : null;
+}
 export function bearing(latitude, longitude) {
   if (!validCoordinates(latitude, longitude)) throw new Error('Invalid coordinates');
   const r = Math.PI / 180, from = latitude * r, to = KAABA.latitude * r, delta = (KAABA.longitude - longitude) * r;

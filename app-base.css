@@ -520,8 +520,8 @@ body.dark-mode .qb-mark{stroke:rgba(232,238,255,.42);}
 .qb-hub{fill:var(--gold-l);stroke:#fff7dd;stroke-width:2;}
 .qb-kaaba-bg{fill:#161616;stroke:var(--gold-l);stroke-width:1.2;}
 .qb-kaaba-band{fill:var(--gold-l);}
-#qb-needle{transition:transform .35s cubic-bezier(.22,.8,.2,1);transform-origin:100px 100px;}
-#qb-dial{transition:transform .25s cubic-bezier(.22,.8,.2,1);transform-origin:100px 100px;}
+/* SVG rotate() already supplies its center. A CSS origin would offset it twice. */
+#qb-needle,#qb-dial{transform-origin:0 0;transform-box:view-box;transition:none;}
 .qibla-readout{text-align:center;margin-top:10px;font-family:var(--font-ar);}
 .qibla-main-status{font-size:1rem;font-weight:900;color:var(--text);min-height:1.7em;}
 .qibla-main-status.ok{color:#2e9d5b;}

@@ -1,6 +1,29 @@
 /* Exported daily cards share the app's navy, muted gold and mountain/star mark. */
 (() => {
   'use strict';
+  // Installation help belongs to both Home and About, including installed PWAs.
+  function paintInstallState(installed = window.isStandalone?.()) {
+    if (!installed) return;
+    const button = document.getElementById('install-btn');
+    button.classList.remove('hidden'); button.disabled = true;
+    button.textContent = 'التطبيق مثبت على هذا الجهاز';
+    document.getElementById('app-install-note').textContent = 'يمكنك إدارة تنبيهاتك من الخيارات أسفل هذه البطاقة.';
+  }
+  paintInstallState();
+  window.addEventListener('appinstalled', () => paintInstallState(true));
+  const openInstallGuide = window.homeInstall, closeInstallGuide = window.closeInstallGuide;
+  let installOpener;
+  window.homeInstall = () => {
+    installOpener = document.activeElement;
+    openInstallGuide();
+    if (document.getElementById('install-overlay').classList.contains('open')) document.querySelector('.install-sheet-close').focus();
+  };
+  window.closeInstallGuide = () => { closeInstallGuide(); installOpener?.focus(); };
+  document.addEventListener('keydown', (event) => {
+    if (!document.getElementById('install-overlay').classList.contains('open')) return;
+    if (event.key === 'Escape') window.closeInstallGuide();
+    if (event.key === 'Tab') { event.preventDefault(); document.querySelector('.install-sheet-close').focus(); }
+  });
   const dateOptions = { timeZone: 'Asia/Riyadh' };
   const numeric = (value) => typeof value === 'number' && Number.isFinite(value) ? value : null;
   const number = (value) => numeric(value) === null ? '—' : Math.round(value).toLocaleString('ar-SA');
