@@ -1,11 +1,12 @@
 /* Forecasts load only when Weather is visible; opening the app never waits for them. */
-import { mountWeatherCards } from './weather-cards.mjs?v=6.00-themes1';
-import { normalizeForecast, WEATHER_REQUEST_URL } from './weather-data.mjs?v=6.00-themes1';
+import { mountWeatherCards } from './weather-cards.mjs?v=6.00-ecmwf1';
+import { normalizeForecast, WEATHER_REQUEST_URL, CORE_WEATHER_REQUEST_URL, FORECAST_SOURCE_ID } from './weather-data.mjs?v=6.00-ecmwf1';
 
 const page = document.getElementById('page-weather');
 const root = document.getElementById('weather-cards');
 const cards = mountWeatherCards(root, { showHeader: false, onRefresh: () => void load(true) });
-const CACHE_KEY = 'faifaWeatherCards1';
+// Previous automatic-model forecasts cannot be presented as this explicit ECMWF product.
+const CACHE_KEY = 'faifaWeatherECMWFCards1';
 const FRESH_FOR = 30 * 60 * 1000;
 const KEEP_FOR = 24 * 60 * 60 * 1000;
 const CURRENT_MAX_AGE = 3 * 60 * 60 * 1000;
@@ -21,7 +22,7 @@ function active() { return !document.hidden && page.classList.contains('active')
 function readCache() {
   try {
     const value = JSON.parse(localStorage.getItem(CACHE_KEY));
-    if (value?.version === 1 && typeof value.fetchedAt === 'number') return value;
+    if (value?.version === 2 && value.source === FORECAST_SOURCE_ID && typeof value.fetchedAt === 'number') return value;
   } catch (_) { /* Storage is optional. */ }
   return null;
 }
@@ -50,6 +51,18 @@ function unavailable(offline) {
   updateTime();
 }
 
+async function requestForecast(signal) {
+  const options = { signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' };
+  let response = await fetch(WEATHER_REQUEST_URL, options);
+  // An older API schema can reject optional fields. Retrying keeps the same
+  // explicit European model; outages and rate limits do not trigger extra calls.
+  if ([400, 422].includes(response.status) && CORE_WEATHER_REQUEST_URL !== WEATHER_REQUEST_URL) {
+    response = await fetch(CORE_WEATHER_REQUEST_URL, options);
+  }
+  if (!response.ok) throw new Error('Forecast unavailable');
+  return response.json();
+}
+
 async function load(force = false) {
   if (!active()) return;
   void window.ensureAstronomy?.();
@@ -75,14 +88,12 @@ async function load(force = false) {
   const timeout = setTimeout(() => requestController.abort(), 10000);
   pending = (async () => {
     try {
-      const response = await fetch(WEATHER_REQUEST_URL, { signal, cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' });
-      if (!response.ok) throw new Error('Forecast unavailable');
-      const payload = await response.json();
+      const payload = await requestForecast(signal);
       const forecast = normalizeForecast(payload);
       const now = Date.now();
       if (now - forecast.currentAt > CURRENT_MAX_AGE || forecast.currentAt - now > 30 * 60 * 1000) throw new Error('Forecast is out of date');
       if (id !== requestId) return;
-      saved = { version: 1, fetchedAt: now, payload };
+      saved = { version: 2, source: FORECAST_SOURCE_ID, fetchedAt: now, payload };
       try { localStorage.setItem(CACHE_KEY, JSON.stringify(saved)); } catch (_) { /* Weather also works without storage. */ }
       cards.render(forecast);
       updateTime(now);
