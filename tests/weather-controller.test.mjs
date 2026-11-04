@@ -35,14 +35,16 @@ function saved(payload = forecast(), fetchedAt = NOW - 5 * 60000, extra = {}) {
   return { version: 2, source: FORECAST_SOURCE_ID, fetchedAt, payload, ...extra };
 }
 
-function harness({ active = true, online = true, storage = {}, ignoreAbort = false } = {}) {
+function harness({ active = true, homeActive = false, homeCard = true, hidden = false, readyState = 'loading', online = true, storage = {}, ignoreAbort = false } = {}) {
   const clock = { now: NOW }, timers = new Map(), intervals = new Map();
   const windowEvents = new Map(), documentEvents = new Map();
   const stored = new Map(Object.entries(storage).map(([key, value]) => [key, typeof value === 'string' ? value : JSON.stringify(value)]));
-  const requests = [], renders = [], updates = { textContent: '', hidden: true };
+  const requests = [], renders = [], homeRenders = [], updates = { textContent: '', hidden: true };
   const view = { state: null, status: '', data: null };
+  const homeView = { state: null, fetchedAt: null, data: null };
   const classes = new Set(active ? ['active'] : []);
-  let nextTimer = 0, observer, mountOptions;
+  const homeClasses = new Set(homeActive ? ['active'] : []);
+  let nextTimer = 0, observer, mountOptions, astronomyCalls = 0;
   class ClockDate extends Date {
     constructor(...args) { super(...(args.length ? args : [clock.now])); }
     static now() { return clock.now; }
@@ -53,14 +55,16 @@ function harness({ active = true, online = true, storage = {}, ignoreAbort = fal
   }
   function emit(map, name) { for (const callback of map.get(name) || []) callback(); }
   const page = { classList: { contains: name => classes.has(name) } };
+  const homePage = { classList: { contains: name => homeClasses.has(name) } };
+  const homeRoot = {};
   const root = { querySelector: () => updates };
   const document = {
-    hidden: false, readyState: 'loading',
-    getElementById: id => id === 'page-weather' ? page : root,
+    hidden, readyState,
+    getElementById: id => ({ 'page-weather': page, 'page-home': homePage, 'weather-cards': root, 'home-weather-summary': homeCard ? homeRoot : null }[id] ?? null),
     addEventListener: (name, callback) => listen(documentEvents, name, callback)
   };
   const window = {
-    ensureAstronomy: () => Promise.resolve(),
+    ensureAstronomy: () => { astronomyCalls++; return Promise.resolve(); },
     addEventListener: (name, callback) => listen(windowEvents, name, callback)
   };
   const navigator = { onLine: online };
@@ -68,6 +72,12 @@ function harness({ active = true, online = true, storage = {}, ignoreAbort = fal
     window, document, navigator, Date: ClockDate, Intl, AbortController,
     FORECAST_SOURCE_ID, WEATHER_REQUEST_URL, CORE_WEATHER_REQUEST_URL,
     normalizeForecast: payload => normalizeForecast(payload, clock.now),
+    mountHomeWeatherSummary() {
+      return { render(data, meta) {
+        homeRenders.push({ data, ...meta });
+        homeView.data = data; homeView.state = meta.state; homeView.fetchedAt = meta.fetchedAt;
+      } };
+    },
     mountWeatherCards(_root, options) {
       mountOptions = options;
       return {
@@ -92,14 +102,19 @@ function harness({ active = true, online = true, storage = {}, ignoreAbort = fal
     }
   });
   return {
-    window, document, navigator, requests, renders, stored, view, updates,
+    window, document, navigator, requests, renders, homeRenders, stored, view, homeView, updates,
+    get astronomyCalls() { return astronomyCalls; },
     load: force => window.loadWeather(force),
-    ready: () => emit(documentEvents, 'DOMContentLoaded'),
+    ready: () => { document.readyState = 'interactive'; emit(documentEvents, 'DOMContentLoaded'); },
+    loaded: () => { document.readyState = 'complete'; emit(windowEvents, 'load'); },
     refresh: () => mountOptions.onRefresh(),
     resume: () => emit(documentEvents, 'visibilitychange'),
     online(value) { navigator.onLine = value; emit(windowEvents, value ? 'online' : 'offline'); },
-    leave() { classes.delete('active'); observer(); },
-    enter() { classes.add('active'); observer(); },
+    leave() { classes.delete('active'); homeClasses.delete('active'); observer(); },
+    enter() { classes.add('active'); homeClasses.delete('active'); observer(); },
+    home() { classes.delete('active'); homeClasses.add('active'); observer(); },
+    hide() { document.hidden = true; emit(documentEvents, 'visibilitychange'); },
+    show() { document.hidden = false; emit(documentEvents, 'visibilitychange'); },
     respond(index, status = 200, payload = forecast(clock.now)) {
       requests[index].resolve({ status, ok: status >= 200 && status < 300, json: async () => payload });
     },
@@ -112,12 +127,180 @@ function harness({ active = true, online = true, storage = {}, ignoreAbort = fal
   };
 }
 
-test('opening Home and background refresh events never request a forecast', async () => {
+test('opening unrelated pages and background events never request a forecast', async () => {
   const ui = harness({ active: false });
   ui.ready(); ui.resume(); ui.online(true); ui.advance(HOUR);
   await ui.load(true); await settle();
   assert.equal(ui.requests.length, 0);
   assert.equal(ui.renders.length, 0);
+  assert.equal(ui.astronomyCalls, 0);
+});
+
+test('Home waits until readiness plus the defer before its first request and never loads astronomy', async () => {
+  for (const readyState of ['loading', 'interactive']) {
+    const ui = harness({ active: false, homeActive: true, readyState });
+    ui.load(true); ui.advance(2000);
+    assert.equal(ui.requests.length, 0); // DOMContentLoaded has not occurred.
+    assert.equal(ui.homeView.data, null);
+    assert.equal(ui.homeView.state, 'loading');
+    ui.ready(); ui.resume();
+    ui.advance(999);
+    assert.equal(ui.requests.length, 0);
+    ui.advance(1);
+    assert.equal(ui.requests.length, 1);
+    assert.equal(ui.astronomyCalls, 0);
+    assert.equal(ui.renders.length, 0); // Hidden full cards were not rebuilt or announced.
+    ui.respond(0, 200, forecast(NOW, 25)); await settle();
+    assert.equal(ui.homeView.state, 'ready');
+    assert.equal(ui.homeView.data.current.temperature, 25);
+    assert.equal(ui.renders.length, 0);
+  }
+});
+
+test('late module readiness via load is idempotent and a completed document still defers Home', async () => {
+  for (const readyState of ['interactive', 'complete']) {
+    const ui = harness({ active: false, homeActive: true, readyState });
+    if (readyState === 'interactive') ui.loaded();
+    ui.advance(500); ui.loaded();
+    ui.advance(499);
+    assert.equal(ui.requests.length, 0);
+    ui.advance(1);
+    assert.equal(ui.requests.length, 1);
+    assert.equal(ui.astronomyCalls, 0);
+  }
+});
+
+test('fresh Home cache paints synchronously without requests or hidden Weather rendering', async () => {
+  const fetchedAt = NOW - 5 * 60000;
+  const ui = harness({ active: false, homeActive: true, storage: { [CACHE_KEY]: saved(forecast(NOW, 29), fetchedAt) } });
+  assert.equal(ui.homeView.state, 'ready');
+  assert.equal(ui.homeView.data.current.temperature, 29);
+  assert.equal(ui.homeView.fetchedAt, fetchedAt);
+  ui.ready(); ui.resume(); ui.advance(1000); await ui.load();
+  assert.equal(ui.requests.length, 0);
+  assert.equal(ui.astronomyCalls, 0);
+  assert.equal(ui.renders.length, 0);
+  assert.equal(ui.updates.hidden, true);
+});
+
+test('offline Home shows a labeled snapshot or unavailable values without fetching', async () => {
+  for (const cached of [true, false]) {
+    const ui = harness({ active: false, homeActive: true, online: false,
+      storage: cached ? { [CACHE_KEY]: saved(forecast(NOW, 30)) } : {} });
+    assert.equal(ui.homeView.state, 'offline');
+    assert.equal(ui.homeView.data?.current.temperature ?? null, cached ? 30 : null);
+    assert.equal(ui.homeView.fetchedAt != null, cached);
+    ui.ready(); ui.advance(HOUR); await settle();
+    assert.equal(ui.requests.length, 0);
+    assert.equal(ui.astronomyCalls, 0);
+    assert.equal(ui.renders.length, 0);
+  }
+});
+
+test('Home refresh failure preserves a clearly stale matching cache', async () => {
+  const payload = forecast(NOW, 32);
+  const ui = harness({ active: false, homeActive: true,
+    storage: { [CACHE_KEY]: saved(payload, NOW - 31 * 60000) } });
+  assert.equal(ui.homeView.state, 'stale');
+  assert.equal(ui.homeView.data.current.temperature, 32);
+  ui.ready(); ui.advance(1000);
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.homeView.state, 'stale');
+  ui.fail(0); await settle();
+  assert.equal(ui.homeView.state, 'stale');
+  assert.equal(ui.homeView.data.current.temperature, 32);
+  assert.deepEqual(JSON.parse(ui.stored.get(CACHE_KEY)).payload, payload);
+  assert.equal(ui.renders.length, 0);
+});
+
+test('leaving Home or hiding cancels its queued fetch and a hidden Home never queues one', async () => {
+  for (const cancel of ['leave', 'hide']) {
+    const ui = harness({ active: false, homeActive: true });
+    ui.ready(); ui.advance(500); ui[cancel](); ui.advance(1000);
+    assert.equal(ui.requests.length, 0);
+    assert.equal(ui.astronomyCalls, 0);
+  }
+  const hidden = harness({ active: false, homeActive: true, hidden: true });
+  hidden.ready(); hidden.advance(2000);
+  assert.equal(hidden.requests.length, 0);
+  hidden.show(); hidden.advance(999);
+  assert.equal(hidden.requests.length, 0);
+  hidden.advance(1);
+  assert.equal(hidden.requests.length, 1);
+});
+
+test('entering Weather cancels the queued Home delay and immediately loads the full forecast', async () => {
+  const ui = harness({ active: false, homeActive: true });
+  ui.ready(); ui.advance(300);
+  ui.enter();
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.view.state, 'loading');
+  assert.equal(ui.astronomyCalls, 1);
+  ui.advance(700);
+  assert.equal(ui.requests.length, 1);
+  ui.respond(0, 200, forecast(NOW, 26)); await settle();
+  assert.equal(ui.view.state, 'ready');
+  assert.equal(ui.view.data.current.temperature, 26);
+  assert.equal(ui.homeView.data.current.temperature, 26);
+});
+
+test('Home to Weather and back shares one pending request and paints the active consumer first', async () => {
+  const ui = harness({ active: false, homeActive: true });
+  ui.ready(); ui.advance(1000);
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.view.state, null);
+  ui.enter();
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.view.state, 'loading');
+  assert.equal(ui.requests[0].options.signal.aborted, false);
+  assert.equal(ui.astronomyCalls, 1);
+  ui.home();
+  assert.equal(ui.requests[0].options.signal.aborted, false);
+  const weatherRenderCount = ui.renders.length;
+  ui.respond(0, 200, forecast(NOW, 27)); await settle();
+  assert.equal(ui.homeView.state, 'ready');
+  assert.equal(ui.homeView.data.current.temperature, 27);
+  assert.equal(ui.renders.length, weatherRenderCount);
+  ui.enter();
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.view.state, 'ready');
+  assert.equal(ui.view.data.current.temperature, 27);
+});
+
+test('a Weather request survives the move to Home but is canceled when both consumers leave', async () => {
+  const ui = harness();
+  const loading = ui.load();
+  ui.home(); ui.resume();
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.requests[0].options.signal.aborted, false);
+  assert.equal(ui.astronomyCalls, 1);
+  ui.leave(); await loading; await settle();
+  assert.equal(ui.requests[0].options.signal.aborted, true);
+  assert.equal(ui.stored.has(CACHE_KEY), false);
+});
+
+test('coming online queues one forced Home refresh even when the current cache is fresh', async () => {
+  const ui = harness({ active: false, homeActive: true, online: false,
+    storage: { [CACHE_KEY]: saved(forecast(NOW, 30)) } });
+  ui.ready(); ui.online(true); ui.resume(); ui.load();
+  ui.advance(999);
+  assert.equal(ui.requests.length, 0);
+  ui.advance(1);
+  assert.equal(ui.requests.length, 1);
+  assert.equal(ui.astronomyCalls, 0);
+  ui.respond(0, 200, forecast(NOW, 25)); await settle();
+  assert.equal(ui.homeView.state, 'ready');
+  assert.equal(ui.homeView.data.current.temperature, 25);
+});
+
+test('without the Home card the previous Weather-only request behavior is preserved', async () => {
+  const ui = harness({ active: false, homeActive: true, homeCard: false });
+  ui.ready(); ui.resume(); ui.advance(2000);
+  assert.equal(ui.requests.length, 0);
+  ui.enter();
+  assert.equal(ui.requests.length, 1);
+  ui.respond(0); await settle();
+  assert.equal(ui.view.state, 'ready');
 });
 
 test('automatic-model caches and wrong-version or wrong-source ECMWF-key entries are not displayed', async () => {

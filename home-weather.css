@@ -1,0 +1,108 @@
+/* A compact route from Home to the detailed forecast, in either app theme. */
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary {
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center;
+  gap: 11px;
+  width: calc(100% - 32px) !important;
+  min-height: 100px;
+  margin: 0 16px 12px !important;
+  padding: 11px 14px;
+  border: 1px solid var(--app-line) !important;
+  border-radius: 18px;
+  background: var(--app-panel) !important;
+  color: var(--app-text) !important;
+  box-shadow: var(--app-shadow) !important;
+  font-family: var(--font-ar, 'Almarai', sans-serif) !important;
+  text-align: start;
+  line-height: 1.6;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary > * { box-sizing: border-box; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-icon {
+  display: block;
+  flex: 0 0 29px;
+  width: 29px;
+  height: 37px;
+  color: var(--app-gold);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-icon circle { fill: var(--app-gold-fill); }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-icon svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-copy strong {
+  color: var(--app-text) !important;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-wind {
+  display: block;
+  color: var(--app-muted) !important;
+  font-size: .77rem;
+  line-height: 1.5;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-status {
+  display: block;
+  min-height: 3em;
+  color: var(--app-muted) !important;
+  font-size: .68rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-status:empty::before { content: '\00a0'; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-temperature {
+  display: block;
+  flex: 0 0 auto;
+  min-width: 2.4ch;
+  color: var(--app-text) !important;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: center;
+  white-space: nowrap;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-arrow {
+  display: block;
+  flex: 0 0 12px;
+  width: 12px;
+  color: var(--app-blue) !important;
+  font-family: sans-serif;
+  font-size: 1.8rem;
+  line-height: 1;
+  text-align: center;
+}
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary[data-state='stale'] .home-weather-status,
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary[data-state='offline'] .home-weather-status { color: var(--app-gold) !important; }
+html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary:focus-visible { outline: 2px solid var(--app-blue) !important; outline-offset: 3px; }
+@media (hover: hover) and (pointer: fine) {
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary:hover { background: var(--app-soft) !important; }
+}
+@media (max-width: 350px) {
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary { gap: 8px; padding-inline: 12px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-icon { flex-basis: 25px; width: 25px; height: 34px; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-copy strong { font-size: .93rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-wind { font-size: .72rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-status { font-size: .65rem; }
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-temperature { font-size: 1.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] body.calm-sky.dark-mode #app #page-home .home-weather-summary { animation: none !important; transition: none !important; }
+}

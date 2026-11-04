@@ -1313,6 +1313,7 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
 <link rel="stylesheet" href="/weather-ui.css?v=6.00-themes1">
 <link rel="stylesheet" href="/weather-cards.css?v=6.00-ecmwf1">
 <link rel="stylesheet" href="/app-theme.css?v=6.00-themes1">
+<link rel="stylesheet" href="/home-weather.css?v=6.00-homewx1">
 </head>
 <body class="dark-mode calm-sky">
 
@@ -1380,6 +1381,13 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
           <div class="countdown-lbl">أيام متبقية</div>
         </div>
       </div>
+
+      <button type="button" class="home-weather-summary" id="home-weather-summary" onclick="showPage('weather')" aria-label="فتح تفاصيل طقس فيفاء" aria-describedby="home-weather-status">
+        <span class="home-weather-icon" aria-hidden="true"><svg viewBox="0 0 32 40"><path d="M12 23V8a4 4 0 0 1 8 0v15a9 9 0 1 1-8 0Z"/><path d="M16 14v17M24 10h4M24 17h3"/><circle cx="16" cy="31" r="3"/></svg></span>
+        <span class="home-weather-copy"><strong>طقس فيفاء</strong><span class="home-weather-wind" id="home-weather-wind">اضغط لعرض التفاصيل</span><small class="home-weather-status" id="home-weather-status">جارٍ تحميل الطقس…</small></span>
+        <bdi class="home-weather-temperature" id="home-weather-temperature">—</bdi>
+        <span class="home-weather-arrow" aria-hidden="true">‹</span>
+      </button>
 
       <!-- زر تثبيت التطبيق -->
       <button class="home-install" id="home-install" onclick="homeInstall()">
@@ -1759,7 +1767,7 @@ function _buildYearTablePDFDocument(){const e=getActiveStars(),t=cycleLabel(curr
 
 
 <script src="/sky-astronomy.js?v=6.00-type1"></script>
-<script type="module" src="/weather-ui.js?v=6.00-ecmwf1"></script>
+<script type="module" src="/weather-ui.js?v=6.00-homewx1"></script>
 <script type="module" src="/prayer-ui.js?v=6.00-fast2"></script>
 <script src="/app-refinements.js?v=6.00-design2"></script>
 <script type="module" src="/qibla-ui.js?v=6.00-compass4"></script>
