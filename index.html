@@ -1330,8 +1330,13 @@ if(isMobilePushDevice()) OneSignalDeferred.push(async function (OneSignal) {
 <!-- ══ APP ══ -->
 <div id="app" style="display:none">
   <header class="app-toolbar">
-    <a class="app-toolbar-brand" href="/?page=home" aria-label="نجوم مذاري فيفاء، الرئيسية"><img src="/assets/brand-mark.svg" alt="" width="34" height="34"><span>نجوم مذاري فيفاء</span></a>
-
+<a class="app-toolbar-brand" href="/?page=home" aria-label="نجوم مذاري فيفاء، إعداد علي أحمد الفيفي (أبو منير)، الرئيسية">
+  <img src="/assets/brand-mark.svg" alt="" width="34" height="34">
+  <span style="display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;">
+    <span style="line-height:1.2;">نجوم مذاري فيفاء</span>
+    <small style="display:block;max-width:100%;font-size:13px;font-weight:500;line-height:1.3;white-space:normal;text-align:center;color:var(--app-gold,#d8bb7c);">إعداد علي أحمد الفيفي (أبو منير)</small>
+  </span>
+</a>
   </header>
 
 
