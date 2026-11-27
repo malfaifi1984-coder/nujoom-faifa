@@ -1,5 +1,7 @@
 const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-author7';
-'/app-refinements.js?v=6.00-author7',  '/',
+
+const APP_SHELL = [
+  '/',
   '/start.html',
   '/assets/fonts/cairo-arabic.woff2',
   '/assets/fonts/almarai-arabic-300-normal.woff2',
@@ -26,11 +28,12 @@ const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-author7';
   '/weather-cards.mjs?v=6.00-ecmwf1',
   '/weather-data.mjs?v=6.00-ecmwf1',
   '/sky-astronomy.js?v=6.00-type1',
-  '/app-refinements.js?v=6.00-design2',
+  '/app-refinements.js?v=6.00-author7',
   '/qibla-ui.js?v=6.00-compass4',
   '/qibla-math.mjs?v=6.00-compass4',
   '/assets/vendor/suncalc/suncalc.js',
   '/assets/vendor/astronomy-engine/astronomy.browser.min.js'
+];
 ];self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
   self.skipWaiting();
