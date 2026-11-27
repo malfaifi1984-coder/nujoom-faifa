@@ -34,8 +34,7 @@ const APP_SHELL = [
   '/assets/vendor/suncalc/suncalc.js',
   '/assets/vendor/astronomy-engine/astronomy.browser.min.js'
 ];
-];self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
+self.addEventListener('install', event => {  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
   self.skipWaiting();
 });
 
