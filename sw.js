@@ -1,7 +1,5 @@
-const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-author6';
-
-const APP_SHELL = [
-  '/',
+const CACHE_NAME = 'nujoom-faifa-pwa-v6-00-author7';
+'/app-refinements.js?v=6.00-author7',  '/',
   '/start.html',
   '/assets/fonts/cairo-arabic.woff2',
   '/assets/fonts/almarai-arabic-300-normal.woff2',
