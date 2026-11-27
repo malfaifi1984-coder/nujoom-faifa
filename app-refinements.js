@@ -83,55 +83,16 @@
     text(ctx, 'nujoom-faifa.netlify.app', 242, 1226, 27, '#b6cae2');
     ctx.restore();
 
-    let portraitDrawn = false;
-    let portraitTimer;
-    try {
-      const portrait = await Promise.race([
-        loadCanvasImage('/assets/author-profile.jpg'),
-        new Promise((_, reject) => {
-          portraitTimer = setTimeout(() => reject(new Error('Author image timeout')), 4000);
-        })
-      ]);
-      const imageWidth = portrait.naturalWidth || portrait.width;
-      const imageHeight = portrait.naturalHeight || portrait.height;
-      if (imageWidth > 0 && imageHeight > 0) {
-        const cropSize = Math.min(imageWidth, imageHeight);
-        ctx.save();
-        try {
-          ctx.beginPath();
-          ctx.arc(960, 1298, 40, 0, Math.PI * 2);
-          ctx.clip();
-          ctx.drawImage(
-            portrait,
-            (imageWidth - cropSize) / 2, (imageHeight - cropSize) / 2,
-            cropSize, cropSize,
-            920, 1258, 80, 80
-          );
-          ctx.strokeStyle = '#e2cca0';
-          ctx.lineWidth = 4;
-          ctx.stroke();
-          portraitDrawn = true;
-        } finally {
-          ctx.restore();
-        }
-      }
-    } catch (_) {
-      // يبقى الاسم وتعمل المشاركة إذا تعذر تحميل الصورة.
-    } finally {
-      clearTimeout(portraitTimer);
-    }
-
-    const signatureX = portraitDrawn ? 900 : 1000;
-    ctx.save();
+       ctx.save();
     ctx.direction = 'rtl';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#e2cca0';
     ctx.font = '600 27px Cairo, Tahoma, Arial';
-    ctx.fillText('إعداد علي أحمد الفيفي (أبو منير)', signatureX, 1284);
+    ctx.fillText('إعداد علي أحمد الفيفي (أبو منير)', 1000, 1284);
     ctx.fillStyle = '#90a8c3';
     ctx.font = '400 19px Cairo, Tahoma, Arial';
-    ctx.fillText('الإصدار 6.00', signatureX, 1318);
+    ctx.fillText('الإصدار 6.00', 1000, 1318);
     ctx.restore();
 
     return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve({ blob, url: URL.createObjectURL(blob) }) : reject(new Error('Card export failed')), 'image/png'));
